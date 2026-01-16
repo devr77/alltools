@@ -1,11 +1,5 @@
-import type { Metadata } from "next";
 import "./globals.css";
 import { PostHogProvider } from "./provider";
-
-export const metadata: Metadata = {
-  title: "All tools",
-  description: "A collection of useful tools ",
-};
 
 export default function RootLayout({
   children,
@@ -14,23 +8,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-bg text-text">
+      <body className="bg-bg text-text min-h-screen flex flex-col">
         <header className="border-b border-border">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <span className="font-semibold">All tools</span>
+            <a className="font-semibold" href="/">
+              All tools
+            </a>
             <nav className="text-sm text-muted space-x-6">
-              <a href="/tools">Tools</a>
+              <a href="/">Tools</a>
             </nav>
           </div>
         </header>
 
-        <main className="max-w-6xl mx-auto px-4 py-10">
+        <main className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 flex-1">
           <PostHogProvider>{children}</PostHogProvider>
         </main>
 
-        <footer className="border-t border-border mt-20">
+        <footer className="border-t border-border mt-auto">
           <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-muted">
-            © {new Date().getFullYear()} Toolbox
+            © {new Date().getFullYear()} All Tools. All rights reserved.
           </div>
         </footer>
       </body>
