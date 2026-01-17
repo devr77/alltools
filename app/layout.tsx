@@ -23,10 +23,19 @@ export default function RootLayout({
         <main className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 flex-1">
           <PostHogProvider>{children}</PostHogProvider>
         </main>
-
         <footer className="border-t border-border mt-auto">
-          <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-muted">
-            © {new Date().getFullYear()} All Tools. All rights reserved.
+          <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-2">
+            <p>© {new Date().getFullYear()} AllTools. All rights reserved.</p>
+
+            <p className="max-w-3xl">
+              AllTools provides free online utilities for developers, creators,
+              and general use. Tools are offered “as is” without warranties of
+              any kind. Use at your own discretion.
+            </p>
+
+            <p>
+              Not affiliated with any third-party brands or services mentioned.
+            </p>
           </div>
         </footer>
       </body>

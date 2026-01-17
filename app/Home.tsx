@@ -16,7 +16,7 @@ export default function Home() {
         ...tool,
         category: category.name,
         categoryIcon: category.icon,
-      }))
+      })),
     );
   }, []);
 
@@ -124,6 +124,14 @@ export default function Home() {
                 <div className="flex items-center mb-3">
                   <span className="mr-2 text-xl">{category.icon}</span>
                   <h2 className="text-2xl font-semibold">{category.name}</h2>
+                  {/* Arrow button to category page */}
+                  <a
+                    href={`/${category.slug}`}
+                    className="ml-2 text-blue-500 hover:underline flex items-center"
+                    title={`See all ${category.name} tools`}
+                  >
+                    <span className="ml-1">→</span>
+                  </a>
                 </div>
 
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
