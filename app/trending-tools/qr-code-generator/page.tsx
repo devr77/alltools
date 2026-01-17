@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import QRCodeGeneratorPage from "./QrCodeGenerator";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "QR Code Generator Simple and Free Online Tool | AllTools",
@@ -25,9 +26,74 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "QR Code Generator",
+  applicationCategory: "UtilityApplication",
+  operatingSystem: "Web",
+  url: "https://alltools.example/tools/qr-code-generator",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
+
+const jsonldFaq = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Is the QR Code Generator free to use?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, the QR Code Generator is completely free to use with no sign-up required.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What types of QR codes can I generate?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "You can generate QR codes for URLs, text, email addresses, phone numbers, Wi-Fi credentials, and more.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do you store the generated QR codes or data?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No, all QR codes are generated instantly in your browser and no data is stored on our servers.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I use the generated QR codes for commercial purposes?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, you can use the generated QR codes for both personal and commercial purposes without restrictions.",
+      },
+    },
+  ],
+};
+
 function page() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonldFaq).replace(/</g, "\\u003c"),
+        }}
+      />
       <QRCodeGeneratorPage />
     </>
   );

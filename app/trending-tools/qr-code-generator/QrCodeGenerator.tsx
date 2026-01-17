@@ -1,19 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 
 export default function QRCodeGeneratorPage() {
   const [content, setContent] = useState("");
-  const [size, setSize] = useState(320);
+  const [size, setSize] = useState(220);
   const [margin, setMargin] = useState(1);
   const [ecc, setEcc] = useState<"L" | "M" | "Q" | "H">("M");
   const [isDownloading, setIsDownloading] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const qrSrc = useMemo(() => {
     if (!content.trim()) return "";
     const base = "https://api.qrserver.com/v1/create-qr-code/";
     return `${base}?data=${encodeURIComponent(
-      content.trim()
+      content.trim(),
     )}&size=${size}x${size}&ecc=${ecc}&margin=${margin}`;
   }, [content, size, ecc, margin]);
 
@@ -39,13 +40,18 @@ export default function QRCodeGeneratorPage() {
     await navigator.clipboard.writeText(qrSrc);
   };
 
+  // Auto-expand textarea height
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.style.height = "auto";
+      contentRef.current.style.height = contentRef.current.scrollHeight + "px";
+    }
+  }, [content]);
+
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-black px-4 sm:px-6 md:px-8 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-semibold mb-2">QR Code Generator</h1>
-        <p className="text-xs uppercase tracking-wide text-muted mb-2">
-          QR Code
-        </p>
         <h2 className="text-xl font-medium mb-2">
           Create QR codes for links, text, or any content
         </h2>
@@ -59,11 +65,13 @@ export default function QRCodeGeneratorPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Content</label>
               <textarea
+                ref={contentRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Enter text or URL"
-                className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-                rows={5}
+                className="w-full min-h-[40px] max-h-[300px] resize-none rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                rows={1}
+                style={{ overflow: "hidden" }}
               />
             </div>
 

@@ -19,7 +19,7 @@ function page() {
           {allTools.map((tool) => (
             <a
               key={tool.slug}
-              href={`/random-tools/${tool.slug}`}
+              href={`/trending-tools/${tool.slug}`}
               className="border border-border bg-card p-4 rounded-md hover:border-white transition"
             >
               <h3 className="font-medium flex items-center">
