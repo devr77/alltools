@@ -102,6 +102,32 @@ function Base64Encode() {
         readOnly
         style={{ marginTop: "8px" }}
       />
+      {/* References / Citations */}
+      <div style={{ marginTop: "24px", fontSize: "0.95em" }}>
+        <h4>References</h4>
+        <ul>
+          <li>
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#0070f3", textDecoration: "underline" }}
+            >
+              MDN Web Docs: btoa()
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/Base64"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#0070f3", textDecoration: "underline" }}
+            >
+              Wikipedia: Base64
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

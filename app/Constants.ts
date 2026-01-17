@@ -232,7 +232,7 @@ export const categories = [
   },
   {
     name: "Data Conversion & Formatting",
-    slug: "json-data",
+    slug: "data-convertor",
     icon: "🧩",
     tools: [
       {

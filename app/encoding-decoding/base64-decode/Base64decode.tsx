@@ -109,6 +109,32 @@ function Base64decode() {
         <h3>Decoded Output:</h3>
         <pre>{output}</pre>
       </div>
+      {/* References / Citations */}
+      <div style={{ marginTop: "24px", fontSize: "0.95em" }}>
+        <h4>References</h4>
+        <ul>
+          <li>
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#0070f3", textDecoration: "underline" }}
+            >
+              MDN Web Docs: atob()
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/Base64"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#0070f3", textDecoration: "underline" }}
+            >
+              Wikipedia: Base64
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }
