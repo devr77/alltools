@@ -24,7 +24,7 @@ export default function RootLayout({
           <PostHogProvider>{children}</PostHogProvider>
         </main>
         <footer className="border-t border-border mt-auto">
-          <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-2">
+          <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-3">
             <p>© {new Date().getFullYear()} AllTools. All rights reserved.</p>
 
             <p className="max-w-3xl">
@@ -35,6 +35,21 @@ export default function RootLayout({
 
             <p>
               Not affiliated with any third-party brands or services mentioned.
+            </p>
+
+            {/* Legal & Info Links */}
+            <p className="flex flex-wrap gap-4">
+              <a href="/privacy" className="hover:underline underline-offset-4">
+                Privacy Policy
+              </a>
+              <span>·</span>
+              <a href="/about" className="hover:underline underline-offset-4">
+                About
+              </a>
+              <span>·</span>
+              <a href="/contact" className="hover:underline underline-offset-4">
+                Contact
+              </a>
             </p>
           </div>
         </footer>
