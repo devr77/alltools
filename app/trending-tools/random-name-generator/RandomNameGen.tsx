@@ -1,75 +1,9 @@
 "use client";
 import React, { useState } from "react";
-
-const adjectives = [
-  "Swift",
-  "Silent",
-  "Brave",
-  "Clever",
-  "Mighty",
-  "Lucky",
-  "Bright",
-  "Wild",
-  "Calm",
-  "Bold",
-  "Gentle",
-  "Fierce",
-  "Nimble",
-  "Daring",
-  "Sly",
-  "Radiant",
-  "Sturdy",
-  "Vivid",
-  "Epic",
-  "Grand",
-  "Cheerful",
-  "Lively",
-  "Serene",
-  "Fearless",
-  "Jolly",
-  "Witty",
-  "Gallant",
-  "Majestic",
-  "Stealthy",
-  "Dynamic",
-];
-const nouns = [
-  "Tiger",
-  "Falcon",
-  "Lion",
-  "Wolf",
-  "Eagle",
-  "Fox",
-  "Bear",
-  "Shark",
-  "Panther",
-  "Hawk",
-  "Otter",
-  "Dragon",
-  "Leopard",
-  "Cobra",
-  "Stallion",
-  "Raven",
-  "Buffalo",
-  "Cheetah",
-  "Jaguar",
-  "Orca",
-  "Moose",
-  "Viper",
-  "Gazelle",
-  "Lynx",
-  "Puma",
-  "Crane",
-  "Bison",
-  "Mantis",
-  "Heron",
-  "Cougar",
-];
+import { faker } from "@faker-js/faker";
 
 function getRandomName() {
-  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  return `${adj} ${noun}`;
+  return faker.person.fullName();
 }
 
 function RandomNameGen() {
@@ -99,7 +33,7 @@ function RandomNameGen() {
         textAlign: "center",
       }}
     >
-      <h2>Random Name Generator</h2>
+      <h1>Random Name Generator</h1>
       <div
         style={{
           fontSize: "1.5rem",
