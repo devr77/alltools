@@ -1,60 +1,59 @@
 import type { Metadata } from "next";
-import RandomPasswordGen from "./RandomPasswordGen";
+import RandomNameGen from "./RandomNameGen";
 
 export const metadata: Metadata = {
-  title: "Random Password Generator Simple and Free Online Tool | AllTools",
+  title: "Random Name Generator Simple and Free Online Tool | AllTools",
   description:
-    "Generate strong, random passwords with customizable options. Choose length, include symbols, numbers, and more for enhanced security.",
+    "Generate random names by combining adjectives and nouns. Perfect for character names, usernames, or any creative project.",
   keywords: [
-    "random password generator",
-    "generate random password",
-    "strong password generator",
-    "secure password generator",
-    "online password generator",
-    "custom password generator",
-    "free password generator",
+    "random name generator",
+    "name generator",
+    "generate random names",
+    "adjective noun names",
+    "creative name tool",
+    "free name generator",
   ],
   publisher: "AllTools Network",
   metadataBase: new URL("https://alltools.network"),
-  alternates: { canonical: "/trending-tools/random-password-generator" },
+  alternates: { canonical: "/trending-tools/random-name-generator" },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
   },
 };
-
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Random Password Generator",
+  name: "Random Name Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/random-password-generator",
+  url: "https://alltools.example/tools/random-name-generator",
   offers: {
     "@type": "Offer",
     price: "0",
     priceCurrency: "USD",
   },
 };
+
 const jsonldFaq = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
     {
       "@type": "Question",
-      name: "Is the Random Password Generator free to use?",
+      name: "Is the Random Name Generator free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, the Random Password Generator is completely free to use with no sign-up required.",
+        text: "Yes, the Random Name Generator is completely free to use with no sign-up required.",
       },
     },
     {
       "@type": "Question",
-      name: "Can I customize the passwords generated?",
+      name: "What types of names can I generate?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, you can customize the length and character types (such as symbols, numbers, uppercase, and lowercase letters) included in the generated passwords.",
+        text: "You can generate random names by combining a variety of adjectives and nouns, suitable for characters, usernames, and more.",
       },
     },
   ],
@@ -75,7 +74,7 @@ function page() {
           __html: JSON.stringify(jsonldFaq).replace(/</g, "\\u003c"),
         }}
       />
-      <RandomPasswordGen />
+      <RandomNameGen />
     </div>
   );
 }

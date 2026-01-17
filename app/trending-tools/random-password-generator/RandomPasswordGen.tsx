@@ -187,9 +187,48 @@ function RandomPasswordGen() {
             borderRadius: 4,
             outline: "none",
             cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
           }}
         >
-          {copied ? "Copied!" : "Copy"}
+          {copied ? (
+            "Copied!"
+          ) : (
+            <>
+              {/* Copy Icon SVG */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 20 20"
+                fill="none"
+                style={{ display: "inline", verticalAlign: "middle" }}
+              >
+                <rect
+                  x="7"
+                  y="7"
+                  width="9"
+                  height="11"
+                  rx="2"
+                  stroke="#1976d2"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
+                <rect
+                  x="4"
+                  y="2"
+                  width="9"
+                  height="11"
+                  rx="2"
+                  stroke="#1976d2"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
+              </svg>
+              Copy
+            </>
+          )}
         </button>
       )}
       {password && (

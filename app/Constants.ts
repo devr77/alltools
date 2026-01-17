@@ -80,7 +80,7 @@ export const categories = [
     slug: "generators",
     icon: "⚙️",
     tools: [
-      { name: "UUID Generator", slug: "uuid-generator-2", icon: "🎲" },
+      { name: "UUID Generator", slug: "uuid-generator", icon: "🎲" },
       { name: "NanoID Generator", slug: "nanoid-generator", icon: "🧬" },
       { name: "Fake Data Generator", slug: "fake-data-generator", icon: "🧪" },
       { name: "Changelog Generator", slug: "changelog-generator", icon: "📑" },

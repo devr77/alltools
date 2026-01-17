@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import QRCodeGeneratorPage from "./QrCodeGenerator";
-import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "QR Code Generator Simple and Free Online Tool | AllTools",

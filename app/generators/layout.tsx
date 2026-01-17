@@ -4,7 +4,7 @@ import { categories } from "../Constants";
 export default function Layout({ children }: { children: ReactNode }) {
   // Get Trending Tools category
   const trendingToolsCategory = categories.find(
-    (cat) => cat.slug === "trending-tools",
+    (cat) => cat.slug === "generators",
   );
   // Pick 3 random tools
   const similarTools = trendingToolsCategory
@@ -21,8 +21,8 @@ export default function Layout({ children }: { children: ReactNode }) {
           Home
         </a>{" "}
         /{" "}
-        <a href="/trending-tools" className="text-blue-600 hover:underline">
-          Trending Tools
+        <a href="/generators" className="text-blue-600 hover:underline">
+          Generators
         </a>
       </nav>
       {children}
@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {similarTools.map((tool) => (
               <a
                 key={tool.slug}
-                href={`/trending-tools/${tool.slug}`}
+                href={`/generators/${tool.slug}`}
                 className="border border-border bg-card p-4 rounded-md hover:border-white transition"
               >
                 <h3 className="font-medium flex items-center">
