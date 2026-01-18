@@ -26,13 +26,23 @@ function Base64Encode() {
   return (
     <div>
       <h2>Base64 Encoder</h2>
-      <textarea
-        rows={5}
-        cols={50}
-        placeholder="Enter text to encode"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
+      <label style={{ display: "block", marginBottom: "8px" }}>
+        <span
+          style={{ fontWeight: 500, display: "block", marginBottom: "4px" }}
+        >
+          Input Text
+        </span>
+        <textarea
+          rows={5}
+          cols={50}
+          placeholder="Enter text to encode"
+          value={input}
+          style={{
+            border: "1px solid #0070f3",
+          }}
+          onChange={(e) => setInput(e.target.value)}
+        />
+      </label>
       <br />
       <button
         onClick={handleEncode}
@@ -94,14 +104,20 @@ function Base64Encode() {
         {copied ? "Copied!" : "Copy"}
       </button>
       <br />
-      <textarea
-        rows={5}
-        cols={50}
-        placeholder="Base64 output"
-        value={output}
-        readOnly
-        style={{ marginTop: "8px" }}
-      />
+      <label style={{ display: "block", marginTop: "8px" }}>
+        <span
+          style={{ fontWeight: 500, display: "block", marginBottom: "4px" }}
+        >
+          Base64 Output
+        </span>
+        <textarea
+          rows={5}
+          cols={50}
+          placeholder="Base64 output"
+          value={output}
+          readOnly
+        />
+      </label>
       {/* References / Citations */}
       <div style={{ marginTop: "24px", fontSize: "0.95em" }}>
         <h4>References</h4>

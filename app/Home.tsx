@@ -99,6 +99,9 @@ export default function Home() {
                       <span className="mr-2">{tool.icon}</span>
                       {tool.name}
                     </h3>
+                    <p className="text-xs text-muted mt-1">
+                      {tool.description}
+                    </p>
                     <p className="text-sm text-muted mt-1">Open tool →</p>
                   </a>
                 ))}
@@ -145,6 +148,9 @@ export default function Home() {
                         <span className="mr-2">{tool.icon}</span>
                         {tool.name}
                       </h3>
+                      <p className="text-xs text-muted mt-1">
+                        {tool.description}
+                      </p>
                       <p className="text-sm text-muted mt-1">Open tool →</p>
                     </a>
                   ))}

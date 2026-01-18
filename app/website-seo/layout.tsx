@@ -1,4 +1,5 @@
 "use client";
+
 import type { ReactNode } from "react";
 import { categories } from "../Constants";
 import posthog from "posthog-js";
@@ -7,7 +8,7 @@ import { useState } from "react";
 export default function Layout({ children }: { children: ReactNode }) {
   // Get Trending Tools category
   const trendingToolsCategory = categories.find(
-    (cat) => cat.slug === "generators",
+    (cat) => cat.slug === "website-seo",
   );
   // Pick 3 random tools
   const similarTools = trendingToolsCategory
@@ -15,6 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         .sort(() => 0.5 - Math.random())
         .slice(0, 3)
     : [];
+
   const [feedback, setFeedback] = useState<null | "like" | "dislike" | "share">(
     null,
   );
@@ -41,12 +43,14 @@ export default function Layout({ children }: { children: ReactNode }) {
           Home
         </a>{" "}
         /{" "}
-        <a href="/generators" className="text-blue-600 hover:underline">
-          Generators
+        <a href="/website-seo" className="text-blue-600 hover:underline">
+          Website SEO Tools
         </a>
       </nav>
       {children}
-      <div className="mt-10 flex flex-col items-start gap-2">
+      <br />
+      {/* Did you find this useful section */}
+      <div className="mt-8 flex flex-col items-start gap-2">
         <span className="font-medium">Did you find this tool useful?</span>
         <div className="flex items-center gap-4">
           <button
@@ -101,7 +105,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {similarTools.map((tool) => (
               <a
                 key={tool.slug}
-                href={`/generators/${tool.slug}`}
+                href={`/website-seo/${tool.slug}`}
                 className="border border-border bg-card p-4 rounded-md hover:border-white transition"
               >
                 <h3 className="font-medium flex items-center">

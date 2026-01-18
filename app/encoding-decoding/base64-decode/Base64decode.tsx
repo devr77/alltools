@@ -38,6 +38,9 @@ function Base64decode() {
         rows={4}
         cols={50}
         placeholder="Enter Base64 string"
+        style={{
+          border: "1px solid #0070f3",
+        }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />

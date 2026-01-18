@@ -1,5 +1,8 @@
+"use client";
 import type { ReactNode } from "react";
 import { categories } from "../Constants";
+import posthog from "posthog-js";
+import { useState } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   // Get Trending Tools category
@@ -13,6 +16,23 @@ export default function Layout({ children }: { children: ReactNode }) {
         .slice(0, 3)
     : [];
 
+  const [feedback, setFeedback] = useState<null | "like" | "dislike" | "share">(
+    null,
+  );
+
+  const handleFeedback = (type: "like" | "dislike" | "share") => {
+    posthog.capture("trending_tools_feedback", { type });
+    setFeedback(type);
+    if (type === "share") {
+      if (typeof window !== "undefined" && window.navigator?.clipboard) {
+        window.navigator.clipboard.writeText(window.location.href);
+      }
+    }
+    // Optionally clear feedback after a timeout for share
+    if (type === "share") {
+      setTimeout(() => setFeedback(null), 2000);
+    }
+  };
   return (
     <div>
       <nav className="mb-6">
@@ -26,6 +46,53 @@ export default function Layout({ children }: { children: ReactNode }) {
         </a>
       </nav>
       {children}
+      <div className="mt-10 flex flex-col items-start gap-2">
+        <span className="font-medium">Did you find this tool useful?</span>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="flex items-center px-3 py-1.5 rounded hover:bg-gray-100 transition text-lg"
+            aria-label="Like"
+            onClick={() => handleFeedback("like")}
+            disabled={feedback === "like"}
+          >
+            👍
+          </button>
+          <button
+            type="button"
+            className="flex items-center px-3 py-1.5 rounded hover:bg-gray-100 transition text-lg"
+            aria-label="Dislike"
+            onClick={() => handleFeedback("dislike")}
+            disabled={feedback === "dislike"}
+          >
+            👎
+          </button>
+          <button
+            type="button"
+            className="flex items-center px-3 py-1.5 rounded hover:bg-gray-100 transition text-lg"
+            aria-label="Share"
+            onClick={() => handleFeedback("share")}
+            disabled={feedback === "share"}
+          >
+            🔗
+          </button>
+        </div>
+        {feedback === "like" && (
+          <span className="text-green-600 text-sm mt-1">
+            Thanks for your feedback! 👍
+          </span>
+        )}
+        {feedback === "dislike" && (
+          <span className="text-red-600 text-sm mt-1">
+            Thanks for your feedback! 👎
+          </span>
+        )}
+        {feedback === "share" && (
+          <span className="text-blue-600 text-sm mt-1">
+            Link copied to clipboard!
+          </span>
+        )}
+      </div>
       {/* Similar Tools Section */}
       {similarTools.length > 0 && (
         <div className="mt-10">
