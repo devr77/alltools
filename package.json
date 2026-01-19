@@ -11,14 +11,27 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@mozilla/readability": "^0.6.0",
+    "@opendocsg/pdf2md": "^0.2.3",
+    "ajv": "^8.17.1",
     "fast-xml-parser": "^5.3.3",
     "fuse.js": "^7.1.0",
+    "js-yaml": "^4.1.1",
+    "json-diff": "^1.0.6",
+    "json2csv": "^6.0.0-alpha.2",
+    "linkedom": "^0.18.12",
+    "mammoth": "^1.11.0",
     "next": "16.1.2",
+    "papaparse": "^5.5.3",
     "pdfjs-dist": "^5.4.530",
     "posthog-js": "^1.324.1",
     "posthog-node": "^5.21.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "turndown": "^7.2.2",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -12,7 +12,7 @@ export default function RootLayout({
         <header className="border-b border-border">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
             <a className="font-semibold" href="/">
-              All tools
+              ToolsBase
             </a>
             <nav className="text-sm text-muted space-x-6">
               <a href="/">Tools</a>

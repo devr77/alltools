@@ -1,5 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
 
 function jsonToMarkdown(obj: any, indent = 0): string {
   if (typeof obj !== "object" || obj === null) {
@@ -63,6 +66,20 @@ function JsontoMarkdown() {
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const text = e.clipboardData.getData("text");
     setJsonInput(text);
+  };
+
+  // Beautify/format the markdown using unified + remark
+  const handleBeautify = async () => {
+    if (!markdown) return;
+    try {
+      const file = await unified()
+        .use(remarkParse)
+        .use(remarkStringify)
+        .process(markdown);
+      setMarkdown(String(file));
+    } catch (err) {
+      // fallback: do nothing
+    }
   };
 
   return (
@@ -228,6 +245,45 @@ function JsontoMarkdown() {
               <path d="M5 15V5a2 2 0 0 1 2-2h10" />
             </svg>
             {copied ? "Copied!" : "Copy"}
+          </button>
+          {/* Beautify Markdown button */}
+          <button
+            type="button"
+            onClick={handleBeautify}
+            disabled={!markdown}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              border: "none",
+              background: "#e0ffe6",
+              color: "#059669",
+              padding: "6px 12px",
+              borderRadius: 4,
+              fontWeight: 500,
+              cursor: markdown ? "pointer" : "not-allowed",
+              marginLeft: 8,
+            }}
+            aria-label="Beautify Markdown"
+            tabIndex={0}
+            title="Beautify Markdown"
+          >
+            {/* Sparkle icon */}
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="#059669"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              style={{ marginRight: 2 }}
+            >
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+            Beautify
           </button>
         </div>
         <textarea
