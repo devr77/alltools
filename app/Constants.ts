@@ -2,7 +2,7 @@ export const categories = [
   {
     name: "Trending Tools",
     slug: "trending-tools",
-    icon: "🎲",
+    icon: "🔥 🔥",
     description: "Popular tools currently trending among users.",
     tools: [
       {
@@ -53,6 +53,20 @@ export const categories = [
         slug: "lorem-ipsum-generator",
         icon: "📜",
         description: "Generate placeholder Lorem Ipsum text.",
+      },
+    ],
+  },
+  {
+    name: "Randomisers",
+    slug: "randomisers",
+    icon: "🎲",
+    description: "Tools to generate random data for various needs.",
+    tools: [
+      {
+        name: "Random Animal Generator",
+        slug: "random-animal-generator",
+        icon: "🐼",
+        description: "Generate random animal names and facts.",
       },
     ],
   },
@@ -489,22 +503,10 @@ export const categories = [
         description: "Decode and inspect JWT tokens.",
       },
       {
-        name: "Gzip String Compressor",
-        slug: "gzip-compressor",
-        icon: "🗜️",
-        description: "Compress strings using Gzip.",
-      },
-      {
-        name: "Gzip String Decompressor",
-        slug: "gzip-decompressor",
-        icon: "🗜️",
-        description: "Decompress Gzip-compressed strings.",
-      },
-      {
-        name: "Morse Code Encoder",
-        slug: "morse-encode",
+        name: "Morse Code Translator",
+        slug: "morse-translate",
         icon: "📡",
-        description: "Encode text into Morse code.",
+        description: "Translate text to and from Morse code.",
       },
     ],
   },

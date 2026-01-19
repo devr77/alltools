@@ -1,0 +1,110 @@
+"use client";
+import React, { useState } from "react";
+
+type Props = {
+  onGenerate: (prompt: string) => Promise<string>;
+};
+
+function AireplyGen({ onGenerate }: Props) {
+  const [prompt, setPrompt] = useState("");
+  const [reply, setReply] = useState("");
+  const [pending, setPending] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPending(true);
+    setReply("");
+    try {
+      const result = await onGenerate(prompt);
+      setReply(result);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!reply) return;
+    await navigator.clipboard.writeText(reply);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
+        AI Reply Generator
+      </h1>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        rows={5}
+        placeholder="Paste the message or context you want a reply for..."
+        style={{
+          width: "100%",
+          fontFamily: "monospace",
+          border: "1px solid #d1d5db",
+          borderRadius: 5,
+          padding: 8,
+          marginBottom: 12,
+        }}
+        required
+        disabled={pending}
+      />
+      <div style={{ marginBottom: 12 }}>
+        <button
+          type="submit"
+          disabled={pending || !prompt}
+          style={{
+            border: "2px solid #0070f3",
+            background: "#fff",
+            color: "#0070f3",
+            padding: "8px 16px",
+            borderRadius: 5,
+            fontWeight: 500,
+            cursor: pending || !prompt ? "not-allowed" : "pointer",
+          }}
+        >
+          {pending ? "Generating..." : "Generate Reply"}
+        </button>
+      </div>
+      {reply && (
+        <div>
+          <label style={{ fontWeight: 500 }}>AI Reply:</label>
+          <textarea
+            value={reply}
+            readOnly
+            rows={5}
+            style={{
+              width: "100%",
+              fontFamily: "monospace",
+              border: "1px solid #d1d5db",
+              borderRadius: 5,
+              padding: 8,
+              marginBottom: 8,
+              background: "#f9fafb",
+            }}
+          />
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={!reply}
+            style={{
+              border: "2px solid #0070f3",
+              background: copied ? "#0070f3" : "#fff",
+              color: copied ? "#fff" : "#0070f3",
+              padding: "8px 16px",
+              borderRadius: 5,
+              fontWeight: 500,
+              cursor: reply ? "pointer" : "not-allowed",
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      )}
+    </form>
+  );
+}
+
+export default AireplyGen;
