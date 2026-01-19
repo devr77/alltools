@@ -1,11 +1,19 @@
-import AireplyGen from "./AireplyGen";
+export const runtime = "edge";
 
-export async function onGenerate(prompt: string): Promise<string> {
-  "use server";
-  if (!prompt) return "";
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+
+  if (!prompt || typeof prompt !== "string") {
+    return Response.json({ error: "Prompt is required" }, { status: 400 });
+  }
+
   const apiKey = process.env.NEXT_GROQ_KEY;
-  if (!apiKey) return "Missing GROQ_API_KEY in environment.";
-  console.log("prompt", prompt);
+  if (!apiKey) {
+    return Response.json(
+      { error: "Missing GROQ_API_KEY in environment." },
+      { status: 500 },
+    );
+  }
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -26,16 +34,19 @@ export async function onGenerate(prompt: string): Promise<string> {
       max_tokens: 256,
       temperature: 0.7,
     }),
-    cache: "no-store",
   });
 
   if (!res.ok) {
-    return `Groq API error: ${res.status}`;
+    return Response.json(
+      { error: `Groq API error: ${res.status}` },
+      { status: res.status },
+    );
   }
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() || "No reply generated.";
-}
 
-export default function Page() {
-  return <AireplyGen />;
+  const data = await res.json();
+
+  const content =
+    data.choices?.[0]?.message?.content?.trim() ?? "No reply generated.";
+
+  return Response.json({ content });
 }

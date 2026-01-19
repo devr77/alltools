@@ -1,23 +1,32 @@
 "use client";
 import React, { useState } from "react";
 
-type Props = {
-  onGenerate: (prompt: string) => Promise<string>;
-};
-
-function AireplyGen({ onGenerate }: Props) {
+function AireplyGen() {
   const [prompt, setPrompt] = useState("");
   const [reply, setReply] = useState("");
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
     setReply("");
+    setError("");
     try {
-      const result = await onGenerate(prompt);
-      setReply(result);
+      const res = await fetch("/api/ai-gen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to generate reply");
+      } else {
+        setReply(data.content);
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error");
     } finally {
       setPending(false);
     }
@@ -68,6 +77,9 @@ function AireplyGen({ onGenerate }: Props) {
           {pending ? "Generating..." : "Generate Reply"}
         </button>
       </div>
+      {error && (
+        <div style={{ color: "#e11d48", marginBottom: 8 }}>{error}</div>
+      )}
       {reply && (
         <div>
           <label style={{ fontWeight: 500 }}>AI Reply:</label>
