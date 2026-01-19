@@ -25,10 +25,10 @@ export default function RootLayout({
         </main>
         <footer className="border-t border-border mt-auto">
           <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-3">
-            <p>© {new Date().getFullYear()} AllTools. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} ToolsBase. All rights reserved.</p>
 
             <p className="max-w-3xl">
-              AllTools provides free online utilities for developers, creators,
+              ToolsBase provides free online utilities for developers, creators,
               and general use. Tools are offered “as is” without warranties of
               any kind. Use at your own discretion.
             </p>

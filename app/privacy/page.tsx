@@ -14,12 +14,12 @@ export default function Page() {
       {/* INTRO */}
       <section className="space-y-4">
         <p className="text-zinc-600 dark:text-zinc-400">
-          At <strong>AllTools</strong>, your privacy is important to us. This
+          At <strong>ToolsBase</strong>, your privacy is important to us. This
           Privacy Policy explains how we collect, use, and protect information
           when you use our website and online tools.
         </p>
         <p className="text-zinc-600 dark:text-zinc-400">
-          By using AllTools, you agree to the practices described in this
+          By using ToolsBase, you agree to the practices described in this
           policy.
         </p>
       </section>
@@ -29,7 +29,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold">Information We Collect</h2>
 
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools is designed to work without requiring personal information.
+          ToolsBase is designed to work without requiring personal information.
           Most tools operate entirely within your browser.
         </p>
 
@@ -74,7 +74,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold">Cookies</h2>
 
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools may use minimal cookies or similar technologies to:
+          ToolsBase may use minimal cookies or similar technologies to:
         </p>
 
         <ul className="list-disc pl-6 text-zinc-600 dark:text-zinc-400 space-y-2">
@@ -99,7 +99,7 @@ export default function Page() {
         </p>
 
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools is not responsible for the privacy practices of third-party
+          ToolsBase is not responsible for the privacy practices of third-party
           websites or services linked from our platform.
         </p>
       </section>
@@ -114,7 +114,7 @@ export default function Page() {
         </p>
 
         <p className="text-zinc-600 dark:text-zinc-400">
-          Use AllTools at your own discretion, especially for sensitive or
+          Use ToolsBase at your own discretion, especially for sensitive or
           critical data.
         </p>
       </section>
@@ -124,7 +124,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold">Children’s Information</h2>
 
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools does not knowingly collect any personal information from
+          ToolsBase does not knowingly collect any personal information from
           children under the age of 13. If you believe a child has provided
           personal data, please contact us so we can remove it.
         </p>

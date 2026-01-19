@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RandomUsernameGen from "./RandomUsernameGen";
 
 export const metadata: Metadata = {
-  title: "Random Username Generator Simple and Free Online Tool | AllTools",
+  title: "Random Username Generator Simple and Free Online Tool | ToolsBase",
   description:
     "Generate unique and random usernames easily with our free online tool. Customize length, add numbers, and include your own words for personalized usernames.",
   keywords: [
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     "online username tool",
     "custom username",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/random-username-generator" },
   robots: {
     index: true,
@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Username Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/random-username-generator",
+  url: "https://toolsbase.org/tools/random-username-generator",
   offers: {
     "@type": "Offer",
     price: "0",

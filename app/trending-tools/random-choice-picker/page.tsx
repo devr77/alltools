@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RandomChoicepicker from "./RandomChoicepicker";
 
 export const metadata: Metadata = {
-  title: "Random Choice Picker Online Tool | AllTools",
+  title: "Random Choice Picker Online Tool | ToolsBase",
   description:
     "Pick a random choice from your list with this easy-to-use online tool. Perfect for decision making and fun!",
   keywords: [
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     "online random picker",
     "free random choice picker",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/random-choice-picker" },
   robots: {
     index: true,
@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Choice Picker",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/random-choice-picker",
+  url: "https://toolsbase.org/tools/random-choice-picker",
 
   offers: {
     "@type": "Offer",

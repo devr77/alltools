@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import QRCodeGeneratorPage from "./QrCodeGenerator";
 
 export const metadata: Metadata = {
-  title: "QR Code Generator Simple and Free Online Tool | AllTools",
+  title: "QR Code Generator Simple and Free Online Tool | ToolsBase",
   description:
     "Create QR codes for links, text, or any content. Adjust size, margin, and error correction, then copy or download the image.",
   keywords: [
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     "free qr code",
     "custom qr code",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/qr-code-generator" },
   robots: {
     index: true,
@@ -31,7 +31,7 @@ const jsonLd = {
   name: "QR Code Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/qr-code-generator",
+  url: "https://toolsbase.org/tools/qr-code-generator",
   offers: {
     "@type": "Offer",
     price: "0",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LastNameGen from "./LastNameGen";
 
 export const metadata: Metadata = {
-  title: "Last Name Generator Simple and Free Online Tool | AllTools",
+  title: "Last Name Generator Simple and Free Online Tool | ToolsBase",
   description:
     "Generate random last names for characters, stories, or any creative project. Customize length and origin, then copy or download the list.",
   keywords: [
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     "free last name generator",
     "custom last names",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/last-name-generator" },
   robots: {
     index: true,
@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Last Name Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/last-name-generator",
+  url: "https://toolsbase.org/tools/last-name-generator",
   offers: {
     "@type": "Offer",
     price: "0",

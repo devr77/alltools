@@ -5,7 +5,7 @@ export default function Page() {
     <div className="max-w-4xl mx-auto py-12 space-y-12">
       {/* HERO */}
       <section>
-        <h1 className="text-4xl font-semibold mb-4">About AllTools</h1>
+        <h1 className="text-4xl font-semibold mb-4">About ToolsBase</h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-lg">
           Simple tools. Zero clutter. Built for speed, privacy, and reliability.
         </p>
@@ -15,7 +15,7 @@ export default function Page() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Who We Are</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools is a modern online utilities platform created to solve a
+          ToolsBase is a modern online utilities platform created to solve a
           simple problem: most online tools today are slow, bloated, ad-heavy,
           or filled with distractions. We wanted to build a clean, fast, and
           reliable place where anyone can access useful tools instantly.
@@ -31,7 +31,7 @@ export default function Page() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">What We Offer</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          AllTools provides over 500 free online tools across multiple
+          ToolsBase provides over 500 free online tools across multiple
           categories, including:
         </p>
 
@@ -56,7 +56,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold">Our Philosophy</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
           We strongly believe that tools should help you focus on your task —
-          not distract you from it. That’s why AllTools follows a strict design
+          not distract you from it. That’s why ToolsBase follows a strict design
           and product philosophy:
         </p>
 
@@ -73,7 +73,7 @@ export default function Page() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Privacy & Data Usage</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          Privacy is a core principle at AllTools. Most tools run entirely in
+          Privacy is a core principle at ToolsBase. Most tools run entirely in
           your browser and do not send your data to our servers. We do not
           store, analyze, or sell user-generated content.
         </p>
@@ -88,7 +88,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold">Accuracy & Reliability</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
           While we work hard to ensure accuracy and correctness, all tools on
-          AllTools are provided “as is” without warranties of any kind. Results
+          ToolsBase are provided “as is” without warranties of any kind. Results
           should be verified independently when used for critical or
           professional purposes.
         </p>
@@ -102,10 +102,11 @@ export default function Page() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Our Vision</h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          Our long-term goal is to make AllTools the most trusted and accessible
-          tools platform on the web. We plan to continue expanding our library,
-          improving performance, and introducing APIs and advanced features for
-          power users — all while keeping the core experience free and simple.
+          Our long-term goal is to make ToolsBase the most trusted and
+          accessible tools platform on the web. We plan to continue expanding
+          our library, improving performance, and introducing APIs and advanced
+          features for power users — all while keeping the core experience free
+          and simple.
         </p>
       </section>
 
@@ -113,7 +114,7 @@ export default function Page() {
       <section className="space-y-4 border-t border-zinc-200 dark:border-zinc-800 pt-8">
         <h2 className="text-xl font-semibold">Disclaimer</h2>
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-          AllTools is an independent platform and is not affiliated with any
+          ToolsBase is an independent platform and is not affiliated with any
           third-party brands, services, or organizations mentioned on this
           website. Tool names are used for descriptive purposes only.
         </p>

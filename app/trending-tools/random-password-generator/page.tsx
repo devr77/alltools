@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RandomPasswordGen from "./RandomPasswordGen";
 
 export const metadata: Metadata = {
-  title: "Random Password Generator Simple and Free Online Tool | AllTools",
+  title: "Random Password Generator Simple and Free Online Tool | ToolsBase",
   description:
     "Generate strong, random passwords with customizable options. Choose length, include symbols, numbers, and more for enhanced security.",
   keywords: [
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     "custom password generator",
     "free password generator",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/random-password-generator" },
   robots: {
     index: true,
@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Password Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/random-password-generator",
+  url: "https://toolsbase.org/tools/random-password-generator",
   offers: {
     "@type": "Offer",
     price: "0",

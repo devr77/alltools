@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { categories } from "./Constants";
 
-const BASE_URL = "https://alltools.network";
+const BASE_URL = "https://toolsbase.org";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Static sitemap links

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LoremPicsumGen from "./LoremPicsumGen";
 
 export const metadata: Metadata = {
-  title: "Lorem Ipsum Generator Simple and Free Online Tool | AllTools",
+  title: "Lorem Ipsum Generator Simple and Free Online Tool | ToolsBase",
   description:
     "Generate placeholder text with our Lorem Ipsum Generator. Customize the number of paragraphs and words per paragraph for your design and development needs.",
   keywords: [
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     "free lorem ipsum",
     "custom lorem ipsum",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/lorem-ipsum-generator" },
   robots: {
     index: true,
@@ -29,7 +29,7 @@ const jsonLd = {
   name: "Lorem Ipsum Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/lorem-ipsum-generator",
+  url: "https://toolsbase.org/tools/lorem-ipsum-generator",
   offers: {
     "@type": "Offer",
     price: "0",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RandomNumGen from "./RandomNumGen";
 
 export const metadata: Metadata = {
-  title: "Random Number Generator Online Tool | AllTools",
+  title: "Random Number Generator Online Tool | ToolsBase",
   description:
     "Generate random numbers quickly and easily with our online tool. Perfect for games, simulations, and decision making.",
   keywords: [
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     "random number picker",
     "free random number generator",
   ],
-  publisher: "AllTools Network",
-  metadataBase: new URL("https://alltools.network"),
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/trending-tools/random-number-generator" },
   robots: {
     index: true,
@@ -28,7 +28,7 @@ const jsonLd = {
   name: "Random Number Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://alltools.example/tools/random-number-generator",
+  url: "https://toolsbase.org/tools/random-number-generator",
   offers: {
     "@type": "Offer",
     price: "0",
