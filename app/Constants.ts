@@ -122,7 +122,7 @@ export const categories = [
     name: "Generators",
     slug: "generators",
     icon: "⚙️",
-    description: "Various generators for IDs, data, and changelogs.",
+    description: "Various generators for IDs and  data",
     tools: [
       {
         name: "UUID Generator",
@@ -141,12 +141,6 @@ export const categories = [
         slug: "fake-data-generator",
         icon: "🧪",
         description: "Create fake data for testing and development.",
-      },
-      {
-        name: "Changelog Generator",
-        slug: "changelog-generator",
-        icon: "📑",
-        description: "Generate changelogs for your projects.",
       },
     ],
   },
@@ -366,12 +360,12 @@ export const categories = [
         icon: "📝➡️📝",
         description: "Convert plain text to Markdown format.",
       },
-      {
-        name: "Webpage to Markdown Converter",
-        slug: "webpage-to-markdown-converter",
-        icon: "🌐➡️📝",
-        description: "Convert webpages to Markdown files.",
-      },
+      // {
+      //   name: "Webpage to Markdown Converter",
+      //   slug: "webpage-to-markdown-converter",
+      //   icon: "🌐➡️📝",
+      //   description: "Convert webpages to Markdown files.",
+      // },
       {
         name: "JSON Formatter & Validator",
         slug: "json-formatter-validator",
