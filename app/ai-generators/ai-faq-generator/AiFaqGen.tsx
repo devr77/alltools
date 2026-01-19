@@ -1,33 +1,32 @@
 "use client";
 import React, { useState } from "react";
 
-function AireplyGen() {
-  const [prompt, setPrompt] = useState("");
-  const [reply, setReply] = useState("");
+function AiFaqGen() {
+  const [topic, setTopic] = useState("");
+  const [output, setOutput] = useState("");
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
+  const SYSTEM_PROMPT =
+    "You are an expert FAQ generator. Given a topic or context, generate a concise list of frequently asked questions and their answers. Format as:\n\nQ: ...\nA: ...\n\nReturn only the FAQ list.";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
-    setReply("");
+    setOutput("");
     setError("");
     try {
       const res = await fetch("/api/ai-gen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          masterprompt:
-            "You are a helpful AI assistant that generates concise, polite, and context-aware replies.",
-        }),
+        body: JSON.stringify({ masterprompt: SYSTEM_PROMPT, prompt: topic }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Failed to generate reply");
+        setError(data.error || "Failed to generate FAQs");
       } else {
-        setReply(data.content);
+        setOutput(data.content);
       }
     } catch (err: any) {
       setError(err.message || "Network error");
@@ -37,8 +36,8 @@ function AireplyGen() {
   };
 
   const handleCopy = async () => {
-    if (!reply) return;
-    await navigator.clipboard.writeText(reply);
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 1200);
   };
@@ -46,13 +45,14 @@ function AireplyGen() {
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
-        AI Reply Generator
+        AI FAQ Generator
       </h1>
+      <label style={{ fontWeight: 500 }}>Topic or Context:</label>
       <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        rows={5}
-        placeholder="Paste the message or context you want a reply for..."
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
+        rows={4}
+        placeholder="Describe the topic or context for FAQ generation..."
         style={{
           width: "100%",
           fontFamily: "monospace",
@@ -67,7 +67,7 @@ function AireplyGen() {
       <div style={{ marginBottom: 12 }}>
         <button
           type="submit"
-          disabled={pending || !prompt}
+          disabled={pending || !topic}
           style={{
             border: "2px solid #0070f3",
             background: "#fff",
@@ -75,22 +75,22 @@ function AireplyGen() {
             padding: "8px 16px",
             borderRadius: 5,
             fontWeight: 500,
-            cursor: pending || !prompt ? "not-allowed" : "pointer",
+            cursor: pending || !topic ? "not-allowed" : "pointer",
           }}
         >
-          {pending ? "Generating..." : "Generate Reply"}
+          {pending ? "Generating..." : "Generate FAQs"}
         </button>
       </div>
       {error && (
         <div style={{ color: "#e11d48", marginBottom: 8 }}>{error}</div>
       )}
-      {reply && (
+      {output && (
         <div>
-          <label style={{ fontWeight: 500 }}>AI Reply:</label>
+          <label style={{ fontWeight: 500 }}>Generated FAQs:</label>
           <textarea
-            value={reply}
+            value={output}
             readOnly
-            rows={5}
+            rows={8}
             style={{
               width: "100%",
               fontFamily: "monospace",
@@ -104,7 +104,7 @@ function AireplyGen() {
           <button
             type="button"
             onClick={handleCopy}
-            disabled={!reply}
+            disabled={!output}
             style={{
               border: "2px solid #0070f3",
               background: copied ? "#0070f3" : "#fff",
@@ -112,7 +112,7 @@ function AireplyGen() {
               padding: "8px 16px",
               borderRadius: 5,
               fontWeight: 500,
-              cursor: reply ? "pointer" : "not-allowed",
+              cursor: output ? "pointer" : "not-allowed",
             }}
           >
             {copied ? "Copied!" : "Copy"}
@@ -123,4 +123,4 @@ function AireplyGen() {
   );
 }
 
-export default AireplyGen;
+export default AiFaqGen;

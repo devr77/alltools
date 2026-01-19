@@ -1,7 +1,7 @@
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
+  const { masterprompt, prompt } = await req.json();
 
   if (!prompt || typeof prompt !== "string") {
     return Response.json({ error: "Prompt is required" }, { status: 400 });
@@ -27,7 +27,8 @@ export async function POST(req: Request) {
         {
           role: "system",
           content:
-            "You are a helpful AI assistant that generates concise, polite, and context-aware replies.",
+            masterprompt ||
+            "You are a helpful assistant that provides concise and accurate information.",
         },
         { role: "user", content: prompt },
       ],
