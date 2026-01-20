@@ -1,15 +1,15 @@
 "use client";
 import React, { useState } from "react";
 
-function AiEmailResGen() {
-  const [email, setEmail] = useState("");
+function AiBlogTitleGen() {
+  const [topic, setTopic] = useState("");
   const [output, setOutput] = useState("");
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
   const SYSTEM_PROMPT =
-    "You are an expert email assistant. Given the email content or context, generate a clear, concise, and polite email response. Return only the response email.";
+    "You are an expert blog writer. Given a topic or description, generate a list of 5 catchy and relevant blog post titles. Return only the titles, each on a new line.";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,11 +20,11 @@ function AiEmailResGen() {
       const res = await fetch("/api/ai-gen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ masterprompt: SYSTEM_PROMPT, prompt: email }),
+        body: JSON.stringify({ masterprompt: SYSTEM_PROMPT, prompt: topic }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Failed to generate email response");
+        setError(data.error || "Failed to generate blog titles");
       } else {
         setOutput(data.content);
       }
@@ -45,14 +45,14 @@ function AiEmailResGen() {
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
-        AI Email Response Generator
+        AI Blog Title Generator
       </h1>
-      <label style={{ fontWeight: 500 }}>Email Content or Context:</label>
+      <label style={{ fontWeight: 500 }}>Blog Topic or Description:</label>
       <textarea
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        rows={6}
-        placeholder="Paste the email or describe the context for your response..."
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
+        rows={4}
+        placeholder="Describe your blog topic or content..."
         style={{
           width: "100%",
           fontFamily: "monospace",
@@ -67,7 +67,7 @@ function AiEmailResGen() {
       <div style={{ marginBottom: 12 }}>
         <button
           type="submit"
-          disabled={pending || !email}
+          disabled={pending || !topic}
           style={{
             border: "2px solid #0070f3",
             background: "#fff",
@@ -75,10 +75,10 @@ function AiEmailResGen() {
             padding: "8px 16px",
             borderRadius: 5,
             fontWeight: 500,
-            cursor: pending || !email ? "not-allowed" : "pointer",
+            cursor: pending || !topic ? "not-allowed" : "pointer",
           }}
         >
-          {pending ? "Generating..." : "Generate Response"}
+          {pending ? "Generating..." : "Generate Titles"}
         </button>
       </div>
       {error && (
@@ -86,7 +86,7 @@ function AiEmailResGen() {
       )}
       {output && (
         <div>
-          <label style={{ fontWeight: 500 }}>AI Email Response:</label>
+          <label style={{ fontWeight: 500 }}>AI Blog Titles:</label>
           <textarea
             value={output}
             readOnly
@@ -130,7 +130,7 @@ function AiEmailResGen() {
       <div style={{ marginBottom: 12 }}>
         <button
           type="submit"
-          disabled={pending || !email}
+          disabled={pending || !topic}
           style={{
             border: "2px solid #0070f3",
             background: "#fff",
@@ -138,10 +138,10 @@ function AiEmailResGen() {
             padding: "8px 16px",
             borderRadius: 5,
             fontWeight: 500,
-            cursor: pending || !email ? "not-allowed" : "pointer",
+            cursor: pending || !topic ? "not-allowed" : "pointer",
           }}
         >
-          {pending ? "Generating..." : "Generate Response"}
+          {pending ? "Generating..." : "Generate Titles"}
         </button>
       </div>
       {error && (
@@ -149,11 +149,11 @@ function AiEmailResGen() {
       )}
       {output && (
         <div>
-          <label style={{ fontWeight: 500 }}>AI Email Response:</label>
+          <label style={{ fontWeight: 500 }}>Generated Blog Titles:</label>
           <textarea
             value={output}
             readOnly
-            rows={8}
+            rows={7}
             style={{
               width: "100%",
               fontFamily: "monospace",
@@ -186,4 +186,4 @@ function AiEmailResGen() {
   );
 }
 
-export default AiEmailResGen;
+export default AiBlogTitleGen;

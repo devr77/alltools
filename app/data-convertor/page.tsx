@@ -1,5 +1,20 @@
-"use client";
 import { categories } from "../Constants";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Data Conversion & Formatting Tools | ToolsBase",
+  description:
+    "Convert and format data between various formats including JSON, XML, CSV, YAML, and more. Free online data conversion tools for developers.",
+  keywords: ["data conversion", "json formatter", "xml tools", "csv converter", "data formatting"],
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
+  alternates: { canonical: "/data-convertor" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 function page() {
   // Get the Trending Tools category
@@ -12,7 +27,7 @@ function page() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-6">Encoding-Decoding</h1>
+      <h1 className="text-3xl font-semibold mb-6">Data Conversion & Formatting</h1>
 
       {allTools.length > 0 && (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">

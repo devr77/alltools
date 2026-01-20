@@ -46,22 +46,86 @@ function AiPromptGen() {
     setPending(true);
     setOutput("");
     setError("");
-    try {
-      const res = await fetch("/api/ai-gen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ masterprompt: getSystemPrompt(), prompt }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Failed to generate prompt");
-      } else {
-        setOutput(data.content);
-      }
-    } catch (err: any) {
-      setError(err.message || "Network error");
-    } finally {
-      setPending(false);
+    return (
+      <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
+        <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
+          AI Prompt Generator
+        </h1>
+        {/* ...existing code for system prompt options... */}
+        <label style={{ fontWeight: 500 }}>Prompt or Context:</label>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={5}
+          placeholder="Enter your prompt or context..."
+          style={{
+            width: "100%",
+            fontFamily: "monospace",
+            border: "1px solid #d1d5db",
+            borderRadius: 5,
+            padding: 8,
+            marginBottom: 12,
+          }}
+          required
+          disabled={pending}
+        />
+        <div style={{ marginBottom: 12 }}>
+          <button
+            type="submit"
+            disabled={pending || !prompt}
+            style={{
+              border: "2px solid #0070f3",
+              background: "#fff",
+              color: "#0070f3",
+              padding: "8px 16px",
+              borderRadius: 5,
+              fontWeight: 500,
+              cursor: pending || !prompt ? "not-allowed" : "pointer",
+            }}
+          >
+            {pending ? "Generating..." : "Generate Prompt"}
+          </button>
+        </div>
+        {error && (
+          <div style={{ color: "#e11d48", marginBottom: 8 }}>{error}</div>
+        )}
+        {output && (
+          <div>
+            <label style={{ fontWeight: 500 }}>AI Prompt:</label>
+            <textarea
+              value={output}
+              readOnly
+              rows={8}
+              style={{
+                width: "100%",
+                fontFamily: "monospace",
+                border: "1px solid #d1d5db",
+                borderRadius: 5,
+                padding: 8,
+                marginBottom: 8,
+                background: "#f9fafb",
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleCopy}
+              disabled={!output}
+              style={{
+                border: "2px solid #0070f3",
+                background: copied ? "#0070f3" : "#fff",
+                color: copied ? "#fff" : "#0070f3",
+                padding: "8px 16px",
+                borderRadius: 5,
+                fontWeight: 500,
+                cursor: output ? "pointer" : "not-allowed",
+              }}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        )}
+      </form>
+    );
     }
   };
 

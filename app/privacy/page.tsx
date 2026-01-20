@@ -1,4 +1,20 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - ToolsBase",
+  description:
+    "Read ToolsBase's privacy policy. Learn how we collect, use, and protect your data when using our free online tools platform.",
+  keywords: ["privacy policy", "data protection", "privacy", "toolsbase privacy"],
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
+  alternates: { canonical: "/privacy" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 export default function Page() {
   return (

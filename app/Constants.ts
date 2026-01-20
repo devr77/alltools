@@ -77,6 +77,12 @@ export const categories = [
     description: "AI-powered generators for text, replies, and more.",
     tools: [
       {
+        name: "Ai Review Generator",
+        slug: "ai-review-generator",
+        icon: "⭐",
+        description: "Generate product or service reviews using AI.",
+      },
+      {
         name: "AI Reply Generator",
         slug: "ai-reply-generator",
         icon: "💬",
@@ -149,12 +155,6 @@ export const categories = [
         slug: "nanoid-generator",
         icon: "🧬",
         description: "Generate NanoIDs for compact unique IDs.",
-      },
-      {
-        name: "Fake Data Generator",
-        slug: "fake-data-generator",
-        icon: "🧪",
-        description: "Create fake data for testing and development.",
       },
     ],
   },
@@ -329,6 +329,12 @@ export const categories = [
         slug: "ads-txt-generator",
         icon: "📄",
         description: "Generate ads.txt files for ad monetization.",
+      },
+      {
+        name: "Llms.txt Generator",
+        slug: "llms-txt-generator",
+        icon: "📄",
+        description: "Generate llms.txt files for language model services.",
       },
     ],
   },

@@ -48,6 +48,7 @@ function AireplyGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Reply Generator
       </h1>
+      <label style={{ fontWeight: 500 }}>Message or Context:</label>
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
@@ -90,7 +91,7 @@ function AireplyGen() {
           <textarea
             value={reply}
             readOnly
-            rows={5}
+            rows={8}
             style={{
               width: "100%",
               fontFamily: "monospace",

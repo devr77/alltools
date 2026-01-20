@@ -1,4 +1,20 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact ToolsBase - Get in Touch",
+  description:
+    "Contact ToolsBase for questions, feedback, or suggestions about our online tools platform. We're here to help with your development and productivity needs.",
+  keywords: ["contact toolsbase", "support", "feedback", "help"],
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
+  alternates: { canonical: "/contact" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 export default function Page() {
   return (

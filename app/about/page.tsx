@@ -1,4 +1,20 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About ToolsBase - Free Online Tools Platform",
+  description:
+    "Learn about ToolsBase, a modern online utilities platform offering 500+ free tools for developers, creators, and professionals. Fast, clean, and privacy-focused.",
+  keywords: ["about toolsbase", "online tools platform", "free utilities", "developer tools"],
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
+  alternates: { canonical: "/about" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 export default function Page() {
   return (
