@@ -121,69 +121,6 @@ function AiansGen() {
       )}
     </form>
   );
-          padding: 8,
-          marginBottom: 12,
-        }}
-        required
-        disabled={pending}
-      />
-      <div style={{ marginBottom: 12 }}>
-        <button
-          type="submit"
-          disabled={pending || !question}
-          style={{
-            border: "2px solid #0070f3",
-            background: "#fff",
-            color: "#0070f3",
-            padding: "8px 16px",
-            borderRadius: 5,
-            fontWeight: 500,
-            cursor: pending || !question ? "not-allowed" : "pointer",
-          }}
-        >
-          {pending ? "Generating..." : "Generate Answer"}
-        </button>
-      </div>
-      {error && (
-        <div style={{ color: "#e11d48", marginBottom: 8 }}>{error}</div>
-      )}
-      {output && (
-        <div>
-          <label style={{ fontWeight: 500 }}>AI Answer:</label>
-          <textarea
-            value={output}
-            readOnly
-            rows={5}
-            style={{
-              width: "100%",
-              fontFamily: "monospace",
-              border: "1px solid #d1d5db",
-              borderRadius: 5,
-              padding: 8,
-              marginBottom: 8,
-              background: "#f9fafb",
-            }}
-          />
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={!output}
-            style={{
-              border: "2px solid #0070f3",
-              background: copied ? "#0070f3" : "#fff",
-              color: copied ? "#fff" : "#0070f3",
-              padding: "8px 16px",
-              borderRadius: 5,
-              fontWeight: 500,
-              cursor: output ? "pointer" : "not-allowed",
-            }}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-      )}
-    </form>
-  );
 }
 
 export default AiansGen;
