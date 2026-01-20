@@ -1,5 +1,6 @@
 import "./globals.css";
 import { PostHogProvider } from "./provider";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 export default function RootLayout({
   children,
@@ -8,6 +9,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <GoogleTagManager gtmId="AW-16468887880" />
       <body className="bg-bg text-text min-h-screen flex flex-col">
         <header className="border-b border-border">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
