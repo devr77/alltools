@@ -9,6 +9,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/site.webmanifest" />
+      </head>
       <GoogleTagManager gtmId="AW-16468887880" />
       <body className="bg-bg text-text min-h-screen flex flex-col">
         <header className="border-b border-border">
