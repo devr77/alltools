@@ -104,7 +104,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {similarTools.map((tool) => (
               <a
                 key={tool.slug}
-                href={`/trending-tools/${tool.slug}`}
+                href={`/ai-generators/${tool.slug}`}
                 className="border border-border bg-card p-4 rounded-md hover:border-white transition"
               >
                 <h3 className="font-medium flex items-center">
