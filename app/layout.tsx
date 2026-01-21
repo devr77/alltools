@@ -12,7 +12,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <GoogleTagManager gtmId="AW-16468887880" />
+      <GoogleTagManager gtmId=""GTM-N8G5XC2K />
       <body className="bg-bg text-text min-h-screen flex flex-col">
         <header className="border-b border-border">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
