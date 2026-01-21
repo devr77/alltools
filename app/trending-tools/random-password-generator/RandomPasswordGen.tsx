@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 const CHAR_SETS = {
   lowercase: "abcdefghijklmnopqrstuvwxyz",
@@ -247,6 +249,7 @@ function RandomPasswordGen() {
           </div>
         </div>
       )}
+      <FAQSection faqs={trendingToolsFAQs} />
     </div>
   );
 }

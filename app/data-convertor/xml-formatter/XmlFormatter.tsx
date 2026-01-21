@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
 import xmlFormatter from "xml-formatter";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function XmlFormatter() {
   const [input, setInput] = useState("");
@@ -216,6 +218,7 @@ function XmlFormatter() {
         readOnly
         placeholder="Formatted XML will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

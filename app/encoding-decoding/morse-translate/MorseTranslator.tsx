@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { encodingDecodingFAQs } from "../../components/faqData";
 
 // Morse code map
 const morseMap: Record<string, string> = {
@@ -224,6 +226,7 @@ function MorseTranslator() {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
+      <FAQSection faqs={encodingDecodingFAQs} />
     </div>
   );
 }

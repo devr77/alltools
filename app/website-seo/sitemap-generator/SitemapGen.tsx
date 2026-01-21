@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function SitemapGen() {
   const [baseUrl, setBaseUrl] = useState("");
@@ -192,6 +194,7 @@ function SitemapGen() {
           </div>
         </div>
       )}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

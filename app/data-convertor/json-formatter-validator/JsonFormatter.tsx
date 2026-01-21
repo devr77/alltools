@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsonFormatter() {
   const [input, setInput] = useState("");
@@ -212,6 +214,7 @@ function JsonFormatter() {
         readOnly
         placeholder="Formatted JSON will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

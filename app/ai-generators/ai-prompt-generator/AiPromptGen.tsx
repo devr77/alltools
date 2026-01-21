@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 const SYSTEM_PROMPT_OPTIONS = [
   {
@@ -71,6 +73,9 @@ function AiPromptGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Prompt Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Prompt Generator is a revolutionary tool that transforms how users interact with artificial intelligence language models. This intelligent prompt creation tool analyzes user objectives, context, and desired outcomes to craft highly effective prompts that maximize AI response quality and relevance.
+      </p>
       <label style={{ fontWeight: 500 }}>System Prompt (optional):</label>
       <select
         value={systemPromptType}
@@ -180,6 +185,7 @@ function AiPromptGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

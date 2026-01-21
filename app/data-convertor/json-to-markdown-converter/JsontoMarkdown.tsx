@@ -3,6 +3,8 @@ import React, { useState, useRef } from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function jsonToMarkdown(obj: any, indent = 0): string {
   if (typeof obj !== "object" || obj === null) {
@@ -317,6 +319,7 @@ function JsontoMarkdown() {
           }
         }
       `}</style>
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

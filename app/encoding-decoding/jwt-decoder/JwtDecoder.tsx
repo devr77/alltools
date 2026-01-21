@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { encodingDecodingFAQs } from "../../components/faqData";
 
 function JwtDecoder() {
   const [input, setInput] = useState("");
@@ -164,6 +166,7 @@ function JwtDecoder() {
           </div>
         </div>
       )}
+      <FAQSection faqs={encodingDecodingFAQs} />
     </div>
   );
 }

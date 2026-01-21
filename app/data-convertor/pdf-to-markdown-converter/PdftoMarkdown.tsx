@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { usePDFJS } from "@/app/hooks/usePDFJS";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 /**
  * Text → Markdown converter (rules-based)
@@ -179,6 +181,7 @@ function PdftoMarkdown() {
           </div>
         </div>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </div>
   );
 }

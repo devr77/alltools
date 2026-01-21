@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AiLetterGen() {
   const [context, setContext] = useState("");
@@ -119,6 +121,7 @@ function AiLetterGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

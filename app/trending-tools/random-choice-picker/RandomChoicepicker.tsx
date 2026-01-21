@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 function RandomChoicePicker() {
   const [input, setInput] = useState("");
@@ -197,6 +199,7 @@ function RandomChoicePicker() {
           </div>
         </>
       )}
+      <FAQSection faqs={trendingToolsFAQs} />
     </div>
   );
 }

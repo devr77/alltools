@@ -6,6 +6,8 @@ import mammoth from "mammoth";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function DocstoMarkdown() {
   const [markdown, setMarkdown] = useState("");
@@ -270,6 +272,7 @@ function DocstoMarkdown() {
           </div>
         </div>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </div>
   );
 }

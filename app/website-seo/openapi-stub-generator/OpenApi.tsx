@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function OpenApi() {
   const [title, setTitle] = useState("");
@@ -227,6 +229,7 @@ function OpenApi() {
           </div>
         </div>
       )}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

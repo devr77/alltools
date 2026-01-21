@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 export default function QRCodeGeneratorPage() {
   const [content, setContent] = useState("");
@@ -152,6 +154,7 @@ export default function QRCodeGeneratorPage() {
             )}
           </div>
         </section>
+        <FAQSection faqs={trendingToolsFAQs} />
       </div>
     </main>
   );

@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AiFaqGen() {
   const [topic, setTopic] = useState("");
@@ -47,6 +49,9 @@ function AiFaqGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI FAQ Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI FAQ Generator revolutionizes how businesses create and maintain comprehensive frequently asked questions sections. This intelligent tool analyzes product documentation, customer inquiries, and industry knowledge to generate relevant, accurate FAQs that address common customer concerns and improve user experience.
+      </p>
       <label style={{ fontWeight: 500 }}>Topic or Context:</label>
       <textarea
         value={topic}
@@ -119,6 +124,7 @@ function AiFaqGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AiEmailResGen() {
   const [email, setEmail] = useState("");
@@ -47,6 +49,9 @@ function AiEmailResGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Email Response Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Email Response Generator transforms email communication by creating personalized, professional responses that maintain human-like warmth and attention to detail. This intelligent email assistant analyzes incoming messages, understands context and tone, and generates appropriate replies that reflect the sender's communication style and relationship dynamics.
+      </p>
       <label style={{ fontWeight: 500 }}>Email Content or Context:</label>
       <textarea
         value={email}
@@ -119,6 +124,7 @@ function AiEmailResGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

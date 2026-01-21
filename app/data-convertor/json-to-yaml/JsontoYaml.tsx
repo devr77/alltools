@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
 import yaml from "js-yaml";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsontoYaml() {
   const [input, setInput] = useState("");
@@ -212,6 +214,7 @@ function JsontoYaml() {
           style={{ width: "100%", fontFamily: "monospace", fontSize: 15 }}
         />
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

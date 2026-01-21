@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function SitemapValidator() {
   const [sitemapUrl, setSitemapUrl] = useState("");
@@ -91,6 +93,7 @@ function SitemapValidator() {
         </button>
       </form>
       {result && <div style={{ marginTop: 20, fontWeight: 500 }}>{result}</div>}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

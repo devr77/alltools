@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { faker } from "@faker-js/faker";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 function getRandomLastName() {
   return faker.person.lastName();
@@ -115,6 +117,7 @@ function LastNameGen() {
           )}
         </div>
       </main>
+      <FAQSection faqs={trendingToolsFAQs} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { encodingDecodingFAQs } from "../../components/faqData";
 
 function HtmlEntityDecode() {
   const [input, setInput] = useState("");
@@ -112,6 +114,7 @@ function HtmlEntityDecode() {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
+      <FAQSection faqs={encodingDecodingFAQs} />
     </div>
   );
 }

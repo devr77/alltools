@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { faker } from "@faker-js/faker";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 function LoremPicsumGen() {
   const [paragraphs, setParagraphs] = useState(1);
@@ -181,6 +183,7 @@ function LoremPicsumGen() {
           </p>
         ))}
       </div>
+      <FAQSection faqs={trendingToolsFAQs} />
     </div>
   );
 }

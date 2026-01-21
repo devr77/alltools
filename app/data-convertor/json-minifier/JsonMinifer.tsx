@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsonMinifer() {
   const [input, setInput] = useState("");
@@ -211,6 +213,7 @@ function JsonMinifer() {
         readOnly
         placeholder="Minified JSON will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

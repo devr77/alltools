@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
+import FAQSection from "../../components/FAQSection";
+import { generatorFAQs } from "../../components/faqData";
 
 function NanoIdGen() {
   const [id, setId] = useState<string>("");
@@ -120,6 +122,7 @@ function NanoIdGen() {
         </svg>
         {copied ? "Copied!" : "Copy"}
       </button>
+      <FAQSection faqs={generatorFAQs} />
     </div>
   );
 }

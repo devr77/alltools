@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsonPrettyPrint() {
   const [input, setInput] = useState("");
@@ -211,6 +213,7 @@ function JsonPrettyPrint() {
         readOnly
         placeholder="Pretty JSON will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

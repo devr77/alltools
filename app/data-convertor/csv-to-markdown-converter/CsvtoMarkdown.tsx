@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function csvToMarkdown(csv: string): string {
   const rows = csv
@@ -191,6 +193,7 @@ function CsvtoMarkdown() {
           readOnly
         />
       </div>
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
 import xmltojson from "xmltojson";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function XmltoJson() {
   const [input, setInput] = useState("");
@@ -213,6 +215,7 @@ function XmltoJson() {
         readOnly
         placeholder="Converted JSON will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

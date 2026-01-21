@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { XMLParser } from "fast-xml-parser";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 type SitemapResult = {
   url: string;
@@ -381,6 +383,7 @@ function SitemapFindChecker() {
           )}
         </div>
       ))}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

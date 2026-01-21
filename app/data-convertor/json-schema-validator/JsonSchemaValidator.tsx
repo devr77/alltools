@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import Ajv from "ajv";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsonSchemaValidator() {
   const [jsonInput, setJsonInput] = useState("");
@@ -148,6 +150,7 @@ function JsonSchemaValidator() {
           </pre>
         </div>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

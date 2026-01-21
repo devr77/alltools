@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import yaml from "js-yaml";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function YamltoJson() {
   const [input, setInput] = useState("");
@@ -37,6 +39,7 @@ function YamltoJson() {
           style={{ width: "100%", fontFamily: "monospace" }}
         />
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </div>
   );
 }

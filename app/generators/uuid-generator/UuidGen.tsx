@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { generatorFAQs } from "../../components/faqData";
 
 // Simple UUID v4 generator
 function generateUUID() {
@@ -154,6 +156,7 @@ function UuidGen() {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
+      <FAQSection faqs={generatorFAQs} />
     </div>
   );
 }

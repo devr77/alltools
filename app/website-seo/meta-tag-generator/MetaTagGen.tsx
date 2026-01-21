@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function MetaTagGen() {
   const [title, setTitle] = useState("");
@@ -326,6 +328,7 @@ function MetaTagGen() {
           {metaTags}
         </pre>
       </div>
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

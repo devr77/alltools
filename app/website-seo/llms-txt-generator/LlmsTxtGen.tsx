@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 interface LlmsTxtData {
   websiteUrl: string;
@@ -253,6 +255,7 @@ This LLMs.txt file was generated for better AI understanding of the website cont
           )}
         </div>
       </div>
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

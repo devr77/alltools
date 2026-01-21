@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { faker } from "@faker-js/faker";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 function getRandomName() {
   return faker.person.fullName();
@@ -107,6 +109,7 @@ function RandomNameGen() {
         </svg>
         {copied ? "Copied!" : "Copy"}
       </button>
+      <FAQSection faqs={trendingToolsFAQs} />
     </div>
   );
 }

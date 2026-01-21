@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { trendingToolsFAQs } from "../../components/faqData";
 
 function RandomNumGen() {
   const [min, setMin] = useState<number>(1);
@@ -189,6 +191,7 @@ function RandomNumGen() {
           </div>
         </>
       )}
+      <FAQSection faqs={trendingToolsFAQs} />
     </main>
   );
 }

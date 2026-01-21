@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 // Use papaparse for browser CSV parsing
 import Papa from "papaparse";
 
@@ -221,6 +223,7 @@ function CsvJson() {
         readOnly
         placeholder="Converted JSON will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

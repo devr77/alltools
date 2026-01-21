@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function RobottxtGen() {
   const [userAgent, setUserAgent] = useState("*");
@@ -229,6 +231,7 @@ function RobottxtGen() {
           </div>
         </div>
       )}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

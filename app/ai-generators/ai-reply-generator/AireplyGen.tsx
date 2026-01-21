@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AireplyGen() {
   const [prompt, setPrompt] = useState("");
@@ -48,6 +50,9 @@ function AireplyGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Reply Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Reply Generator represents the future of digital communication, offering intelligent automated responses that maintain the personal touch in an increasingly fast-paced world. This sophisticated AI-powered tool analyzes conversation context, tone, and intent to generate appropriate, contextually relevant replies across various communication channels.
+      </p>
       <label style={{ fontWeight: 500 }}>Message or Context:</label>
       <textarea
         value={prompt}
@@ -120,6 +125,7 @@ function AireplyGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

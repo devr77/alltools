@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function AdsTxtGen() {
   const [entries, setEntries] = useState([
@@ -283,6 +285,7 @@ function AdsTxtGen() {
           </div>
         </div>
       )}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

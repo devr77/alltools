@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function WebPagetoMarkdown() {
   const [url, setUrl] = useState("");
@@ -234,6 +236,7 @@ function WebPagetoMarkdown() {
           </div>
         </div>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </div>
   );
 }

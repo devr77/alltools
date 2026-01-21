@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AIReviewGen() {
   const [context, setContext] = useState("");
@@ -47,6 +49,9 @@ function AIReviewGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Review Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Review Generator is a cutting-edge artificial intelligence-powered tool designed to create authentic, engaging product and service reviews that resonate with modern consumers. This innovative review generation tool leverages advanced natural language processing algorithms to produce high-quality, contextually relevant reviews that can enhance your online reputation and boost customer trust.
+      </p>
       <label style={{ fontWeight: 500 }}>Product, Service, or Context:</label>
       <textarea
         value={context}
@@ -119,6 +124,7 @@ function AIReviewGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

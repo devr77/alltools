@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { websiteSEOFAQs } from "../../components/faqData";
 
 function ReadmeGen() {
   const [projectName, setProjectName] = useState("");
@@ -326,6 +328,7 @@ ${(issues && `## Issues\n\n${issues}\n`) || ""}
           </div>
         </div>
       )}
+      <FAQSection faqs={websiteSEOFAQs} />
     </div>
   );
 }

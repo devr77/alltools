@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function deepMerge(objA: any, objB: any): any {
   if (Array.isArray(objA) && Array.isArray(objB)) {
@@ -310,6 +312,7 @@ function JsonMerge() {
           placeholder="Merged JSON will appear here"
         />
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

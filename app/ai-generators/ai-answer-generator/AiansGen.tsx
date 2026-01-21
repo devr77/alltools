@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AiansGen() {
   const [question, setQuestion] = useState("");
@@ -47,6 +49,9 @@ function AiansGen() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Answer Generator
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Answer Generator is a powerful knowledge synthesis tool that creates comprehensive, accurate responses to complex questions across various domains. This sophisticated AI-powered tool combines information retrieval, natural language processing, and reasoning capabilities to generate detailed answers that rival human expertise.
+      </p>
       <label style={{ fontWeight: 500 }}>Question or Context:</label>
       <textarea
         value={question}
@@ -119,6 +124,7 @@ function AiansGen() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

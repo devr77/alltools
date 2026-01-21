@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import TurndownService from "turndown";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function HtmltoMarkdown() {
   const [html, setHtml] = useState("");
@@ -316,6 +318,7 @@ function HtmltoMarkdown() {
           </div>
         </div>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </div>
   );
 }

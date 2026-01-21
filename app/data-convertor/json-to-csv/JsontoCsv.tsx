@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 // Use json2csv for conversion
 import { Parser } from "json2csv";
 
@@ -216,6 +218,7 @@ function JsontoCsv() {
         readOnly
         placeholder="Converted CSV will appear here"
       />
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { encodingDecodingFAQs } from "../../components/faqData";
 
 function Base64Encode() {
   const [input, setInput] = useState("");
@@ -144,6 +146,7 @@ function Base64Encode() {
           </li>
         </ul>
       </div>
+      <FAQSection faqs={encodingDecodingFAQs} />
     </div>
   );
 }

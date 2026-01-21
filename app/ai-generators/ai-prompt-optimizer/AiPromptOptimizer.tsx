@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { aiGeneratorFAQs } from "../../components/faqData";
 
 function AiPromptOptimizer() {
   const [prompt, setPrompt] = useState("");
@@ -47,6 +49,9 @@ function AiPromptOptimizer() {
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 8 }}>
         AI Prompt Optimizer
       </h1>
+      <p style={{ marginBottom: 20, lineHeight: 1.6, color: "#666" }}>
+        The AI Prompt Optimizer takes prompt engineering to the next level by analyzing and refining existing prompts to achieve superior AI model performance. This advanced optimization tool uses machine learning algorithms to identify weaknesses in prompts and suggest improvements that enhance clarity, specificity, and effectiveness.
+      </p>
       <label style={{ fontWeight: 500 }}>Your Prompt:</label>
       <textarea
         value={prompt}
@@ -119,6 +124,7 @@ function AiPromptOptimizer() {
           </button>
         </div>
       )}
+      <FAQSection faqs={aiGeneratorFAQs} />
     </form>
   );
 }

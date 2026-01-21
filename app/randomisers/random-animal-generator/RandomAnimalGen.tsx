@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import FAQSection from "../../components/FAQSection";
+import { randomiserFAQs } from "../../components/faqData";
 
 type Animal = {
   Animal: string;
@@ -394,6 +396,7 @@ export default function RandomAnimalGenWithTable(props: Props) {
     <>
       <RandomAnimalGen {...props} />
       <AnimalTable animals={props.animals} />
+      <FAQSection faqs={randomiserFAQs} />
     </>
   );
 }

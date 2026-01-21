@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { diffString } from "json-diff";
+import FAQSection from "../../components/FAQSection";
+import { dataConverterFAQs } from "../../components/faqData";
 
 function JsonDiff() {
   const [inputA, setInputA] = useState("");
@@ -200,6 +202,7 @@ function JsonDiff() {
           {output}
         </pre>
       )}
+      <FAQSection faqs={dataConverterFAQs} />
     </main>
   );
 }
