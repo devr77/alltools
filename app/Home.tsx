@@ -57,7 +57,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="bg-zinc-50 font-sans dark:bg-black">
+      <div className="bg-zinc-50 font-sans">
         <section className="mb-12">
           <h1 className="text-4xl font-semibold mb-3">
             Simple tools. Zero clutter.

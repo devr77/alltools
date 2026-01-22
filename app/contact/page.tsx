@@ -22,14 +22,14 @@ export default function Page() {
       {/* HEADER */}
       <section>
         <h1 className="text-4xl font-semibold mb-4">Contact Us</h1>
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500">
           Have a question, feedback, or suggestion? We’d love to hear from you.
         </p>
       </section>
 
       {/* CONTACT INFO */}
       <section className="space-y-4">
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-zinc-600">
           For general inquiries, bug reports, feature requests, or business
           communication, please contact us via email:
         </p>
@@ -43,7 +43,7 @@ export default function Page() {
           </a>
         </p>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500">
           We aim to respond within a reasonable timeframe. Please avoid sending
           sensitive or confidential information via email.
         </p>

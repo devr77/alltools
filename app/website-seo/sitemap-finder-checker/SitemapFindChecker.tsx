@@ -224,8 +224,8 @@ function SitemapFindChecker() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full border border-zinc-300 dark:border-zinc-700 px-6 py-3 rounded-md text-sm font-medium
-             hover:border-black dark:hover:border-white
+            className="w-full border border-zinc-300 px-6 py-3 rounded-md text-sm font-medium
+             hover:border-black
              disabled:opacity-50 disabled:cursor-not-allowed
              transition"
           >

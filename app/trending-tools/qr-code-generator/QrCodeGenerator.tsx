@@ -51,7 +51,7 @@ export default function QRCodeGeneratorPage() {
   }, [content]);
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-black px-4 sm:px-6 md:px-8 py-8">
+    <main className="min-h-screen bg-zinc-50 px-4 sm:px-6 md:px-8 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-semibold mb-2">QR Code Generator</h1>
         <h2 className="text-xl font-medium mb-2">
