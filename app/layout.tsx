@@ -2,6 +2,14 @@ import "./globals.css";
 import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
 
+const jsonLdWebsite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "ToolsBase",
+  alternateName: "ToolsBase",
+  url: "https://toolsbase.org/",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -11,6 +19,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/site.webmanifest" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+        />
       </head>
       <body className="bg-bg text-text min-h-screen flex flex-col">
         <GoogleTagManager gtmId="GTM-N8G5XC2K" />
