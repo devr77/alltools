@@ -685,24 +685,24 @@ export const categories = [
   //   icon: "🎡",
   //   tools: [{ name: "Spinner Wheel", slug: "spinner-wheel", icon: "🎡" }],
   // },
-  // {
-  //   name: "Torrent & Hashing",
-  //   slug: "torrent-hashing",
-  //   icon: "📡",
-  //   tools: [
-  //     {
-  //       name: "Magnet Link Generator",
-  //       slug: "magnet-link-generator",
-  //       icon: "🧲",
-  //     },
-  //     { name: "BTIH Hash Generator", slug: "btih-hash-generator", icon: "🔢" },
-  //     { name: "Torrent File Parser", slug: "torrent-file-parser", icon: "📂" },
-  //     {
-  //       name: "Torrent File Creator",
-  //       slug: "torrent-file-creator",
-  //       icon: "🛠️",
-  //     },
-  //     { name: "Info Hash Extractor", slug: "info-hash-extractor", icon: "🔍" },
-  //   ],
-  // },
+  {
+    name: "Torrent & Hashing",
+    slug: "torrent",
+    icon: "📡",
+    tools: [
+      {
+        name: "Magnet Link Generator",
+        slug: "magnet-link-generator",
+        icon: "🧲",
+      },
+      { name: "BTIH Hash Generator", slug: "btih-hash-generator", icon: "🔢" },
+      { name: "Torrent File Parser", slug: "torrent-file-parser", icon: "📂" },
+      {
+        name: "Torrent File Creator",
+        slug: "torrent-file-creator",
+        icon: "🛠️",
+      },
+      { name: "Info Hash Extractor", slug: "info-hash-extractor", icon: "🔍" },
+    ],
+  },
 ];

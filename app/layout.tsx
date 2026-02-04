@@ -1,6 +1,10 @@
+"use client";
+
 import "./globals.css";
 import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
+import MobileSidebar from "./components/MobileSidebar";
+import { useState } from "react";
 
 const jsonLdWebsite = {
   "@context": "https://schema.org",
@@ -15,6 +19,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <html lang="en">
       <head>
@@ -24,13 +30,44 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
       </head>
-      <body className="bg-bg text-text min-h-screen flex flex-col">
+      <body className="bg-white text-gray-900 min-h-screen flex flex-col">
         <GoogleTagManager gtmId="GTM-N8G5XC2K" />
-        <header className="border-b border-border">
+
+        {/* Mobile Sidebar */}
+        <MobileSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+
+        <header className="border-b border-gray-200">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a className="font-semibold" href="/">
-              ToolsBase
-            </a>
+            <div className="flex items-center">
+              {/* Hamburger Menu Button - Only visible on mobile */}
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="mr-3 p-2 -ml-2 lg:hidden hover:bg-gray-100 rounded-md transition-colors"
+                aria-label="Open navigation menu"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+
+              <a className="font-semibold" href="/">
+                ToolsBase
+              </a>
+            </div>
+
             <nav className="text-sm text-muted space-x-6">
               <a href="/">Tools</a>
             </nav>
@@ -40,13 +77,13 @@ export default function RootLayout({
         <main className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 flex-1">
           <PostHogProvider>{children}</PostHogProvider>
         </main>
-        <footer className="border-t border-border mt-auto">
+        <footer className="border-t border-gray-200 mt-auto">
           <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-3">
             <p>© {new Date().getFullYear()} ToolsBase. All rights reserved.</p>
 
             <p className="max-w-3xl">
               ToolsBase provides free online utilities for developers, creators,
-              and general use. Tools are offered “as is” without warranties of
+              and general use. Tools are offered "as is" without warranties of
               any kind. Use at your own discretion.
             </p>
 

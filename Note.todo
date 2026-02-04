@@ -14,7 +14,6 @@ https://www.seoptimer.com/free-tools
 RapidTables
 Online-Utility.org
 Toolsaday
-iLovePDF
 random country generator
 https://app-sorteos.com/en
 
@@ -23,15 +22,3 @@ calculators
 converters
 checkers
 generators
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPending(true);
-    setReply("");
-    try {
-      const result = await onGenerate(prompt);
-      setReply(result);
-    } finally {
-      setPending(false);
-    }
-  };
