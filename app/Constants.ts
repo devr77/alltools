@@ -5,6 +5,12 @@ export const categories = [
     icon: "🔥 🔥",
     description: "Popular tools currently trending among users.",
     tools: [
+      // {
+      //   name: "Url to Markdown Converter",
+      //   slug: "url-to-markdown-converter",
+      //   icon: "🌐➡️📝",
+      //   description: "Convert URLs to Markdown format.",
+      // },
       {
         name: "QR Code Generator",
         slug: "qr-code-generator",
