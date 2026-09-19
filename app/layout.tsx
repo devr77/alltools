@@ -1,10 +1,8 @@
-"use client";
-
 import "./globals.css";
+import type { Metadata } from "next";
 import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
-import MobileSidebar from "./components/MobileSidebar";
-import { useState } from "react";
+import SiteHeader from "./components/SiteHeader";
 
 const jsonLdWebsite = {
   "@context": "https://schema.org",
@@ -14,16 +12,33 @@ const jsonLdWebsite = {
   url: "https://toolsbase.org/",
 };
 
+// Fallback metadata for any route that does not export its own.
+// A page's `metadata` export overrides these fields.
+export const metadata: Metadata = {
+  title: "ToolsBase | A collection of useful online tools",
+  description:
+    "ToolsBase is a fast, free online tools website offering 500+ utilities for developers, creators, and everyday tasks. Simple, clean, and clutter-free.",
+  publisher: "ToolsBase Network",
+  metadataBase: new URL("https://toolsbase.org"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   return (
     <html lang="en">
       <head>
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-2636230803963138"
+        />
         <link rel="manifest" href="/site.webmanifest" />
         <script
           type="application/ld+json"
@@ -33,46 +48,7 @@ export default function RootLayout({
       <body className="bg-white text-gray-900 min-h-screen flex flex-col">
         <GoogleTagManager gtmId="GTM-N8G5XC2K" />
 
-        {/* Mobile Sidebar */}
-        <MobileSidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-
-        <header className="border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <div className="flex items-center">
-              {/* Hamburger Menu Button - Only visible on mobile */}
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="mr-3 p-2 -ml-2 lg:hidden hover:bg-gray-100 rounded-md transition-colors"
-                aria-label="Open navigation menu"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-
-              <a className="font-semibold" href="/">
-                ToolsBase
-              </a>
-            </div>
-
-            <nav className="text-sm text-muted space-x-6">
-              <a href="/">Tools</a>
-            </nav>
-          </div>
-        </header>
+        <SiteHeader />
 
         <main className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 flex-1">
           <PostHogProvider>{children}</PostHogProvider>
