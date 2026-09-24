@@ -24,6 +24,7 @@ Open <http://localhost:3000>. Existing installations can run `npm run dev` direc
 
 - [Maintenance and architecture guide](docs/MAINTENANCE.md): project structure, homepage design, footer, search, adding tools, environment configuration, SEO, verification, and troubleshooting.
 - [Verification record](docs/VERIFICATION.md): checks performed for the compact homepage and footer.
+- Share tools (`app/share/`): temporary file/text-to-URL pages at `/share` with their own layout. `components/SiteChrome.tsx` skips the main header/footer there. Copy and settings live in `app/share/catalog.ts`. Uploads call `https://app.toolsbase.org/v1/uploads` from the browser, so the API and the R2 bucket must allow the site's origin via CORS.
 - [Torrent tools](torrent/README.md): the torrent and hashing tools are a separate static site in `torrent/`, deployed to GitHub Pages. They are no longer part of this Next.js app; old `/torrent` URLs redirect there.
 
 ## Commands

@@ -4,6 +4,7 @@ import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
 import SiteHeader from "./components/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
+import SiteChrome from "./components/SiteChrome";
 
 const jsonLdWebsite = {
   "@context": "https://schema.org",
@@ -49,12 +50,11 @@ export default function RootLayout({
       <body className="bg-white text-gray-900 min-h-screen flex flex-col">
         <GoogleTagManager gtmId="GTM-N8G5XC2K" />
 
-        <SiteHeader />
-
-        <main className="site-main">
-          <PostHogProvider>{children}</PostHogProvider>
-        </main>
-        <SiteFooter />
+        <PostHogProvider>
+          <SiteChrome header={<SiteHeader />} footer={<SiteFooter />}>
+            {children}
+          </SiteChrome>
+        </PostHogProvider>
       </body>
     </html>
   );

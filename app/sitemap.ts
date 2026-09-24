@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { categories } from "./Constants";
+import { tools as shareTools } from "./share/catalog";
 
 const BASE_URL = "https://toolsbase.org";
 
@@ -39,6 +40,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/", // Home page
     ...categoryUrls,
     ...toolUrls,
+    "/share",
+    ...shareTools.map((tool) => `/share/${tool.slug}`),
   ];
 
   const dynamicSitemap: MetadataRoute.Sitemap = dynamicUrls.map((url) => ({
