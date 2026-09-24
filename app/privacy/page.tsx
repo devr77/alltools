@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="max-w-4xl mx-auto py-12 space-y-12">
+    <div className="info-page max-w-4xl mx-auto space-y-8">
       {/* HEADER */}
       <section>
         <h1 className="text-4xl font-semibold mb-4">Privacy Policy</h1>

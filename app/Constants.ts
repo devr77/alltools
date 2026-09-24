@@ -1,3 +1,5 @@
+import { torrentTools } from "./torrent/tools";
+
 export const categories = [
   {
     name: "Trending Tools",
@@ -5,12 +7,6 @@ export const categories = [
     icon: "🔥 🔥",
     description: "Popular tools currently trending among users.",
     tools: [
-      // {
-      //   name: "Url to Markdown Converter",
-      //   slug: "url-to-markdown-converter",
-      //   icon: "🌐➡️📝",
-      //   description: "Convert URLs to Markdown format.",
-      // },
       {
         name: "QR Code Generator",
         slug: "qr-code-generator",
@@ -74,6 +70,8 @@ export const categories = [
         icon: "🐼",
         description: "Generate random animal names and facts.",
       },
+      { name: "Coin Flip", slug: "coin-flip", icon: "🪙", description: "Flip one or more coins and count heads and tails." },
+      { name: "Dice Roller", slug: "dice-roller", icon: "🎲", description: "Roll standard or custom dice and see each result and the total." },
     ],
   },
   {
@@ -123,12 +121,6 @@ export const categories = [
         slug: "ai-email-response-generator",
         icon: "📧",
         description: "Generate email responses with AI assistance.",
-      },
-      {
-        name: "Ai Letter Generator",
-        slug: "ai-letter-generator",
-        icon: "✉️",
-        description: "Create letters using AI.",
       },
       {
         name: "AI Blog title Generator",
@@ -325,12 +317,6 @@ export const categories = [
         description: "Generate OpenAPI stubs for APIs.",
       },
       {
-        name: "README Generator",
-        slug: "readme-generator",
-        icon: "📖",
-        description: "Create README files for your projects.",
-      },
-      {
         name: "Ads.txt Generator",
         slug: "ads-txt-generator",
         icon: "📄",
@@ -386,12 +372,12 @@ export const categories = [
         icon: "📝➡️📝",
         description: "Convert plain text to Markdown format.",
       },
-      // {
-      //   name: "Webpage to Markdown Converter",
-      //   slug: "webpage-to-markdown-converter",
-      //   icon: "🌐➡️📝",
-      //   description: "Convert webpages to Markdown files.",
-      // },
+      {
+        name: "Webpage to Markdown Converter",
+        slug: "webpage-to-markdown-converter",
+        icon: "🌐➡️📝",
+        description: "Convert webpages to Markdown files.",
+      },
       {
         name: "JSON Formatter & Validator",
         slug: "json-formatter-validator",
@@ -409,12 +395,6 @@ export const categories = [
         slug: "json-merge",
         icon: "🧬",
         description: "Merge multiple JSON files into one.",
-      },
-      {
-        name: "JSON Minifier",
-        slug: "json-minifier",
-        icon: "📦",
-        description: "Minify JSON data for compact storage.",
       },
       {
         name: "JSON Pretty Printer",
@@ -695,20 +675,7 @@ export const categories = [
     name: "Torrent & Hashing",
     slug: "torrent",
     icon: "📡",
-    tools: [
-      {
-        name: "Magnet Link Generator",
-        slug: "magnet-link-generator",
-        icon: "🧲",
-      },
-      { name: "BTIH Hash Generator", slug: "btih-hash-generator", icon: "🔢" },
-      { name: "Torrent File Parser", slug: "torrent-file-parser", icon: "📂" },
-      {
-        name: "Torrent File Creator",
-        slug: "torrent-file-creator",
-        icon: "🛠️",
-      },
-      { name: "Info Hash Extractor", slug: "info-hash-extractor", icon: "🔍" },
-    ],
+    description: "Create and inspect torrents, magnet links, and info hashes.",
+    tools: [...torrentTools],
   },
 ];

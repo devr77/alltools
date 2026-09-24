@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Choice Picker",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/random-choice-picker",
+  url: "https://toolsbase.org/trending-tools/random-choice-picker",
 
   offers: {
     "@type": "Offer",

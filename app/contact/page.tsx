@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="max-w-3xl mx-auto py-12 space-y-8">
+    <div className="info-page max-w-4xl mx-auto space-y-8">
       {/* HEADER */}
       <section>
         <h1 className="text-4xl font-semibold mb-4">Contact Us</h1>
@@ -36,10 +36,10 @@ export default function Page() {
 
         <p className="text-lg font-medium">
           <a
-            href="mailto:support@alltools.network"
+            href="mailto:info@toolsbase.org"
             className="underline underline-offset-4 hover:opacity-80"
           >
-            support@alltools.network
+            info@toolsbase.org
           </a>
         </p>
 

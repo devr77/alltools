@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
 import SiteHeader from "./components/SiteHeader";
+import SiteFooter from "./components/SiteFooter";
 
 const jsonLdWebsite = {
   "@context": "https://schema.org",
@@ -17,7 +18,7 @@ const jsonLdWebsite = {
 export const metadata: Metadata = {
   title: "ToolsBase | A collection of useful online tools",
   description:
-    "ToolsBase is a fast, free online tools website offering 500+ utilities for developers, creators, and everyday tasks. Simple, clean, and clutter-free.",
+    "ToolsBase is a fast, free online tools website offering useful utilities for developers, creators, and everyday tasks. Simple, clean, and clutter-free.",
   publisher: "ToolsBase Network",
   metadataBase: new URL("https://toolsbase.org"),
   robots: {
@@ -50,39 +51,10 @@ export default function RootLayout({
 
         <SiteHeader />
 
-        <main className="max-w-7xl xl:max-w-screen-2xl mx-auto px-4 py-10 flex-1">
+        <main className="site-main">
           <PostHogProvider>{children}</PostHogProvider>
         </main>
-        <footer className="border-t border-gray-200 mt-auto">
-          <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-muted space-y-3">
-            <p>© {new Date().getFullYear()} ToolsBase. All rights reserved.</p>
-
-            <p className="max-w-3xl">
-              ToolsBase provides free online utilities for developers, creators,
-              and general use. Tools are offered "as is" without warranties of
-              any kind. Use at your own discretion.
-            </p>
-
-            <p>
-              Not affiliated with any third-party brands or services mentioned.
-            </p>
-
-            {/* Legal & Info Links */}
-            <p className="flex flex-wrap gap-4">
-              <a href="/privacy" className="hover:underline underline-offset-4">
-                Privacy Policy
-              </a>
-              <span>·</span>
-              <a href="/about" className="hover:underline underline-offset-4">
-                About
-              </a>
-              <span>·</span>
-              <a href="/contact" className="hover:underline underline-offset-4">
-                Contact
-              </a>
-            </p>
-          </div>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );

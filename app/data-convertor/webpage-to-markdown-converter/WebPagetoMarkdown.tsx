@@ -16,12 +16,14 @@ function WebPagetoMarkdown() {
     setLoading(true);
     setError("");
     setMarkdown("");
+    setCopied(false);
 
     try {
       const res = await fetch("/api/web-to-markdown", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: url.trim() }),
+        signal: AbortSignal.timeout(20000),
       });
 
       const data = await res.json();
@@ -31,8 +33,8 @@ function WebPagetoMarkdown() {
       }
 
       setMarkdown(data.markdown);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Conversion failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ function WebPagetoMarkdown() {
       await navigator.clipboard.writeText(markdown);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch (err) {
+    } catch {
       setCopied(false);
     }
   };
@@ -65,10 +67,11 @@ function WebPagetoMarkdown() {
         Webpage to Markdown Converter Tool
       </h1>
       <h2 style={{ fontSize: "1.25rem", fontWeight: 500, marginBottom: 18 }}>
-        Convert any webpage URL to Markdown format instantly
+        Convert a public webpage URL to Markdown
       </h2>
       <input
-        type="text"
+        type="url"
+        aria-label="Public webpage URL"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder="https://example.com"
@@ -84,6 +87,8 @@ function WebPagetoMarkdown() {
         }}
       />
       <br />
+      <p className="mb-3 text-sm text-zinc-600">Paste a complete HTTP or HTTPS URL. Pages requiring a login or JavaScript rendering may not be supported. Maximum page size: 2 MB.</p>
+      {error && <p role="alert" className="mb-3 text-sm text-red-700">{error}</p>}
       <button
         onClick={handleConvert}
         disabled={!url || loading}

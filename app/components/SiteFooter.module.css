@@ -1,0 +1,14 @@
+.footer { margin-top: auto; border-top: 1px solid #e4e4e7; background: #fafafa; }
+.inner { max-width: 1184px; padding: 28px 16px 20px; margin: 0 auto; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.brand { font-size: 16px; font-weight: 600; color: #18181b; }
+.top p { margin-top: 6px; font-size: 14px; line-height: 1.7; color: #71717a; }
+.top nav { display: flex; flex-wrap: wrap; gap: 20px; color: #52525b; font-size: 14px; }
+.footer a:hover { color: #2563eb; }
+.footer a:focus-visible { outline: 2px solid #2563eb; outline-offset: 4px; border-radius: 2px; }
+.bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #e4e4e7; color: #71717a; font-size: 12px; line-height: 1.8; }
+@media (max-width: 640px) {
+  .top, .bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .top nav { gap: 18px; }
+  .bottom { gap: 6px; }
+}

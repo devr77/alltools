@@ -29,7 +29,7 @@ const jsonLd = {
   name: "Lorem Ipsum Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/lorem-ipsum-generator",
+  url: "https://toolsbase.org/trending-tools/lorem-ipsum-generator",
   offers: {
     "@type": "Offer",
     price: "0",

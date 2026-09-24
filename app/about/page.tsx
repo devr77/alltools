@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About ToolsBase - Free Online Tools Platform",
   description:
-    "Learn about ToolsBase, a modern online utilities platform offering 500+ free tools for developers, creators, and professionals. Fast, clean, and privacy-focused.",
+    "Learn about ToolsBase, a modern online utilities platform offering free tools for developers, creators, and professionals. Fast, clean, and privacy-focused.",
   keywords: ["about toolsbase", "online tools platform", "free utilities", "developer tools"],
   publisher: "ToolsBase Network",
   metadataBase: new URL("https://toolsbase.org"),
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="max-w-4xl mx-auto py-12 space-y-12">
+    <div className="info-page max-w-4xl mx-auto space-y-8">
       {/* HERO */}
       <section>
         <h1 className="text-4xl font-semibold mb-4">About ToolsBase</h1>
@@ -37,7 +37,7 @@ export default function Page() {
           reliable place where anyone can access useful tools instantly.
         </p>
         <p className="text-zinc-600">
-          Our platform brings together hundreds of carefully designed tools for
+          Our platform brings together a growing collection of carefully designed tools for
           developers, creators, students, and professionals — all in one place,
           with a consistent and minimal user experience.
         </p>
@@ -47,7 +47,7 @@ export default function Page() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">What We Offer</h2>
         <p className="text-zinc-600">
-          ToolsBase provides over 500 free online tools across multiple
+          ToolsBase provides free online tools across multiple
           categories, including:
         </p>
 

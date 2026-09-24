@@ -1,165 +1,359 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Fuse from "fuse.js";
 import { usePostHog } from "posthog-js/react";
 import { categories } from "./Constants";
+import styles from "./Home.module.css";
+
+const tools = categories.flatMap((category) =>
+  category.tools.map((tool) => ({
+    ...tool,
+    category: category.name,
+    categorySlug: category.slug,
+    keywords: "keywords" in tool ? tool.keywords : "",
+  })),
+);
+type Tool = (typeof tools)[number];
+
+const featuredSlugs = [
+  "json-formatter-validator",
+  "random-password-generator",
+  "qr-code-generator",
+];
+const featuredTools = featuredSlugs.flatMap((slug) =>
+  tools.filter((tool) => tool.slug === slug),
+);
+
+function Arrow({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m16 16 4.5 4.5" />
+    </svg>
+  );
+}
+
+function ToolCard({
+  tool,
+  featured = false,
+}: {
+  tool: Tool;
+  featured?: boolean;
+}) {
+  return (
+    <a
+      href={`/${tool.categorySlug}/${tool.slug}`}
+      className={`${styles.toolCard} ${featured ? styles.featuredCard : ""}`}
+    >
+      <div className={styles.cardTop}>
+        <span className={styles.toolIcon} aria-hidden="true">
+          {tool.icon}
+        </span>
+        {featured ? (
+          <span className={styles.cardCategory}>{tool.category}</span>
+        ) : (
+          <Arrow className={styles.cardArrow} />
+        )}
+      </div>
+      <h3>{tool.name}</h3>
+      <p>
+        {tool.description ||
+          `Explore ${tool.name.toLowerCase()} for your next task.`}
+      </p>
+      {featured && (
+        <span className={styles.openTool}>
+          Open tool <Arrow />
+        </span>
+      )}
+    </a>
+  );
+}
 
 export default function Home() {
   const posthog = usePostHog();
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const searchInput = useRef<HTMLInputElement>(null);
+  const query = searchTerm.trim();
 
-  // Flatten all tools for search
-  const allTools = useMemo(() => {
-    return categories.flatMap((category) =>
-      category.tools.map((tool) => ({
-        ...tool,
-        category: category.name,
-        categoryIcon: category.icon,
-      })),
-    );
+  const fuse = useMemo(
+    () =>
+      new Fuse(tools, {
+        keys: ["name", "category", "keywords"],
+        ignoreFieldNorm: true,
+        threshold: 0.3,
+      }),
+    [],
+  );
+
+  const matchedTools = useMemo(() => {
+    const results = query
+      ? fuse.search(query).map((result) => result.item)
+      : tools;
+    return activeCategory === "all"
+      ? results
+      : results.filter((tool) => tool.categorySlug === activeCategory);
+  }, [query, activeCategory, fuse]);
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInput.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  // Initialize Fuse.js
-  const fuse = useMemo(() => {
-    return new Fuse(allTools, {
-      keys: ["name", "category"],
-      threshold: 0.3,
-      includeScore: true,
-      includeMatches: true,
-    });
-  }, [allTools]);
-
-  // Search results
-  const searchResults = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return [];
-    }
-
-    const results = fuse.search(searchTerm);
-    return results.map((result) => result.item);
-  }, [searchTerm, fuse]);
-
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-
-    // Capture search term in PostHog
-    if (value.trim()) {
+  useEffect(() => {
+    if (!query) return;
+    const timeout = window.setTimeout(() => {
       posthog.capture("tool_search", {
-        search_term: value,
-        search_length: value.length,
-        has_results: searchResults.length > 0,
+        search_term: query,
+        search_length: query.length,
+        has_results: matchedTools.length > 0,
+        category: activeCategory,
       });
-    }
+    }, 400);
+    return () => window.clearTimeout(timeout);
+  }, [query, matchedTools.length, activeCategory, posthog]);
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setActiveCategory("all");
+    searchInput.current?.focus();
   };
 
   return (
-    <>
-      <div className="bg-zinc-50 font-sans">
-        <section className="mb-12">
-          <h1 className="text-4xl font-semibold mb-3">
-            Simple tools. Zero clutter.
+    <div className={styles.home}>
+      <section className={styles.hero} aria-labelledby="home-title">
+        <div className={styles.heroContent}>
+          <span className={styles.eyebrow}>
+            <span className={styles.statusDot} /> YOUR EVERYDAY TOOLKIT
+          </span>
+          <h1 id="home-title">
+            Simple tools. <span>Zero clutter.</span>
           </h1>
-          <p className="text-muted mb-6">
-            Fast, free online utilities for developers & creators.
+          <p className={styles.heroDescription}>
+            Free online tools for developers, creators, and everyday tasks.
           </p>
+        </div>
+        <div className={styles.heroSearch}>
+          <div className={styles.searchBox} role="search">
+            <SearchIcon />
+            <label htmlFor="tool-search" className={styles.srOnly}>
+              Search tools
+            </label>
+            <input
+              ref={searchInput}
+              id="tool-search"
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setSearchTerm("");
+              }}
+              placeholder="What do you need to get done?"
+              aria-controls="tool-directory"
+              autoComplete="off"
+            />
+            <kbd aria-hidden="true">⌘ / Ctrl K</kbd>
+          </div>
+          <div className={styles.suggestions}>
+            <span>Try searching</span>
+            {["JSON", "Password", "QR code"].map((term) => (
+              <button
+                key={term}
+                onClick={() => {
+                  setSearchTerm(term);
+                  setActiveCategory("all");
+                  searchInput.current?.focus();
+                }}
+              >
+                {term}
+                <span aria-hidden="true">↗</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <input
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search a tool..."
-            className="w-full bg-card border border-border px-4 py-3 rounded-md outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+      {!query && activeCategory === "all" && (
+        <section className={styles.featured} aria-labelledby="featured-title">
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 id="featured-title">Everyday essentials</h2>
+            </div>
+            <a href="#tool-directory" className={styles.textLink}>
+              Explore all tools <Arrow />
+            </a>
+          </div>
+          <div className={styles.featuredGrid}>
+            {featuredTools.map((tool) => (
+              <ToolCard key={tool.slug} tool={tool} featured />
+            ))}
+          </div>
         </section>
+      )}
 
-        {/* Search Results */}
-        {searchTerm.trim() && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold mb-4">
-              Search Results{" "}
-              {searchResults.length > 0 && `(${searchResults.length})`}
-            </h2>
-
-            {searchResults.length > 0 ? (
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {searchResults.map((tool) => (
-                  <a
-                    key={tool.slug}
-                    href={`/tools/${tool.slug}`}
-                    className="border border-border bg-card p-4 rounded-md hover:border-white transition"
-                  >
-                    <div className="flex items-center mb-2">
-                      <span className="mr-2 text-sm text-muted">
-                        {tool.categoryIcon} {tool.category}
-                      </span>
-                    </div>
-                    <h3 className="font-medium flex items-center">
-                      <span className="mr-2">{tool.icon}</span>
-                      {tool.name}
-                    </h3>
-                    <p className="text-xs text-muted mt-1">
-                      {tool.description}
-                    </p>
-                    <p className="text-sm text-muted mt-1">Open tool →</p>
-                  </a>
+      <section
+        className={styles.directory}
+        id="tool-directory"
+        aria-labelledby="directory-title"
+      >
+        <div className={styles.directoryHeading}>
+          <div>
+            <h2 id="directory-title">The tool collection</h2>
+          </div>
+          <span className={styles.resultCount} role="status" aria-live="polite">
+            {matchedTools.length} {matchedTools.length === 1 ? "tool" : "tools"}
+            {query || activeCategory !== "all"
+              ? " found"
+              : " at your fingertips"}
+          </span>
+        </div>
+        <div className={styles.directoryLayout}>
+          <aside className={styles.sidebar}>
+            <p className={styles.sidebarLabel}>CATEGORIES</p>
+            <nav
+              className={styles.categoryNav}
+              aria-label="Filter tools by category"
+            >
+              <button
+                aria-pressed={activeCategory === "all"}
+                onClick={() => setActiveCategory("all")}
+              >
+                <span aria-hidden="true">▦</span>
+                <span>All tools</span>
+                <span className={styles.categoryCount}>{tools.length}</span>
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category.slug}
+                  aria-pressed={activeCategory === category.slug}
+                  onClick={() => setActiveCategory(category.slug)}
+                >
+                  <span aria-hidden="true">
+                    {category.slug === "trending-tools" ? "🔥" : category.icon}
+                  </span>
+                  <span>{category.name}</span>
+                  <span className={styles.categoryCount}>
+                    {category.tools.length}
+                  </span>
+                </button>
+              ))}
+            </nav>
+            <div className={styles.sidebarNote}>
+              <span aria-hidden="true">↗</span>
+              <strong>Small tools. Big possibilities.</strong>
+              <p>Pick a tool, get it done, and get back to what matters.</p>
+            </div>
+          </aside>
+          <div className={styles.toolGroups}>
+            {(query || activeCategory !== "all") && (
+              <div className={styles.filterSummary}>
+                <span>
+                  {query ? (
+                    <>
+                      Results for <strong>“{query}”</strong>
+                    </>
+                  ) : (
+                    categories.find(
+                      (category) => category.slug === activeCategory,
+                    )?.name
+                  )}
+                </span>
+                <button onClick={resetFilters}>
+                  Clear filters <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            )}
+            {matchedTools.length === 0 ? (
+              <div className={styles.emptyState}>
+                <SearchIcon />
+                <h3>No tools found</h3>
+                <p>Try a different keyword or browse all categories.</p>
+                <button onClick={resetFilters}>
+                  Browse all tools <Arrow />
+                </button>
+              </div>
+            ) : query ? (
+              <div className={styles.toolGrid}>
+                {matchedTools.map((tool) => (
+                  <ToolCard
+                    key={`${tool.categorySlug}/${tool.slug}`}
+                    tool={tool}
+                  />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-muted">
-                  No tools found matching "{searchTerm}"
-                </p>
-                <p className="text-sm text-muted mt-2">
-                  Try a different search term
-                </p>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* All Categories */}
-        {(!searchTerm.trim() || searchResults.length === 0) && (
-          <section className="space-y-10">
-            {categories.map((category) => (
-              <div key={category.name}>
-                <div className="flex items-center mb-3">
-                  <span className="mr-2 text-xl">{category.icon}</span>
-                  <h2 className="text-2xl font-semibold">{category.name}</h2>
-                  {/* Arrow button to category page */}
-                  <a
-                    href={`/${category.slug}`}
-                    className="ml-2 text-blue-500 hover:underline flex items-center"
-                    title={`See all ${category.name} tools`}
+              categories
+                .filter(
+                  (category) =>
+                    activeCategory === "all" ||
+                    category.slug === activeCategory,
+                )
+                .map((category) => (
+                  <section
+                    key={category.slug}
+                    className={styles.toolGroup}
+                    aria-labelledby={`heading-${category.slug}`}
                   >
-                    <span className="ml-1">→</span>
-                  </a>
-                </div>
-
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {category.tools.map((tool) => (
-                    <a
-                      key={tool.slug}
-                      href={`/${category.slug}/${tool.slug}`}
-                      className="border border-border bg-card p-4 rounded-md hover:border-white transition"
-                    >
-                      <h3 className="font-medium flex items-center">
-                        <span className="mr-2">{tool.icon}</span>
-                        {tool.name}
+                    <div className={styles.groupHeading}>
+                      <h3 id={`heading-${category.slug}`}>
+                        {category.name}
+                        <span>{category.tools.length}</span>
                       </h3>
-                      <p className="text-xs text-muted mt-1">
-                        {tool.description}
-                      </p>
-                      <p className="text-sm text-muted mt-1">Open tool →</p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </section>
-        )}
-      </div>
-    </>
+                      <a
+                        href={`/${category.slug}`}
+                        aria-label={`View all ${category.name} tools`}
+                      >
+                        View all <Arrow />
+                      </a>
+                    </div>
+                    <div className={styles.toolGrid}>
+                      {matchedTools
+                        .filter((tool) => tool.categorySlug === category.slug)
+                        .map((tool) => (
+                          <ToolCard key={tool.slug} tool={tool} />
+                        ))}
+                    </div>
+                  </section>
+                ))
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

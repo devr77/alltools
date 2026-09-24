@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Username Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/random-username-generator",
+  url: "https://toolsbase.org/trending-tools/random-username-generator",
   offers: {
     "@type": "Offer",
     price: "0",

@@ -5,7 +5,7 @@ const BASE_URL = "https://toolsbase.org";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Static sitemap links
-  const staticLinks = [
+  const staticLinks: MetadataRoute.Sitemap = [
     {
       url: `${BASE_URL}/about`,
       lastModified: new Date("2026-01-17"),
@@ -41,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...toolUrls,
   ];
 
-  const dynamicSitemap = dynamicUrls.map((url) => ({
+  const dynamicSitemap: MetadataRoute.Sitemap = dynamicUrls.map((url) => ({
     url: `${BASE_URL}${url}`,
     lastModified: new Date(),
     changeFrequency: "weekly",

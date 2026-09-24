@@ -31,7 +31,7 @@ const jsonLd = {
   name: "QR Code Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/qr-code-generator",
+  url: "https://toolsbase.org/trending-tools/qr-code-generator",
   offers: {
     "@type": "Offer",
     price: "0",

@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Random Password Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/random-password-generator",
+  url: "https://toolsbase.org/trending-tools/random-password-generator",
   offers: {
     "@type": "Offer",
     price: "0",

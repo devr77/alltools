@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 // Import mammoth
 import mammoth from "mammoth";
+import TurndownService from "turndown";
 // Import unified, remark-parse, and remark-stringify for beautification
 import { unified } from "unified";
 import remarkParse from "remark-parse";
@@ -14,15 +15,15 @@ function DocstoMarkdown() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Use mammoth to convert DOCX to Markdown
+  // Convert through HTML: Mammoth deprecated its direct Markdown API.
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoading(true);
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.convertToMarkdown({ arrayBuffer });
-      setMarkdown(result.value);
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      setMarkdown(new TurndownService().turndown(result.value));
     } catch (err) {
       setMarkdown(
         `# Conversion Failed\n\n*Could not convert DOCX to Markdown. Please try another file.*`,

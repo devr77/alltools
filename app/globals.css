@@ -25,3 +25,27 @@ body {
   color: var(--foreground);
 }
 
+
+/* Shared light-theme surfaces used by existing tools and refreshed pages. */
+@theme inline {
+  --color-card: #ffffff;
+  --color-border: #e4e4e7;
+  --color-muted: #71717a;
+}
+body { font-size: 16px; line-height: 1.6; }
+.site-main { width: 100%; max-width: 1184px; margin: 0 auto; padding: 32px 16px 40px; flex: 1; min-width: 0; }
+.tool-content { font-size: 16px; line-height: 1.75; overflow-wrap: anywhere; }
+.tool-content :is(h1,h2,h3) { color: #18181b; font-weight: 600; line-height: 1.35; }
+.tool-content h1 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -.8px; margin-bottom: 18px; }
+.tool-content h2 { font-size: 23px; margin-bottom: 16px; }
+.tool-content h3 { font-size: 18px; }
+.tool-content p { line-height: 1.8; }
+.tool-content :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),textarea,select) { max-width: 100%; border-color: #d4d4d8; border-radius: 7px !important; font-size: 15px !important; }
+.tool-content :is(textarea,pre) { max-width: 100%; overflow: auto; }
+.tool-content button { font-size: 14px !important; border-radius: 7px !important; cursor: pointer; }
+.tool-content :is(button,input,textarea,select,a):focus-visible, .site-main a:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+.tool-content :is(.text-xs,.text-sm) { font-size: 14px; }
+.tool-content button:disabled { cursor: not-allowed; }
+.info-page { border: 1px solid #e4e4e7; border-radius: 12px; padding: 28px; background: #fff; }
+.info-page p, .info-page li { font-size: 16px; line-height: 1.85; }
+@media (max-width: 600px) { .site-main { padding-top: 24px; } .info-page { padding: 20px; } }

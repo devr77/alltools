@@ -1,58 +1,28 @@
-import { categories } from "../Constants";
 import type { Metadata } from "next";
+import { torrentTools } from "./tools";
+import styles from "./Torrent.module.css";
 
 export const metadata: Metadata = {
-  title: "Torrent & Hashing Tools - Free Torrent Utilities | ToolsBase",
-  description:
-    "Explore our collection of torrent and hashing tools including magnet link generators, BTIH hash generators, torrent file parsers, and more. Free online utilities for torrent management.",
-  keywords: [
-    "torrent tools",
-    "hashing tools",
-    "magnet link generator",
-    "btih hash generator",
-    "torrent file parser",
-    "free torrent utilities",
-  ],
-  publisher: "ToolsBase Network",
-  metadataBase: new URL("https://toolsbase.org"),
+  title: "Torrent & Hashing Tools | ToolsBase",
+  description: "Create magnet links, inspect torrent files, calculate info hashes, and build v1 torrents locally in your browser.",
   alternates: { canonical: "/torrent" },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
-  },
 };
-
-function page() {
-  // Get the Torrent & Hashing Tools category
-  const torrentToolsCategory = categories.find((cat) => cat.slug === "torrent");
-
-  // Get all tools from the category
-  const allTools = torrentToolsCategory ? torrentToolsCategory.tools : [];
-
+export default function Page() {
   return (
-    <div>
-      <h1 className="text-3xl font-semibold mb-6"> Torrent & Hashing Tools</h1>
-
-      {allTools.length > 0 && (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {allTools.map((tool) => (
-            <a
-              key={tool.slug}
-              href={`/torrent/${tool.slug}`}
-              className="border border-border bg-card p-4 rounded-md hover:border-white transition"
-            >
-              <h3 className="font-medium flex items-center">
-                <span className="mr-2">{tool.icon}</span>
-                {tool.name}
-              </h3>
-              <p className="text-sm text-muted mt-1">Open tool →</p>
-            </a>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <header className={styles.header}>
+        <span className={styles.eyebrow}>YOUR FILES. YOUR BROWSER.</span>
+        <h1>Torrent &amp; Hashing Tools</h1>
+        <p>Create, inspect, and share torrent metadata with free browser utilities. Calculate, inspect, or connect to compatible peers.</p>
+      </header>
+      <div className={styles.catalog}>
+        {torrentTools.map((tool) => (
+          <a key={tool.slug} href={`/torrent/${tool.slug}`} className={styles.catalogCard}>
+            <span aria-hidden="true">{tool.icon}</span><h2>{tool.name}</h2><p>{tool.description}</p><strong>Open tool →</strong>
+          </a>
+        ))}
+      </div>
+      <p className={styles.note}>Supports BitTorrent v1 metadata and the v1 portion of hybrid torrents. Metadata tools run locally. The browser downloader and health checker connect to peers only when you start them.</p>
+    </>
   );
 }
-
-export default page;

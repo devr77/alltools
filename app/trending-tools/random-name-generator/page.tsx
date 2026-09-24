@@ -28,7 +28,7 @@ const jsonLd = {
   name: "Random Name Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/random-name-generator",
+  url: "https://toolsbase.org/trending-tools/random-name-generator",
   offers: {
     "@type": "Offer",
     price: "0",

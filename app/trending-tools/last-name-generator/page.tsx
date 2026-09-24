@@ -30,7 +30,7 @@ const jsonLd = {
   name: "Last Name Generator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Web",
-  url: "https://toolsbase.org/tools/last-name-generator",
+  url: "https://toolsbase.org/trending-tools/last-name-generator",
   offers: {
     "@type": "Offer",
     price: "0",

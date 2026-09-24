@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { categories } from "../Constants";
 
 interface MobileSidebarProps {
@@ -10,6 +11,14 @@ interface MobileSidebarProps {
 
 export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
+  const panel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    panel.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    return () => previous?.focus();
+  }, [isOpen]);
 
   const toggleCategory = (categorySlug: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -26,14 +35,29 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+        ref={panel}
+        role="dialog"
+        aria-label="Site navigation"
+        aria-modal={isOpen || undefined}
+        aria-hidden={!isOpen}
+        inert={!isOpen}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") onClose();
+          if (event.key !== "Tab") return;
+          const items = panel.current?.querySelectorAll<HTMLElement>("button, a[href]");
+          if (!items?.length) return;
+          const first = items[0], last = items[items.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }}
+        className={`fixed top-0 left-0 h-full w-80 max-w-[calc(100vw-32px)] bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -66,20 +90,21 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           <nav className="flex-1 overflow-y-auto p-4">
             <div className="space-y-2">
               {/* Home Link */}
-              <a
+              <Link
                 href="/"
                 className="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors"
                 onClick={onClose}
               >
                 <span className="mr-3">🏠</span>
                 Home
-              </a>
+              </Link>
 
               {/* Categories */}
               {categories.map((category) => (
                 <div key={category.slug}>
                   <button
                     onClick={() => toggleCategory(category.slug)}
+                    aria-expanded={expandedCategories.has(category.slug)}
                     className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors text-left"
                   >
                     <div className="flex items-center">
@@ -107,26 +132,26 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                   {expandedCategories.has(category.slug) && (
                     <div className="ml-6 mt-1 space-y-1">
                       {/* View All Link */}
-                      <a
+                      <Link
                         href={`/${category.slug}`}
-                        className="flex items-center px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                        className="flex items-center px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
                         onClick={onClose}
                       >
                         <span className="mr-2">→</span>
                         View all {category.name} tools
-                      </a>
+                      </Link>
 
                       {/* Individual Tools */}
                       {category.tools.map((tool) => (
-                        <a
+                        <Link
                           key={tool.slug}
                           href={`/${category.slug}/${tool.slug}`}
-                          className="flex items-center px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                          className="flex items-center px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
                           onClick={onClose}
                         >
                           <span className="mr-2">{tool.icon}</span>
                           {tool.name}
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   )}
@@ -137,28 +162,28 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           {/* Footer */}
           <div className="p-4 border-t border-gray-200">
-            <div className="text-xs text-muted space-y-1">
-              <a
+            <div className="text-sm text-muted space-y-1">
+              <Link
                 href="/about"
                 className="block hover:underline"
                 onClick={onClose}
               >
                 About
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/privacy"
                 className="block hover:underline"
                 onClick={onClose}
               >
                 Privacy Policy
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/contact"
                 className="block hover:underline"
                 onClick={onClose}
               >
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
         </div>

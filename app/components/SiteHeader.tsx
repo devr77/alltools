@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import MobileSidebar from "./MobileSidebar";
 
 export default function SiteHeader() {
@@ -15,7 +16,7 @@ export default function SiteHeader() {
       />
 
       <header className="border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-[1184px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center">
             {/* Hamburger Menu Button - Only visible on mobile */}
             <button
@@ -38,13 +39,14 @@ export default function SiteHeader() {
               </svg>
             </button>
 
-            <a className="font-semibold" href="/">
+            <Link className="font-semibold text-lg tracking-tight" href="/">
               ToolsBase
-            </a>
+            </Link>
           </div>
 
-          <nav className="text-sm text-muted space-x-6">
-            <a href="/">Tools</a>
+          <nav aria-label="Main navigation" className="text-sm text-muted flex items-center gap-5">
+            <Link href="/#tool-directory">All tools</Link>
+            <Link href="/about">About</Link>
           </nav>
         </div>
       </header>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tool Base | A collection of useful online tools",
   description:
-    "ToolsBase is a fast, free online tools website offering 500+ utilities for developers, creators, and everyday tasks. Simple, clean, and clutter-free.",
+    "ToolsBase is a fast, free online tools website offering useful utilities for developers, creators, and everyday tasks. Simple, clean, and clutter-free.",
   keywords: ["tools", "utilities", "online tools", "productivity"],
   publisher: "ToolsBase Network",
   metadataBase: new URL("https://toolsbase.org"),
