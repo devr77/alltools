@@ -1,6 +1,6 @@
 import { ConversionError, fetchPublicHtml, htmlToMarkdown } from "../../lib/webpage-markdown";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   let input: unknown;

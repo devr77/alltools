@@ -6,6 +6,8 @@ import TorrentCalculator from "../TorrentCalculator";
 import { torrentTools, calculatorSlugs } from "../tools";
 
 interface PageProps { params: Promise<{ tool: string }> }
+// Every supported tool is prebuilt; unknown slugs must not create a server fallback.
+export const dynamicParams = false;
 export function generateStaticParams() {
   return torrentTools.map(({ slug }) => ({ tool: slug }));
 }

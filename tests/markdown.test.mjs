@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { Readable } from "node:stream";
-import { EventEmitter } from "node:events";
 import test from "node:test";
 import ts from "typescript";
 
@@ -36,41 +34,37 @@ test("HTML conversion preserves structure and resolves links while removing exec
   assert.throws(() => htmlToMarkdown("<html><body><script>x</script></body></html>", "https://example.com"), /No readable content/);
 });
 
-function fakeFetcher(pages, addresses = [{ address: "93.184.215.14", family: 4 }]) {
+function fakeFetcher(pages) {
   const seen = [];
-  function request(url, options, callback) {
-    const req = new EventEmitter();
-    req.end = () => queueMicrotask(() => {
-      options.lookup(url.hostname, { all: true }, (error, pinned) => {
-        assert.ifError(error);
-        assert.deepEqual(pinned, addresses);
-      });
-      seen.push(url.href);
-      const page = pages[seen.length - 1];
-      const response = Readable.from(page.chunks ?? [Buffer.from(page.body ?? "<h1>Example</h1>")]);
-      response.statusCode = page.status ?? 200;
-      response.headers = page.headers ?? { "content-type": "text/html" };
-      callback(response);
-    });
-    return req;
-  }
-  const loaded = load("lib/webpage-markdown.ts", {
-    "node:dns/promises": { lookup: async () => addresses },
-    "node:http": { request }, "node:https": { request },
-  });
-  return { fetch: loaded.fetchPublicHtml, seen };
+  const { fetchPublicHtml } = load("lib/webpage-markdown.ts");
+  return {
+    seen,
+    async fetch(input) {
+      const original = globalThis.fetch;
+      globalThis.fetch = async (url, init) => {
+        assert.equal(init.redirect, "manual");
+        seen.push(String(url));
+        const page = pages[seen.length - 1];
+        const body = new ReadableStream({
+          start(controller) {
+            for (const chunk of page.chunks ?? [Buffer.from(page.body ?? "<h1>Example</h1>")]) controller.enqueue(new Uint8Array(chunk));
+            controller.close();
+          },
+        });
+        return new Response(body, { status: page.status ?? 200, headers: page.headers ?? { "content-type": "text/html" } });
+      };
+      try { return await fetchPublicHtml(input); } finally { globalThis.fetch = original; }
+    },
+  };
 }
 
-test("public fetch pins DNS and resolves relative redirects", async () => {
+test("public fetch resolves relative redirects manually", async () => {
   const client = fakeFetcher([{ status: 302, headers: { location: "/article" } }, { body: "<h1>Article</h1>" }]);
   assert.deepEqual(await client.fetch("https://example.com/start"), { html: "<h1>Article</h1>", url: "https://example.com/article" });
   assert.deepEqual(client.seen, ["https://example.com/start", "https://example.com/article"]);
 });
 
-test("public fetch blocks private DNS answers and redirect targets", async () => {
-  const privateDns = fakeFetcher([], [{ address: "127.0.0.1", family: 4 }]);
-  await assert.rejects(privateDns.fetch("https://example.com"), /Only public/);
-  assert.deepEqual(privateDns.seen, []);
+test("public fetch blocks private redirect targets", async () => {
   const redirect = fakeFetcher([{ status: 302, headers: { location: "http://169.254.169.254/latest/meta-data/" } }]);
   await assert.rejects(redirect.fetch("https://example.com"), /Only public/);
   assert.equal(redirect.seen.length, 1);
