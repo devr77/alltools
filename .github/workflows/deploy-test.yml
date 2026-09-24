@@ -24,8 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Build site (serve torrent/ at /torrent/)
+        run: |
+          mkdir -p _site
+          cp -r torrent _site/torrent
+          echo '<!DOCTYPE html><meta http-equiv="refresh" content="0; url=torrent/">' > _site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: torrent
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
