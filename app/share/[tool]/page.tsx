@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findTool, sharedFaqs, site, tools, type ShareTool } from "../catalog";
-import { About, breadcrumb, Faq, faqPage, Features, hueStyle, JsonLd, lifetimes, sharedFeatures, Steps, ToolGrid, TrustRow, UploadCard } from "../sections";
+import { About, breadcrumb, Faq, faqPage, Features, hueStyle, JsonLd, lifetimes, localFeatures, sharedFeatures, Steps, ToolGrid, TrustRow, UploadCard } from "../sections";
 
 type Props = { params: Promise<{ tool: string }> };
 
@@ -26,6 +26,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function howToSteps(tool: ShareTool) {
+  if (tool.mode === "qr") {
+    return [
+      ["Add the QR code", "Drop or choose an image, paste a screenshot with Ctrl+V, or scan with your camera."],
+      ["Check what it holds", "The link, text, or Wi‑Fi details appear instantly, with warnings for anything suspicious."],
+      ["Copy or open", "Copy the contents, or open the link once you're happy with where it goes."],
+    ];
+  }
   const first = tool.mode === "text" ? ["Paste your text", `Type or paste the ${tool.label} you want to share${tool.json ? ". It's validated as you go" : ""}.`]
     : tool.mode === "base64" ? ["Paste the Base64", "Paste a raw Base64 string or a full data: URI. It's decoded in your browser."]
     : tool.pasteFirst ? ["Paste your screenshot", "Press Ctrl+V (⌘V on Mac) after taking a screenshot, or drop an image file."]
@@ -41,11 +48,12 @@ export default async function ShareToolPage({ params }: Props) {
   const tool = findTool((await params).tool);
   if (!tool) notFound();
   const url = `${site.url}/${tool.slug}`;
-  const faqs = [...tool.faqs, ...sharedFaqs()];
-  const heading = tool.mode === "file" ? `Upload your ${tool.label.replace(/^an? /, "")}` : "Create your link";
+  const local = tool.mode === "qr";
+  const faqs = local ? tool.faqs : [...tool.faqs, ...sharedFaqs()];
+  const heading = local ? "Scan your QR code" : tool.mode === "file" ? `Upload your ${tool.label.replace(/^an? /, "")}` : "Create your link";
   const features: [string, string, string][] = [
     ...tool.features.map(([title, text], index) => [["zap", "sparkle", "link"][index % 3], title, text] as [string, string, string]),
-    ...sharedFeatures,
+    ...(local ? localFeatures : sharedFeatures),
   ];
   return (
     <div className="share-page" style={hueStyle(tool.hue)}>
@@ -71,10 +79,10 @@ export default async function ShareToolPage({ params }: Props) {
           <h1><mark>{tool.name}</mark> Converter</h1>
           <p className="lead">{tool.lead}</p>
           <UploadCard tool={tool} heading={heading} />
-          <TrustRow />
+          <TrustRow local={local} />
         </div>
       </section>
-      <Steps index="01" title={`How to convert ${tool.noun || tool.label} to a URL`} steps={howToSteps(tool)} />
+      <Steps index="01" title={local ? "How to read a QR code online" : `How to convert ${tool.noun || tool.label} to a URL`} steps={howToSteps(tool)} />
       <About index="02" tool={tool} />
       <Features index="03" eyebrow="Features" title={`Why use this ${tool.name} tool`} cards={features} />
       <Faq index="04" faqs={faqs} title={`${tool.name}: frequently asked questions`} />

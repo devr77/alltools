@@ -5,6 +5,7 @@ import { usePostHog } from "posthog-js/react";
 import Icon from "./Icon";
 import type { ShareTool } from "./catalog";
 import { decodeBase64Input, extensionForType, formatBytes, resolveContentType, timeLeft, uploadBlob, validateFile } from "./lib/upload";
+import { canCompressImage, compressImage, minifyJson, PRESETS } from "./lib/compress";
 
 export type UploaderSettings = {
   api: string; uploadWindow: number; maxBytes: number; maxFiles: number;
@@ -13,12 +14,13 @@ export type UploaderSettings = {
 
 type Item = {
   id: string; name: string; size: number; type: string; blob?: Blob; preview?: string | null;
-  state: "waiting" | "uploading" | "done" | "error"; progress: number;
+  state: "waiting" | "compressing" | "uploading" | "done" | "error"; progress: number; originalSize?: number;
   url?: string; deletesAt?: number; remaining?: number | null; error?: string; saved?: boolean;
 };
 
 const HISTORY_KEY = "tbshare:links:v1";
 const LIFETIME_KEY = "tbshare:lifetime";
+const COMPRESS_KEY = "tbshare:compress";
 
 const store = {
   get<T>(key: string, fallback: T): T {
@@ -57,6 +59,13 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
   const [error, setError] = useState("");
   const [over, setOver] = useState(false);
   const [text, setText] = useState("");
+  const [compress, setCompress] = useState(true);
+  const compressRef = useRef(compress);
+  compressRef.current = compress;
+  // Size reduction applies to tools that take raster images (any-file tools included) and to JSON.
+  const anyFile = !tool.accept?.types.length && !tool.accept?.extensions.length;
+  const imageCapable = tool.mode === "file" && (anyFile || tool.accept.types.some((type) => type.startsWith("image/")));
+  const reducible = imageCapable || tool.json;
   const queue = useRef<Item[]>([]);
   const running = useRef(false);
   const lifetimeRef = useRef(lifetime);
@@ -64,6 +73,7 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
 
   // Restore the remembered lifetime and unexpired links after mount (browser storage only).
   useEffect(() => {
+    setCompress(store.get<boolean>(COMPRESS_KEY, true) !== false);
     const saved = store.get<number>(LIFETIME_KEY, settings.defaultLifetime);
     if (settings.lifetimes.some((entry) => entry.days === saved)) setLifetime(saved);
     const history = store.get<Item[]>(HISTORY_KEY, []).filter((entry) => entry?.url && entry.deletesAt * 1000 > Date.now());
@@ -78,9 +88,18 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
     running.current = true;
     let job: Item | undefined;
     while ((job = queue.current.shift())) {
-      const { id, blob, type, name } = job;
-      patch(id, { state: "uploading" });
+      let { blob, type, name } = job;
+      const { id } = job;
       try {
+        if (compressRef.current && canCompressImage(type)) {
+          patch(id, { state: "compressing" });
+          const reduced = await compressImage(blob, type, tool.pasteFirst ? PRESETS.screenshot : PRESETS.photo);
+          if (reduced.changed) {
+            ({ blob, type, name } = reduced);
+            patch(id, { name, type, size: blob.size, originalSize: reduced.originalSize });
+          }
+        }
+        patch(id, { state: "uploading" });
         const slot = await uploadBlob(settings.api, blob, {
           contentType: type, deleteAfterDays: lifetimeRef.current, expiresIn: settings.uploadWindow,
           onProgress: (fraction: number) => patch(id, { progress: fraction }),
@@ -88,16 +107,16 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
         patch(id, { state: "done", progress: 1, url: slot.publicUrl, deletesAt: slot.deletesAt, remaining: slot.remaining });
         const history = store.get<Item[]>(HISTORY_KEY, []);
         store.set(HISTORY_KEY, [{ url: slot.publicUrl, name, size: blob.size, type, deletesAt: slot.deletesAt }, ...history].slice(0, 30));
-        posthog?.capture("share_upload_completed", { tool: tool.slug, lifetime: lifetimeRef.current, size_bucket: bucket(blob.size) });
+        posthog?.capture("share_upload_completed", { tool: tool.slug, lifetime: lifetimeRef.current, size_bucket: bucket(blob.size), reduced: blob.size < job.blob.size });
       } catch (cause) {
         patch(id, { state: "error", error: cause instanceof Error ? cause.message : "Upload failed." });
         posthog?.capture("share_upload_failed", { tool: tool.slug });
       }
     }
     running.current = false;
-  }, [settings, tool.slug, posthog]);
+  }, [settings, tool.slug, tool.pasteFirst, posthog]);
 
-  const enqueue = useCallback((jobs: Pick<Item, "blob" | "name" | "type" | "preview">[]) => {
+  const enqueue = useCallback((jobs: Pick<Item, "blob" | "name" | "type" | "preview" | "originalSize">[]) => {
     const created = jobs.map((job) => ({ ...job, id: newId(), size: job.blob.size, state: "waiting" as const, progress: 0 }));
     queue.current.push(...created);
     setItems((list) => [...created.reverse(), ...list]);
@@ -136,7 +155,7 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
   }, [tool.mode, addFiles]);
 
   // Warn before leaving mid-upload.
-  const busy = items.some((item) => item.state === "waiting" || item.state === "uploading");
+  const busy = items.some((item) => item.state === "waiting" || item.state === "compressing" || item.state === "uploading");
   useEffect(() => {
     if (!busy) return;
     const onLeave = (event: BeforeUnloadEvent) => event.preventDefault();
@@ -148,21 +167,23 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
   const encodeText = () => {
     if (tool.mode === "base64") {
       const { bytes, contentType } = decodeBase64Input(text);
-      return { blob: new Blob([bytes], { type: contentType }), type: contentType, name: `base64-${stamp()}.${extensionForType(contentType)}` };
+      return { blob: new Blob([bytes], { type: contentType }), type: contentType, name: `base64-${stamp()}.${extensionForType(contentType)}`, originalSize: undefined };
     }
     if (!text.trim()) throw new Error("Type or paste some text first.");
-    if (tool.json) JSON.parse(text);
+    const body = tool.json && compress ? minifyJson(text) : text;
+    if (tool.json) JSON.parse(body);
     // A byte-order mark makes browsers display plain text as UTF-8; JSON is UTF-8 by definition and must not have one.
-    const parts = tool.json ? [text] : ["﻿", text];
-    return { blob: new Blob(parts, { type: tool.textType }), type: tool.textType, name: `${tool.json ? "data" : "text"}-${stamp()}.${tool.extension}` };
+    const parts = tool.json ? [body] : ["\uFEFF", body];
+    const originalSize = body !== text ? new Blob([text]).size : undefined;
+    return { blob: new Blob(parts, { type: tool.textType }), type: tool.textType, name: `${tool.json ? "data" : "text"}-${stamp()}.${tool.extension}`, originalSize };
   };
   const describeError = (cause: unknown) => (cause instanceof SyntaxError ? `Invalid JSON: ${cause.message}` : cause instanceof Error ? cause.message : String(cause));
 
   let meta: { text: string; ok: boolean } | null = null;
   if (tool.mode !== "file" && text.trim()) {
     try {
-      const { blob, type } = encodeText();
-      meta = { ok: true, text: `${formatBytes(blob.size)}${tool.mode === "base64" ? ` · ${type}` : tool.json ? " · valid JSON" : ` · ${text.length.toLocaleString()} characters`}` };
+      const { blob, type, originalSize } = encodeText();
+      meta = { ok: true, text: `${originalSize ? `${formatBytes(originalSize)} → ` : ""}${formatBytes(blob.size)}${tool.mode === "base64" ? ` · ${type}` : tool.json ? " · valid JSON" : ` · ${text.length.toLocaleString()} characters`}` };
     } catch (cause) {
       meta = { ok: false, text: describeError(cause) };
     }
@@ -184,7 +205,7 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
     store.set(HISTORY_KEY, []);
     setItems((list) => {
       for (const item of list) if (item.preview && item.state !== "uploading" && item.state !== "waiting") URL.revokeObjectURL(item.preview);
-      return list.filter((item) => item.state === "waiting" || item.state === "uploading");
+      return list.filter((item) => item.state === "waiting" || item.state === "compressing" || item.state === "uploading");
     });
   };
 
@@ -243,6 +264,19 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
         </div>
       </fieldset>
 
+      {reducible && (
+        <label className="reduce">
+          <input type="checkbox" checked={compress} onChange={(event) => { setCompress(event.target.checked); store.set(COMPRESS_KEY, event.target.checked); }} />
+          <span className="switch" aria-hidden="true" />
+          <span>
+            <strong>{tool.json ? "Minify JSON" : "Reduce image size"}</strong>
+            <small>{tool.json
+              ? "Removes spaces and line breaks. The data itself is unchanged."
+              : `Resizes to ${(tool.pasteFirst ? PRESETS.screenshot : PRESETS.photo).maxDimension}px max, saves as WebP, and removes photo metadata such as location. GIFs and animations stay untouched.`}</small>
+          </span>
+        </label>
+      )}
+
       {error && <p className="alert" role="alert">{error}</p>}
 
       {items.length > 0 && (
@@ -261,6 +295,8 @@ export default function Uploader({ tool, settings }: { tool: ShareTool; settings
 function LinkItem({ item }: { item: Item }) {
   const [copied, setCopied] = useState(false);
   const percent = Math.round(item.progress * 100);
+  const saved = item.originalSize && item.originalSize > item.size
+    ? `${formatBytes(item.originalSize)} → ${formatBytes(item.size)} · ${Math.round((1 - item.size / item.originalSize) * 100)}% smaller` : "";
   const low = typeof item.remaining === "number" && item.remaining < 4
     ? ` · ${item.remaining} upload${item.remaining === 1 ? "" : "s"} left for now` : "";
   return (
@@ -271,13 +307,16 @@ function LinkItem({ item }: { item: Item }) {
         {item.preview ? <img src={item.preview} alt="" /> : <Icon name={typeIcon(item.type || "")} size={22} />}
       </span>
       <div className="link-main">
-        <div className="link-title"><strong>{item.name}</strong><span>{formatBytes(item.size)}</span></div>
-        {(item.state === "waiting" || item.state === "uploading") && (
+        <div className="link-title">
+          <strong>{item.name}</strong>
+          {saved ? <span className="saved">{saved}</span> : <span>{formatBytes(item.size)}</span>}
+        </div>
+        {(item.state === "waiting" || item.state === "compressing" || item.state === "uploading") && (
           <div className="link-progress">
             <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={`Uploading ${item.name}`}>
               <span style={{ width: `${percent}%` }} />
             </div>
-            <small>{item.state === "waiting" ? "Waiting…" : `Uploading… ${percent}%`}</small>
+            <small>{item.state === "waiting" ? "Waiting…" : item.state === "compressing" ? "Reducing size…" : `Uploading… ${percent}%`}</small>
           </div>
         )}
         {item.state === "error" && <p className="link-error">{item.error}</p>}

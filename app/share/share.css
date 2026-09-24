@@ -46,6 +46,8 @@
   .skip:focus { top: 12px; }
   .inner { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 16px; }
   .share-page-wrap { flex: 1; }
+  /* Recompute accent-derived tokens where each page sets its own --a1. */
+  .share-page { --soft: color-mix(in srgb, var(--a1) 9%, var(--surface)); }
   @media (prefers-color-scheme: dark) {
     /* Dark backgrounds: use the lighter highlight as the accent so text stays readable. */
     .share-page, .tool-card { --a1: var(--a2); }
@@ -139,6 +141,17 @@
   .segmented input:checked + span { background: var(--ink); color: var(--bg); }
   .segmented input:focus-visible + span { outline: 2px solid var(--a1); outline-offset: 2px; }
 
+  .reduce { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); cursor: pointer; position: relative; }
+  .reduce input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .reduce .switch { flex: none; position: relative; width: 38px; height: 22px; margin-top: 1px; border-radius: 999px; background: var(--line-strong); transition: background .15s; }
+  .reduce .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .25); transition: transform .15s; }
+  .reduce input:checked + .switch { background: var(--a1); }
+  .reduce input:checked + .switch::after { transform: translateX(16px); }
+  .reduce input:focus-visible + .switch { outline: 2px solid var(--a1); outline-offset: 2px; }
+  .reduce strong { display: block; font-size: 15px; }
+  .reduce small { display: block; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .link-title .saved { color: var(--ok); font-weight: 600; }
+
   .alert { padding: 12px 14px; border-radius: 12px; background: var(--bad-bg); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 30%, transparent); font-size: 14px; overflow-wrap: anywhere; }
 
   .links-head { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--line); }
@@ -171,6 +184,32 @@
     .link-url { flex-basis: 100%; }
     .link-thumb { width: 40px; height: 40px; }
   }
+
+  /* ---------- QR reader ---------- */
+  .camera-button { align-self: center; }
+  .camera { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .camera video { width: 100%; max-height: 420px; object-fit: cover; border-radius: 18px; background: #000; }
+  .camera-frame { position: absolute; top: 50%; left: 50%; width: min(56%, 240px); aspect-ratio: 1; transform: translate(-50%, calc(-50% - 30px)); border: 3px solid #fff; border-radius: 22px; box-shadow: 0 0 0 999px rgb(0 0 0 / .28); pointer-events: none; }
+  .camera-hint { font-size: 14px; color: var(--muted); }
+  .qr-result { display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--a1) 35%, var(--line)); background: var(--soft); animation: share-pop .25s ease-out; }
+  .qr-result-head { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .qr-result-head img { flex: none; width: 56px; height: 56px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+  .qr-result-head > div { min-width: 0; }
+  .qr-result-head h3 { font: 700 22px/1.25 var(--display); overflow-wrap: anywhere; }
+  .qr-kind { display: inline-block; margin-bottom: 2px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--a1); }
+  .qr-warning { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #fef3c7; color: #92400e; font-size: 14px; line-height: 1.5; }
+  .qr-warning svg { flex: none; margin-top: 2px; }
+  @media (prefers-color-scheme: dark) { .qr-warning { background: #3a2a0c; color: #fcd34d; } }
+  .qr-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .qr-fields div { padding: 10px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+  .qr-fields dt { font-size: 12px; color: var(--muted); }
+  .qr-fields dd { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; overflow-wrap: anywhere; }
+  .qr-raw { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .qr-raw textarea { width: 100%; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .qr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .qr-actions .text-button { margin-left: auto; }
+  .qr-actions .text-button:hover { color: var(--ink); background: var(--tint); }
+  @media (max-width: 520px) { .qr-fields { grid-template-columns: minmax(0, 1fr); } }
 
   /* ---------- Sections (left-aligned) ---------- */
   .section { padding: 84px 0; }

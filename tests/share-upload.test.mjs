@@ -13,6 +13,8 @@ function load(file) {
 }
 const up = load("lib/upload.ts");
 const { site, tools, sharedFaqs } = load("catalog.ts");
+const cx = load("lib/compress.ts");
+const qr = load("lib/qr.ts");
 
 test("content types come from the browser type, then the extension, then binary", () => {
   assert.equal(up.resolveContentType("a.png", "image/png"), "image/png");
@@ -81,7 +83,7 @@ test("catalog pages are complete and unique for SEO", () => {
     assert.ok(tool.intro.length >= 2 && tool.features.length >= 3 && tool.useCases.length >= 3 && tool.faqs.length >= 3, tool.slug);
     assert.ok(tool.title.length <= 70, `${tool.slug} title ${tool.title.length}`);
     assert.ok(tool.description.length >= 110 && tool.description.length <= 165, `${tool.slug} description ${tool.description.length}`);
-    assert.ok(["file", "text", "base64"].includes(tool.mode));
+    assert.ok(["file", "text", "base64", "qr"].includes(tool.mode));
     slugs.add(tool.slug); titles.add(tool.title); descriptions.add(tool.description);
   }
   assert.equal(slugs.size, tools.length);
@@ -89,4 +91,87 @@ test("catalog pages are complete and unique for SEO", () => {
   assert.equal(descriptions.size, tools.length);
   assert.ok(site.lifetimes.some((entry) => entry.days === site.defaultLifetime));
   assert.ok(sharedFaqs().every(([q, a]) => q && a));
+});
+
+test("image compression only targets still raster images", () => {
+  for (const type of ["image/jpeg", "image/png", "image/webp", "image/heic"]) assert.ok(cx.canCompressImage(type), type);
+  for (const type of ["image/gif", "image/svg+xml", "video/mp4", "application/pdf"]) assert.ok(!cx.canCompressImage(type), type);
+});
+
+test("images are scaled to fit, never upscaled", () => {
+  assert.deepEqual(cx.fitWithin(4000, 3000, 2560), { width: 2560, height: 1920 });
+  assert.deepEqual(cx.fitWithin(1080, 1920, 2560), { width: 1080, height: 1920 });
+  assert.deepEqual(cx.fitWithin(3000, 6000, 2560), { width: 1280, height: 2560 });
+});
+
+test("the smaller file is kept only when it saves enough", () => {
+  assert.ok(cx.isWorthwhile(1000, 900));
+  assert.ok(!cx.isWorthwhile(1000, 960));
+  assert.ok(!cx.isWorthwhile(1000, 1200));
+  assert.equal(cx.renameForType("IMG_1234.HEIC", "image/webp"), "IMG_1234.webp");
+  assert.equal(cx.renameForType("photo", "image/jpeg"), "photo.jpg");
+});
+
+test("animated WebP and APNG are detected so they are not flattened", () => {
+  const webp = (flags) => Uint8Array.from([..."RIFF"].map((c) => c.charCodeAt(0)).concat([0, 0, 0, 0], [..."WEBPVP8X"].map((c) => c.charCodeAt(0)), [10, 0, 0, 0, flags]));
+  assert.ok(cx.isAnimated(webp(0x02), "image/webp"));
+  assert.ok(!cx.isAnimated(webp(0x10), "image/webp"));
+  const chunk = (type, length = 0) => [0, 0, 0, length, ...[...type].map((c) => c.charCodeAt(0)), ...new Array(length + 4).fill(0)];
+  const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  assert.ok(cx.isAnimated(Uint8Array.from([...signature, ...chunk("IHDR", 13), ...chunk("acTL", 8), ...chunk("IDAT", 2)]), "image/png"));
+  assert.ok(!cx.isAnimated(Uint8Array.from([...signature, ...chunk("IHDR", 13), ...chunk("IDAT", 2), ...chunk("acTL", 8)]), "image/png"));
+});
+
+test("JSON minification is lossless and never grows the input", () => {
+  const pretty = JSON.stringify({ a: [1, 2, { b: "x y" }] }, null, 2);
+  assert.equal(cx.minifyJson(pretty), '{"a":[1,2,{"b":"x y"}]}');
+  assert.equal(cx.minifyJson("[1,2]"), "[1,2]");
+  assert.throws(() => cx.minifyJson("{bad"));
+});
+
+test("QR links are recognized, including bare domains, with safety warnings", () => {
+  const link = qr.parseQrContent("https://example.com/menu?table=4");
+  assert.equal(link.kind, "url");
+  assert.equal(link.href, "https://example.com/menu?table=4");
+  assert.deepEqual(link.fields, [["Domain", "example.com"]]);
+  assert.deepEqual(link.warnings, []);
+  assert.equal(qr.parseQrContent("www.example.org/a").href, "https://www.example.org/a");
+  assert.match(qr.parseQrContent("http://example.com").warnings[0], /isn't encrypted/);
+  assert.ok(qr.parseQrContent("https://xn--pypal-4ve.com/").warnings.some((w) => /international/.test(w)));
+  assert.ok(qr.parseQrContent("https://paypal.com@evil.example/").warnings.some((w) => /username/.test(w)));
+  assert.ok(qr.parseQrContent("http://192.168.1.10/login").warnings.some((w) => /IP address/.test(w)));
+});
+
+test("dangerous QR schemes are shown as text and never linked", () => {
+  for (const raw of ["javascript:alert(1)", "data:text/html,<script>x</script>", "intent://scan#Intent;end", "file:///etc/passwd"]) {
+    const content = qr.parseQrContent(raw);
+    assert.equal(content.kind, "text", raw);
+    assert.equal(content.href, undefined, raw);
+    assert.match(content.warnings[0], /scheme/, raw);
+  }
+  assert.equal(qr.safeHref("javascript:alert(1)"), undefined);
+  assert.equal(qr.parseQrContent("Hello, world").kind, "text");
+  assert.deepEqual(qr.parseQrContent("Hello, world").warnings, []);
+});
+
+test("Wi-Fi, email, phone, SMS, contact, and location codes are parsed", () => {
+  const wifi = qr.parseQrContent("WIFI:T:WPA;S:Cafe\\;Guest;P:p\\:ss;H:true;;");
+  assert.equal(wifi.kind, "wifi");
+  assert.deepEqual(wifi.fields, [["Network (SSID)", "Cafe;Guest"], ["Security", "WPA"], ["Password", "p:ss"], ["Hidden network", "Yes"]]);
+  assert.match(qr.parseQrContent("WIFI:S:Open;T:nopass;;").warnings[0], /open network/);
+  const mail = qr.parseQrContent("mailto:hi@example.com?subject=Hello");
+  assert.equal(mail.kind, "email");
+  assert.deepEqual(mail.fields, [["To", "hi@example.com"], ["Subject", "Hello"]]);
+  assert.equal(qr.parseQrContent("MATMSG:TO:a@b.co;SUB:Hi;BODY:Yo;;").fields[0][1], "a@b.co");
+  assert.equal(qr.parseQrContent("tel:+1 (555) 010-9999").href, "tel:+15550109999");
+  const sms = qr.parseQrContent("SMSTO:+15550100:See you at 5");
+  assert.equal(sms.kind, "sms");
+  assert.equal(sms.href, "sms:+15550100?body=See%20you%20at%205");
+  const card = qr.parseQrContent("BEGIN:VCARD\nVERSION:3.0\nFN:Ada Lovelace\nORG:Analytical\nTEL;TYPE=cell:+44 20 0000\nEND:VCARD");
+  assert.equal(card.kind, "contact");
+  assert.deepEqual(card.fields, [["Name", "Ada Lovelace"], ["Organization", "Analytical"], ["Phone", "+44 20 0000"]]);
+  assert.deepEqual(qr.parseQrContent("MECARD:N:Doe,Jane;TEL:123;;").fields, [["Name", "Doe Jane"], ["Phone", "123"]]);
+  const geo = qr.parseQrContent("geo:48.8584,2.2945");
+  assert.equal(geo.kind, "geo");
+  assert.match(geo.href, /^https:\/\/www\.openstreetmap\.org\/\?mlat=48\.8584&mlon=2\.2945/);
 });

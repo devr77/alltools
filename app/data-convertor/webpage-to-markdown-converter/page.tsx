@@ -3,10 +3,10 @@ import WebPagetoMarkdown from "./WebPagetoMarkdown";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Webpage to Markdown Converter - URL to MD | ToolsBase",
+  title: "URL to Markdown Converter - Webpage to MD | ToolsBase",
   description:
-    "Convert any webpage URL into clean Markdown for notes, docs, or LLM context. Free online webpage to Markdown converter.",
-  keywords: ["webpage to markdown", "url to markdown", "web page to md", "html to markdown"],
+    "Convert any webpage URL into clean Markdown for notes, docs, or LLM context. Free online URL to Markdown converter.",
+  keywords: ["url to markdown", "webpage to markdown", "link to markdown", "website to markdown", "web page to md", "html to markdown"],
   publisher: "ToolsBase Network",
   metadataBase: new URL("https://toolsbase.org"),
   alternates: { canonical: "/data-convertor/webpage-to-markdown-converter" },

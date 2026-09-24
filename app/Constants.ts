@@ -371,10 +371,10 @@ export const categories = [
         description: "Convert plain text to Markdown format.",
       },
       {
-        name: "Webpage to Markdown Converter",
+        name: "URL to Markdown Converter",
         slug: "webpage-to-markdown-converter",
         icon: "🌐➡️📝",
-        description: "Convert webpages to Markdown files.",
+        description: "Convert any URL or webpage to clean Markdown.",
       },
       {
         name: "JSON Formatter & Validator",

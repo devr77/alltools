@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Icon from "./Icon";
 import Uploader, { type UploaderSettings } from "./Uploader";
+import QrReader from "./QrReader";
 import { limitLabel, site, type ShareTool } from "./catalog";
 
 const settings: UploaderSettings = {
@@ -30,17 +31,30 @@ export function Eyebrow({ index, children }: { index?: string; children: React.R
   return <p className="eyebrow">{index && <span>{index}</span>}{children}</p>;
 }
 
-export function TrustRow() {
+export function TrustRow({ local }: { local?: boolean }) {
   return (
     <ul className="trust">
-      <li><Icon name="zap" size={16} /> Link in seconds</li>
-      <li><Icon name="clock" size={16} /> Deletes itself</li>
-      <li><Icon name="user" size={16} /> No account</li>
+      <li><Icon name="zap" size={16} /> {local ? "Instant result" : "Link in seconds"}</li>
+      <li><Icon name={local ? "shield" : "clock"} size={16} /> {local ? "Nothing uploaded" : "Deletes itself"}</li>
+      <li><Icon name="user" size={16} /> {local ? "No app needed" : "No account"}</li>
     </ul>
   );
 }
 
 export function UploadCard({ tool, heading }: { tool: ShareTool; heading: string }) {
+  if (tool.mode === "qr") {
+    return (
+      <div className="upload-card">
+        <h2 className="visually-hidden">{heading}</h2>
+        <QrReader />
+        <ul className="facts">
+          <li><Icon name="shield" size={15} /><span><b>Private</b> Decoded on your device, nothing uploaded</span></li>
+          <li><Icon name="sparkle" size={15} /><span><b>Reads</b> Links, text, Wi‑Fi, email, phone, contacts</span></li>
+          <li><Icon name="camera" size={15} /><span><b>Input</b> {tool.formats}</span></li>
+        </ul>
+      </div>
+    );
+  }
   const limit = tool.mode === "file" ? `${limitLabel} per file` : `Up to ${limitLabel}`;
   return (
     <div className="upload-card">
@@ -79,6 +93,13 @@ export const sharedFeatures: [string, string, string][] = [
   ["clock", "Links that clean up after themselves", `Every upload is deleted automatically after ${lifetimes}, so nothing lingers.`],
   ["user", "No account, no email", "Upload and share straight away. There's nothing to sign up for or log in to."],
   ["shield", "HTTPS everywhere", "Uploads and links use encrypted HTTPS connections from end to end."],
+];
+
+/** Shared features for tools that work locally without uploading (QR decoding). */
+export const localFeatures: [string, string, string][] = [
+  ["shield", "Private by design", "Images are processed in your browser. Nothing is uploaded, stored, or logged."],
+  ["user", "No account, no app", "Works in any modern browser on desktop or phone. There's nothing to install."],
+  ["zap", "Instant", "Results appear as soon as the code is read, with no waiting on a server."],
 ];
 
 export function Features({ index, eyebrow, title, cards }: { index: string; eyebrow: string; title: string; cards: [string, string, string][] }) {

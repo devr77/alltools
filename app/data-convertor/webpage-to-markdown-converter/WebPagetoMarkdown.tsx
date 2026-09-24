@@ -64,10 +64,10 @@ function WebPagetoMarkdown() {
   return (
     <div>
       <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: 4 }}>
-        Webpage to Markdown Converter Tool
+        URL to Markdown Converter
       </h1>
       <h2 style={{ fontSize: "1.25rem", fontWeight: 500, marginBottom: 18 }}>
-        Convert a public webpage URL to Markdown
+        Paste any public URL and get clean Markdown
       </h2>
       <input
         type="url"

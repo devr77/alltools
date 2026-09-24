@@ -4,7 +4,7 @@
  * Keep copy specific to the content type; shared facts (lifetime, privacy) are generated from `site`.
  */
 export type ShareTool = {
-  slug: string; name: string; icon: string; hue: string[]; mode: "file" | "text" | "base64";
+  slug: string; name: string; icon: string; hue: string[]; mode: "file" | "text" | "base64" | "qr";
   accept?: { types: string[]; extensions: string[] }; picker?: string; label: string; noun?: string; formats: string;
   pasteFirst?: boolean; textType?: string; extension?: string; json?: boolean; placeholder?: string;
   title: string; description: string; lead: string; intro: string[];
@@ -35,7 +35,8 @@ export const site = {
 };
 
 /*
- * mode: "file" (drop/pick/paste files), "text" (write or paste text), or "base64" (decode then upload).
+ * mode: "file" (drop/pick/paste files), "text" (write or paste text), "base64" (decode then upload),
+ *       or "qr" (decode a QR code locally; nothing is uploaded).
  * accept: { types: [MIME or "family/"], extensions: [...] } for validation; `picker` feeds <input accept>.
  * hue: [accent, soft highlight] for the page; the accent must stay readable as text on the light background.
  */
@@ -55,11 +56,11 @@ export const tools: ShareTool[] = [
     lead: "Turn any picture into a direct link you can paste anywhere. Drop a JPG, PNG, WebP, or GIF, and the link is ready to share or embed a few seconds later.",
     intro: [
       "An image URL is a web address that points straight at the picture file. Chat apps, forums, issue trackers, and HTML all accept image URLs, so a link is often easier than attaching the file again and again.",
-      "This converter uploads your image as it is, without recompressing or resizing it, and serves it with its original image type. The address ends in the file extension, so it works in an <img> tag, a Markdown image, or a browser tab.",
+      "By default, the image is resized to at most 2560 pixels and saved as WebP before it uploads. Photos usually end up a fraction of their original size, and metadata such as GPS location is removed. Switch off Reduce image size to upload the original file exactly as it is. Either way, the link works in an <img> tag, a Markdown image, or a browser tab.",
     ],
     features: [
       ["Direct image link", "The URL opens the image itself, not a download page, so it embeds in HTML, Markdown, and most chat previews."],
-      ["Original quality", "Files are stored byte for byte. Nothing is resized, recompressed, or stripped on upload."],
+      ["Smaller files, faster pages", "Photos are resized and re-encoded in your browser before upload, so links load faster. Turn it off to keep the original."],
       ["Paste from clipboard", "Copied an image? Press Ctrl+V (⌘V on Mac) anywhere on this page to upload it."],
     ],
     useCases: [
@@ -72,7 +73,7 @@ export const tools: ShareTool[] = [
       ["How do I convert an image to a URL?", "Drop the image in the upload box, choose how long the link should last, and wait a few seconds. Copy the link that appears, or open it to check the result."],
       ["Which image formats can I upload?", "Any common image format, including JPG, PNG, WebP, GIF, AVIF, HEIC, BMP, and ICO. SVG files are served as downloads rather than displayed, because SVG can contain scripts."],
       ["Can I embed the image link in HTML or Markdown?", "Yes. Use <img src=\"your-link\"> in HTML or ![alt text](your-link) in Markdown. Remember that the image disappears when the link expires."],
-      ["Is my image compressed?", "No. The file is stored exactly as you upload it. To make it smaller first, use an image compressor, then upload the result."],
+      ["Is my image compressed?", "Yes, unless you switch it off. Reduce image size scales the image to at most 2560 pixels and saves it as WebP, which also removes metadata such as location. If that wouldn't save at least 5%, the original is uploaded instead. GIFs and animated images are never re-encoded."],
     ],
   },
   {
@@ -107,7 +108,7 @@ export const tools: ShareTool[] = [
       ["How do I get a link for a video?", "Drop your video in the upload box, pick a link lifetime, and wait for the upload to finish. The link appears with Copy and Open buttons."],
       ["Will the video play in the browser?", "MP4 with H.264 video and WebM play in all modern browsers. MOV, MKV, and AVI depend on the codec and browser, and may download instead of playing."],
       ["Can I embed the video on a website?", "Yes. Use <video src=\"your-link\" controls></video>. The embed stops working when the link expires, so this suits previews and testing rather than a permanent site."],
-      ["Why is my video upload slow?", "Upload speed depends on your connection's upload bandwidth, which is usually much lower than download speed. A 100 MB video takes about 80 seconds on a 10 Mbps upload."],
+      ["Why is my video upload slow?", "Upload speed depends on your connection's upload bandwidth, which is usually much lower than download speed. A 100 MB video takes about 80 seconds on a 10 Mbps upload. Videos aren't compressed here; to send a smaller file, re-encode it first with a tool such as HandBrake."],
     ],
   },
   {
@@ -296,11 +297,11 @@ export const tools: ShareTool[] = [
     lead: "Take a screenshot, press Ctrl+V (⌘V on Mac) on this page, and the link is ready before you switch windows. You don't need to save a file first.",
     intro: [
       "The fastest route from screen to shareable link skips the file step entirely. Capture with your usual shortcut, paste here, and the image goes straight from your clipboard to a link.",
-      "Use Win+Shift+S on Windows, ⌘⇧4 while holding Control on a Mac, or PrtSc on most Linux desktops. Pasted screenshots are uploaded as PNG, which keeps text sharp.",
+      "Use Win+Shift+S on Windows, ⌘⇧4 while holding Control on a Mac, or PrtSc on most Linux desktops. Screenshots are saved as high-quality WebP at up to 3840 pixels, which keeps text readable at a fraction of the PNG size. Switch off Reduce image size to upload the exact PNG.",
     ],
     features: [
       ["Clipboard paste", "Paste anywhere on the page. You don't need to click into the upload box first."],
-      ["Crisp text", "Clipboard screenshots are sent as lossless PNG, so small UI text stays readable."],
+      ["Readable and small", "Screenshots are compressed gently, so small UI text stays legible while the file shrinks."],
       ["Several at once", "Paste or drop several screenshots; each gets its own link."],
     ],
     useCases: [
@@ -370,7 +371,7 @@ export const tools: ShareTool[] = [
     features: [
       ["Validated", "Invalid JSON is flagged with the parser's message before anything is uploaded."],
       ["Correct content type", "Served as application/json, so fetch() and API clients parse it directly."],
-      ["Format or keep as is", "Pretty-print with one click, or upload your text exactly as pasted."],
+      ["Minify or format", "Minify JSON removes whitespace for a smaller response. Turn it off to upload exactly what you pasted, or use Format to pretty-print it."],
     ],
     useCases: [
       ["Mock APIs", "Point a prototype at a JSON URL while the real API is in progress."],
@@ -416,6 +417,42 @@ export const tools: ShareTool[] = [
     ],
   },
   {
+    slug: "qr-code-to-url",
+    name: "QR Code to URL",
+    icon: "qr",
+    hue: ["#a21caf", "#e879f9"],
+    mode: "qr",
+    label: "a QR code",
+    noun: "a QR code",
+    formats: "PNG, JPG, WebP, screenshots, camera",
+    title: "QR Code to URL – Scan a QR Code Image and Get the Link or Text",
+    description: "Decode a QR code from an image, screenshot, or your camera and see the link or text inside before you open it. Wi‑Fi, email, and contacts too. Free.",
+    lead: "Drop a picture of a QR code, paste a screenshot, or point your camera at it. You'll see exactly which link or text it holds, before anything opens.",
+    intro: [
+      "A QR code is just text drawn as a pattern, usually a web address. Phones open that address as soon as they read it, which makes QR codes an easy way to hide where a link really goes. Decoding the code first shows you the full address, so you can check the domain before you visit it.",
+      "The code is read entirely in your browser; the image never leaves your device. Besides links, it understands Wi‑Fi login codes (network name and password), email and SMS codes, phone numbers, contact cards (vCard and MeCard), and map locations. Anything else is shown as plain text.",
+    ],
+    features: [
+      ["See before you open", "Links are shown with their domain first, and nothing opens until you choose to."],
+      ["Safety warnings", "Insecure http links, lookalike domains, bare IP addresses, and unusual schemes are flagged."],
+      ["Photo, screenshot, or camera", "Upload an image, paste a screenshot with Ctrl+V, or scan live with your camera."],
+    ],
+    useCases: [
+      ["Check a suspicious code", "Inspect a QR code from a parking meter, flyer, or email before trusting it."],
+      ["QR code in a screenshot", "Get the link from a code that's already on your screen, where a phone can't scan it."],
+      ["Wi‑Fi passwords", "Read the network name and password from a Wi‑Fi QR code to type into a laptop."],
+      ["Save the text", "Copy a code's contents into notes, a document, or a support ticket."],
+    ],
+    faqs: [
+      ["How do I get the URL from a QR code image?", "Drop the image in the box, paste a screenshot with Ctrl+V, or choose a file. The link appears with Copy and Open buttons, plus its domain so you can check it first."],
+      ["Is my image uploaded?", "No. The QR code is decoded by JavaScript in your browser, and the image stays on your device. Nothing is stored or sent to a server."],
+      ["Can I scan a QR code with my laptop camera?", "Yes. Select Scan with camera and allow camera access when the browser asks. Hold the code steady and fill about half the frame. The camera stops as soon as a code is read."],
+      ["Why can't it find the QR code?", "The code may be blurry, cropped, too small, or photographed at a steep angle. Retake the photo straight on, in good light, with the whole code visible. Codes with a logo in the middle usually still work."],
+      ["Is it safe to open the link?", "Check the domain shown above the link. Be careful with shortened links, misspelled brand names, and pages asking you to log in or pay. Only web, email, phone, and SMS links can be opened from this page; anything else is shown as text."],
+      ["Can I read Wi‑Fi QR codes?", "Yes. You'll see the network name, security type, and password, with a button to copy the password."],
+    ],
+  },
+  {
     slug: "file-to-url",
     name: "File to URL",
     icon: "file",
@@ -445,6 +482,7 @@ export const tools: ShareTool[] = [
     faqs: [
       ["How do I create a download link for a file?", "Drop the file in the upload box or click to choose it, pick how long the link should last, and copy the link when the upload completes."],
       ["Which file types are allowed?", "Any type. Active web formats (HTML, SVG, XML, JavaScript) are served as downloads rather than opened, to keep links safe for the people who click them."],
+      ["Are my files compressed?", "Images are reduced before upload (resized to at most 2560 pixels and saved as WebP) unless you switch off Reduce image size. Videos, audio, PDFs, documents, and archives are uploaded unchanged."],
       ["Can I upload several files at once?", `Yes, up to ${site.maxFiles} at a time. Each file gets its own link. To share them as one link, put them in a ZIP first.`],
     ],
   },
