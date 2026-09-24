@@ -12,6 +12,12 @@ export const categories = [
         description: "Generate QR codes for URLs, text, and more.",
       },
       {
+        name: "QR Code Reader",
+        slug: "qr-code-reader",
+        icon: "📷",
+        description: "Extract links, text, and Wi‑Fi details from QR code images.",
+      },
+      {
         name: "Random Password Generator",
         slug: "random-password-generator",
         icon: "🔑",

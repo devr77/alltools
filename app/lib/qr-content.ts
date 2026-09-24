@@ -1,5 +1,5 @@
 /**
- * Interprets decoded QR text (pure; covered by tests/share-upload.test.mjs).
+ * Interprets decoded QR text (pure; covered by tests/qr.test.mjs). Shared by the QR Code Reader and /share/qr-code-to-url.
  * Only http(s), mailto, tel, and sms become clickable. Anything else (javascript:, data:, intent:, file:, …) is shown
  * as text, so a malicious code cannot run script or open an app from this page.
  */
