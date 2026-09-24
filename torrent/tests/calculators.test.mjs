@@ -1,14 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
-import ts from "typescript";
-const compile = async (path) => {
-  const source=readFileSync(new URL(path,import.meta.url),"utf8");
-  const js=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
-  return import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
-};
-const calc=await compile("../app/lib/torrent-calculators.ts");
-const {MemoryChunkStore,DEMO_TEXT}=await compile("../app/lib/browser-torrent.ts");
+import * as calc from "../assets/js/lib/calculators.js";
+import { MemoryChunkStore, DEMO_TEXT } from "../assets/js/lib/browser-torrent.js";
 
 test("download estimates convert bits to bytes and account for completion and efficiency",()=>{
   assert.equal(calc.downloadEstimate(1,"GB",100,"Mbps",100).seconds,80);
@@ -69,7 +63,7 @@ test("chunk store reports missing pieces and closed writes",async()=>{
   await assert.rejects(new Promise((resolve,reject)=>store.put(0,new Uint8Array(4),(error)=>error?reject(error):resolve())));
 });
 test("download sample content matches the actual public web seed bytes",()=>{
-  assert.equal(readFileSync(new URL("../public/torrent-demo/readme.txt",import.meta.url),"utf8"),DEMO_TEXT);
+  assert.equal(readFileSync(new URL("../assets/demo/readme.txt",import.meta.url),"utf8"),DEMO_TEXT);
 });
 
 test("overflowing calculation results are rejected rather than displaying Infinity",()=>{

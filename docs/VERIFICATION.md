@@ -2,6 +2,8 @@
 
 Updated September 24, 2026. This records checks completed during the original implementation, before the later removal of five tools; it is not a claim that every existing tool or external service was exhaustively tested.
 
+> **Torrent tools moved (September 24, 2026).** The torrent and hashing tools were moved out of this Next.js app into the standalone static site in `torrent/`. Torrent references below describe the earlier Next.js implementation. For current torrent checks, see [torrent/README.md](../torrent/README.md#verification).
+
 ## Automated checks
 
 | Check | Result |
@@ -34,7 +36,7 @@ The final mobile navigation Link/ARIA/focus changes passed lint, typecheck, and 
 
 ## Remaining environment coverage
 
-The controlled sample verifies actual HTTP web-seed retrieval through WebTorrent, piece verification, and saving. It does **not** verify arbitrary internet swarms. External WebRTC transfers, all trackers, Safari/Firefox behavior, large-memory behavior, cloud-provider deployment, the Cloudflare adapter, and production CSP remain environment-specific checks. Browser limitations are described in the UI and [torrent guide](TORRENT_TOOLS.md).
+The controlled sample verifies actual HTTP web-seed retrieval through WebTorrent, piece verification, and saving. It does **not** verify arbitrary internet swarms. External WebRTC transfers, all trackers, Safari/Firefox behavior, large-memory behavior, cloud-provider deployment, the Cloudflare adapter, and production CSP remain environment-specific checks. Browser limitations are described in the UI and the [torrent guide](../torrent/README.md).
 
 The shared visual design applies across existing category/tool layouts. Existing AI provider, URL-fetching, PDF, and other external integrations were not all exercised. The DOCX conversion API compatibility fix passed the production build; no document-format fidelity audit was performed.
 
@@ -44,9 +46,4 @@ The shared visual design applies across existing category/tool layouts. Existing
 2. Open homepage at desktop and mobile widths. Check visible first tools, search aliases, category filters, empty state, keyboard search shortcut, and footer links.
 3. Open/close mobile navigation with pointer and keyboard. Verify Escape, focus trapping, restored trigger focus, and category expansion.
 4. Open each category and a representative existing tool. Confirm title, panel, controls, related links, and no horizontal overflow.
-5. Create a small multi-file torrent, save it, re-upload it to parser/BTIH tools, and compare expected hashes/files. Try malformed inputs and reset while checking that stale results disappear.
-6. Run every calculator, change its units, exercise invalid inputs, and copy/download the result where offered.
-7. Start the browser downloader's sample, wait for completion, save and compare bytes, then stop. Verify leaving the page closes the connection and temporary storage.
-8. In a controlled WebRTC test swarm, verify metadata retrieval, per-file selection including shared boundary pieces, completion/save, and stop. Do not use unrelated private user files for test uploads/seeding.
-9. Check health checker with a known compatible seeder and with no peers. Ensure the latter stays inconclusive rather than reporting a dead torrent.
-10. Verify production HTTPS, vendor module MIME/path, sample bytes, sitemap entries, canonical URLs, and unknown-tool 404 before publishing.
+Torrent tools have their own release checklist in [torrent/README.md](../torrent/README.md#verification).

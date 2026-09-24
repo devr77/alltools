@@ -12,7 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "public/vendor/**",
+    // Standalone static torrent site (plain JS + vendored WebTorrent bundle).
+    "torrent/**",
   ]),
 ]);
 

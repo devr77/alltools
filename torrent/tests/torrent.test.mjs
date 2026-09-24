@@ -1,13 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
 import test from "node:test";
-import ts from "typescript";
-
-// Compile the dependency-free browser module in memory; no bundler or browser is needed.
-const source = readFileSync(new URL("../app/lib/torrent.ts", import.meta.url), "utf8");
-const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
-const { formatBytes, bencode, createTorrent, extractMagnet, inspectTorrent, makeMagnet, normalizeInfoHash, parseTrackers, toBase32, MAX_TORRENT_BYTES } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
+import { formatBytes, bencode, createTorrent, extractMagnet, inspectTorrent, makeMagnet, normalizeInfoHash, parseTrackers, toBase32, MAX_TORRENT_BYTES } from "../assets/js/lib/torrent.js";
 const sha1 = (data) => createHash("sha1").update(data).digest();
 const sampleHash = "0123456789abcdef0123456789abcdef01234567";
 const fixtureInfo = (overrides = {}) => ({ length: 5, name: "hello.txt", "piece length": 16384, pieces: new Uint8Array(sha1("hello")), ...overrides });

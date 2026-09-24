@@ -1,9 +1,9 @@
-name: Deploy test page to GitHub Pages
+name: Deploy torrent tools to GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths: ['torrent/**']
+    paths: ['torrent/**', '.github/workflows/deploy-test.yml']
   workflow_dispatch:
 
 permissions:
@@ -23,12 +23,25 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test and generate pages
+        working-directory: torrent
+        run: |
+          npm test
+          npm run build
       - uses: actions/configure-pages@v5
       - name: Build site (serve torrent/ at /torrent/)
         run: |
-          mkdir -p _site
-          cp -r torrent _site/torrent
+          mkdir -p _site/torrent
+          cp -r torrent/index.html torrent/sitemap.xml torrent/assets _site/torrent/
+          # Tool pages are the folders containing an index.html (skips tests/ and scripts/).
+          for dir in torrent/*/; do
+            if [ -f "${dir}index.html" ]; then cp -r "${dir%/}" _site/torrent/; fi
+          done
           echo '<!DOCTYPE html><meta http-equiv="refresh" content="0; url=torrent/">' > _site/index.html
+          ls -R _site | head -40
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

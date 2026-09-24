@@ -1,0 +1,167 @@
+/* Torrent & Hashing Tools — matches the ToolsBase light theme (see README.md "Design"). */
+
+/* ---------- Reset (equivalent of the Tailwind preflight the main site uses) ---------- */
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+html { -webkit-text-size-adjust: 100%; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.5; }
+body { min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: #18181b; font-size: 16px; line-height: 1.6; }
+h1, h2, h3 { font-size: inherit; font-weight: inherit; }
+a { color: inherit; text-decoration: inherit; }
+ul, ol { list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; background: transparent; }
+button { cursor: pointer; }
+table { border-collapse: collapse; }
+img, svg { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+
+/* ---------- Site header and footer ---------- */
+.site-header { border-bottom: 1px solid #e5e7eb; }
+.site-header .inner { max-width: 1184px; height: 64px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { font-size: 18px; font-weight: 600; letter-spacing: -.4px; }
+.site-header nav { display: flex; gap: 20px; font-size: 14px; color: #71717a; }
+.site-header nav a:hover, .site-footer a:hover, .breadcrumb a:hover { color: #2563eb; }
+.site-main { width: 100%; max-width: 1184px; margin: 0 auto; padding: 32px 16px 40px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.site-footer { margin-top: auto; border-top: 1px solid #e4e4e7; background: #fafafa; }
+.site-footer .inner { max-width: 1184px; padding: 28px 16px 20px; margin: 0 auto; }
+.site-footer .top { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.site-footer .brand { font-size: 16px; }
+.site-footer .top p { margin-top: 6px; font-size: 14px; line-height: 1.7; color: #71717a; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 20px; color: #52525b; font-size: 14px; }
+.site-footer .bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #e4e4e7; color: #71717a; font-size: 12px; line-height: 1.8; }
+@media (max-width: 640px) {
+  .site-header nav { gap: 16px; }
+  .site-footer .top, .site-footer .bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .site-footer .bottom { gap: 6px; }
+}
+@media (max-width: 600px) { .site-main { padding-top: 24px; } }
+
+/* ---------- Page header ---------- */
+.breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: #71717a; font-size: 14px; margin-bottom: 24px; }
+.page-header { margin-bottom: 28px; }
+.eyebrow { font-size: 12px; color: #71717a; letter-spacing: 1.5px; font-weight: 600; }
+.page-header h1 { margin: 10px 0; font-size: clamp(25px, 4vw, 34px); font-weight: 600; letter-spacing: -1px; line-height: 1.3; }
+.page-header h1 > span { font-size: 28px; margin-right: 5px; }
+.page-header p { max-width: 700px; color: #71717a; font-size: 16px; line-height: 1.8; }
+
+/* ---------- Directory ---------- */
+.catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.catalog-card { display: flex; flex-direction: column; padding: 22px; border: 1px solid #e4e4e7; border-radius: 10px; background: #fff; }
+.catalog-card:hover { border-color: #a1a1aa; box-shadow: 0 4px 12px #18181b06; }
+.catalog-card > span { font-size: 24px; }
+.catalog-card h2 { margin-top: 14px; font-size: 17px; font-weight: 600; }
+.catalog-card p { margin-top: 8px; font-size: 15px; color: #71717a; line-height: 1.8; flex: 1; }
+.catalog-card strong { display: block; margin-top: 20px; font-size: 14px; font-weight: 500; color: #2563eb; }
+.note { color: #71717a; font-size: 14px; line-height: 1.8; margin-top: 26px; max-width: 800px; }
+
+/* ---------- Tool workspace ---------- */
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
+.panel { border: 1px solid #e4e4e7; padding: 26px; border-radius: 12px; min-width: 0; background: #fff; }
+.stop-actions:not(:empty) { margin-top: 18px; }
+.panel progress { width: 100%; height: 8px; appearance: none; border-radius: 999px; overflow: hidden; background: #e4e4e7; }
+.panel progress::-webkit-progress-bar { background: #e4e4e7; }
+.panel progress::-webkit-progress-value { background: #2563eb; }
+.panel progress::-moz-progress-bar { background: #2563eb; }
+.panel button:disabled { opacity: .5; cursor: not-allowed; }
+.fields { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.fields:disabled { opacity: .65; }
+.fields:disabled button { cursor: wait; }
+.legend { font-size: 16px; font-weight: 600; padding-bottom: 22px; }
+.field { display: flex; flex-direction: column; gap: 9px; font-size: 15px; font-weight: 500; min-width: 0; }
+.field :is(input:not([type="file"]), textarea, select), .result-field :is(input, textarea) { width: 100%; min-width: 0; border: 1px solid #d4d4d8; border-radius: 7px; padding: 11px 12px; background: #fff; color: #18181b; font-size: 15px; font-weight: 400; }
+.field textarea, .result-field textarea { resize: vertical; }
+.field small, .hint { color: #71717a; font-size: 13px; font-weight: 400; line-height: 1.8; }
+.upload { padding: 20px; background: #fafafa; border: 1px dashed #d4d4d8; border-radius: 8px; }
+.upload input { font-size: 14px; max-width: 100%; padding: 5px 0; }
+.upload input::file-selector-button { border: 1px solid #d4d4d8; padding: 8px 12px; border-radius: 6px; margin-right: 10px; background: #fff; cursor: pointer; }
+.selection { color: #52525b; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.options-row { display: flex; gap: 24px; align-items: center; }
+.options-row > .field { flex: 1; }
+.checkbox { display: flex; gap: 9px; align-items: center; font-size: 15px; }
+.checkbox input { accent-color: #2563eb; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.primary, .secondary, .result-field button { padding: 10px 15px; border-radius: 7px; border: 1px solid #d4d4d8; font-size: 14px; font-weight: 500; background: #fff; }
+.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.primary:hover { background: #1d4ed8; }
+.secondary:hover, .result-field button:hover { background: #f4f4f5; }
+.source-toggle { display: flex; gap: 4px; padding: 4px; border-radius: 8px; background: #f4f4f5; width: fit-content; }
+.source-toggle button { padding: 8px 14px; font-size: 14px; border-radius: 5px; }
+.source-toggle button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 3px #18181b15; }
+
+/* ---------- Status and results ---------- */
+.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 7px; padding: 12px; font-size: 15px; line-height: 1.7; margin-top: 18px; overflow-wrap: anywhere; }
+.status { color: #52525b; font-size: 14px; line-height: 1.7; }
+.status:not(:empty) { margin-top: 16px; }
+.progress { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 20px; font-size: 14px; }
+.progress progress { flex: 1; min-width: 100px; }
+.results { display: flex; flex-direction: column; gap: 22px; border-top: 1px solid #e4e4e7; padding-top: 24px; margin-top: 24px; }
+.results h2 { font-size: 16px; font-weight: 600; }
+.results > button { align-self: flex-start; }
+.result-field { display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 500; }
+.result-field label { font-size: 14px; font-weight: 500; }
+.result-field > div { display: flex; gap: 8px; }
+.result-field :is(input, textarea) { font-family: ui-monospace, monospace; font-size: 14px; background: #fafafa; }
+.result-field button { flex-shrink: 0; align-self: flex-start; }
+.metadata { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px; background: #fafafa; border-radius: 8px; font-size: 14px; }
+.metadata dt { color: #71717a; margin-bottom: 5px; }
+.metadata dd { overflow-wrap: anywhere; }
+.details { border: 1px solid #e4e4e7; border-radius: 8px; padding: 14px; font-size: 14px; }
+.details summary { cursor: pointer; font-weight: 500; }
+.details :is(ul, p) { margin-top: 12px; color: #52525b; line-height: 1.8; overflow-wrap: anywhere; }
+.table-wrap { max-height: 340px; overflow: auto; margin-top: 12px; }
+.table-wrap table { width: 100%; text-align: left; font-size: 14px; }
+.table-wrap th { color: #71717a; font-weight: 500; background: #fafafa; }
+.table-wrap :is(th, td) { padding: 10px 8px; border-bottom: 1px solid #e4e4e7; }
+.table-wrap td:first-child { overflow-wrap: anywhere; }
+.table-wrap :is(th, td):last-child { white-space: nowrap; text-align: right; }
+
+/* ---------- Calculators ---------- */
+.calculator-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-bottom: 24px; }
+.metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.metric-grid > div { padding: 18px; border: 1px solid #e4e4e7; border-radius: 8px; background: #fafafa; }
+.metric-grid dt { font-size: 13px; color: #71717a; }
+.metric-grid dd { font-size: 22px; line-height: 1.4; font-weight: 600; margin-top: 6px; overflow-wrap: anywhere; }
+
+/* ---------- Connected tools ---------- */
+.connection-notice { padding: 15px 17px; background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; border-radius: 8px; margin-bottom: 24px; font-size: 14px; line-height: 1.8; }
+.results .connection-notice { margin-bottom: 0; }
+.file-list:not(:empty) { display: flex; flex-direction: column; gap: 14px; }
+.hash-text { font-family: ui-monospace, monospace; font-size: 13px; overflow-wrap: anywhere; }
+.download-files { display: flex; flex-direction: column; gap: 10px; }
+.download-files > div { display: flex; gap: 14px; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #e4e4e7; border-radius: 8px; }
+.download-files label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
+.download-files input { margin-top: 5px; accent-color: #2563eb; }
+.download-files small { display: block; color: #71717a; margin-top: 5px; font-size: 12px; }
+.download-files button { flex-shrink: 0; }
+
+/* ---------- Side guide ---------- */
+.guide { padding: 22px; background: #fafafa; border: 1px solid #e4e4e7; border-radius: 10px; }
+.guide h2, .guide h3 { font-size: 15px; font-weight: 600; }
+.guide h3 { margin-top: 24px; }
+.guide p { margin-top: 10px; color: #71717a; font-size: 14px; line-height: 1.9; }
+.local-badge { display: inline-block; margin-top: 24px; font-size: 13px; color: #2563eb; background: #eff6ff; border-radius: 5px; padding: 6px 8px; }
+.guide nav { display: flex; flex-direction: column; margin-top: 12px; gap: 12px; }
+.guide nav a { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: #52525b; }
+.guide nav a:hover { color: #2563eb; }
+
+/* ---------- Shared disclaimer ---------- */
+.terms-notice { margin-top: 32px; padding: 20px 24px; border: 1px solid #e4e4e7; border-radius: 10px; background: #fafafa; }
+.terms-notice h2 { font-size: 16px; font-weight: 600; line-height: 1.5; }
+.terms-notice p { margin-top: 8px; color: #52525b; font-size: 14px; line-height: 1.8; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 850px) {
+  .workspace { grid-template-columns: 1fr; }
+  .catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) { .calculator-fields, .metric-grid { grid-template-columns: 1fr; } }
+@media (max-width: 500px) {
+  .panel { padding: 18px; }
+  .catalog { grid-template-columns: 1fr; }
+  .result-field > div { flex-direction: column; }
+  .options-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .metadata { grid-template-columns: 1fr; }
+  .page-header h1 > span { font-size: 22px; }
+  .terms-notice { padding: 18px; }
+}
+@media (max-width: 450px) { .download-files > div { flex-direction: column; align-items: stretch; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

@@ -1,14 +1,70 @@
-# Torrent and hashing tools
+# Torrent & Hashing Tools
 
-Updated September 24, 2026. There are 15 torrent routes: the original five tools are implemented, with 10 additional utilities. The existing magnet generator is reused rather than duplicated.
+A standalone static site with 15 browser-based torrent and hashing tools, split out of the ToolsBase Next.js app on September 24, 2026. It is plain HTML, CSS, and JavaScript modules with no framework and no runtime dependencies. Old `toolsbase.org/torrent/...` URLs redirect here (see `next.config.ts` in the repo root).
+
+Live site: <https://devr77.github.io/alltools/torrent/>
+
+## Folder layout
+
+```text
+torrent/
+├── index.html, <slug>/index.html   Generated pages (directory + one per tool). Do not edit by hand.
+├── sitemap.xml                     Generated.
+├── assets/
+│   ├── css/torrent.css             All styles (ToolsBase light theme).
+│   ├── js/catalog.js               Tool list: slug, kind, name, icon, description, help. Single source of truth.
+│   ├── js/main.js                  Page entry; mounts the tool named by <div id="tool-root" data-tool="…">.
+│   ├── js/dom.js                   h()/mount() DOM helpers, save/copy, shared side guide.
+│   ├── js/tools/metadata-tool.js   Magnet generator, BTIH, parser, creator, info-hash extractor, torrent to magnet.
+│   ├── js/tools/calculator-tool.js The six calculators and the naming generator.
+│   ├── js/tools/browser-tool.js    Downloader, torrent to direct download, health checker (WebTorrent).
+│   ├── js/lib/torrent.js           Binary-safe bencode, parsing, creation, hashing, magnets.
+│   ├── js/lib/calculators.js       Pure calculator functions.
+│   ├── js/lib/browser-torrent.js   Lazy WebTorrent loader, in-memory chunk store, sample web seed URL.
+│   ├── vendor/                     Vendored webtorrent-3.0.21.min.js and its license.
+│   └── demo/readme.txt             Exact bytes of the downloader's sample file (web seed).
+├── scripts/build-pages.mjs         Generates the HTML pages and sitemap from the catalog.
+└── tests/                          node:test unit tests for the lib modules.
+```
+
+All links and asset paths are relative, so the site works from any base path (`/alltools/torrent/` on GitHub Pages, `/` locally).
+
+## Local development
+
+Node.js 22+ is needed only for the page generator and tests; the site itself needs no build.
+
+```sh
+cd torrent
+npm run build   # regenerate index.html, <slug>/index.html, sitemap.xml
+npm test        # unit tests
+npm run serve   # http://localhost:8000 (python3 http.server)
+```
+
+Serve over HTTP rather than opening files directly: ES modules and the WebTorrent import do not load from `file://`. Hashing and the downloader need a secure context (HTTPS or localhost).
+
+## Adding or changing a tool
+
+1. Add or edit the entry in `assets/js/catalog.js`. `kind` is `metadata`, `calculator`, or `browser` and selects the UI module.
+2. Implement the behavior in the matching `assets/js/tools/*.js` module (calculators: add a field set and a `compute` case). Keep math and parsing in `assets/js/lib/` and cover it in `tests/`.
+3. Run `npm run build` and commit the regenerated pages. The header, footer, breadcrumb, and disclaimer come from `scripts/build-pages.mjs`, so change them there, never in the generated HTML.
+
+If the public URL changes (for example to a custom domain), update `site.url` in `catalog.js` (canonical links and sitemap) and `TORRENT_SITE` in the root `next.config.ts` (redirects).
+
+## Deployment
+
+`.github/workflows/deploy-test.yml` runs on pushes to `main` that touch `torrent/`, or on demand from the Actions tab. It runs the tests, regenerates the pages, copies only the site files (pages, `assets/`, `sitemap.xml`) to `_site/torrent/`, adds a root redirect to `torrent/`, and deploys to GitHub Pages. Pages must be set to **Source: GitHub Actions** in the repository settings.
+
+## Design
+
+The site uses the ToolsBase design system described in [`docs/DESIGN.md`](../docs/DESIGN.md): white surfaces, `#18181b` headings, `#71717a` muted text, `#e4e4e7` borders, `#2563eb` blue actions, 1184px max width with 16px gutters, 10–12px card radii, and 7–8px control radii. The header and footer copy the main site's layout and link back to toolsbase.org. `torrent.css` includes a small reset in place of the Tailwind preflight the main site uses. Tool pages keep the two-column workspace (panel + 280px guide), which stacks below 850px.
 
 ## Shared use disclaimer
 
-Every torrent page inherits a visible “Terms of use & educational disclaimer” from `app/torrent/layout.tsx`. It explains lawful, educational, and open-source data management purposes, permitted content, user responsibility for laws/licenses, and the limits of results. Keep this shared notice in the layout so future tools inherit the same wording. It supplements the specific connection and browser-limit notices within each connected tool.
+Every page shows a visible “Terms of use & educational disclaimer” after the content, rendered once by `scripts/build-pages.mjs`. It explains lawful, educational, and open-source data management purposes, permitted content, user responsibility for laws/licenses, and the limits of results. Keep the wording in the generator so every page stays identical. It supplements the specific connection and browser-limit notices within each connected tool.
 
 ## Tool reference
 
-All paths below start with `/torrent/`.
+Each tool lives at `<site>/<slug>/`.
 
 | Route | How to use it | Result and limits |
 | --- | --- | --- |
@@ -30,7 +86,7 @@ All paths below start with `/torrent/`.
 
 ## Browser downloader walkthrough
 
-1. Open `/torrent/browser-torrent-downloader` on HTTPS or localhost.
+1. Open `browser-torrent-downloader/` on HTTPS or localhost.
 2. To verify the engine without a public swarm, click **Try a small sample**. The tool creates metadata for a known 250-byte text file, downloads the file from this site's HTTP web seed, and verifies its torrent piece hash. Save the completed `readme.txt`.
 3. For your own public torrent, select magnet or `.torrent` input. Review the visible additional tracker field; its default is `wss://tracker.openwebtorrent.com`. Remove or replace it if desired. It is contacted only after starting.
 4. An optional web seed must host the original matching content and allow CORS and byte-range requests. It is not an arbitrary video/document URL converter.
@@ -52,7 +108,7 @@ Browsers cannot connect directly to ordinary TCP/UDP-only BitTorrent peers. A sw
 
 ## Metadata implementation and limits
 
-`app/lib/torrent.ts` implements binary-safe bencode and v1 torrent operations without a server dependency. SHA-1 uses Web Crypto. The BTIH is computed over the original info dictionary byte span, not the whole `.torrent` file and not a reconstructed dictionary. Binary piece hashes must never pass through a text decoder. Outer metadata changes therefore do not alter the info hash.
+`assets/js/lib/torrent.js` implements binary-safe bencode and v1 torrent operations without a server dependency. SHA-1 uses Web Crypto. The BTIH is computed over the original info dictionary byte span, not the whole `.torrent` file and not a reconstructed dictionary. Binary piece hashes must never pass through a text decoder. Outer metadata changes therefore do not alter the info hash.
 
 The parser validates canonical bencoding, dictionary ordering/duplicates, integer syntax, truncation, trailing bytes, sizes, piece lengths/counts, duplicate paths, and traversal paths. It limits metadata to 10 MiB, nesting to 64 levels, and parser work to 200,000 nodes. It supports single- and multi-file v1 metadata and the v1 portion of hybrid torrents. V2-only torrents/magnets are rejected with an explanation.
 
@@ -91,15 +147,15 @@ The browser module is loaded only when a connected tool starts:
 
 ```text
 Package: webtorrent@3.0.21 (official npm package)
-Asset: public/vendor/webtorrent-3.0.21.min.js
-License: public/vendor/WEBTORRENT-LICENSE.txt
+Asset: torrent/assets/vendor/webtorrent-3.0.21.min.js
+License: torrent/assets/vendor/WEBTORRENT-LICENSE.txt
 Asset SHA-256: db4dca98cd135c732eeffdede3cf5f8febd0585a0eba4dc4d1effa1b901f4c3d
 npm tarball SHA-1: 3fef10c0c80b73c8a7fca3dde3001a84ef23d8af
 ```
 
-The official distribution ESM bundle was copied from the npm tarball. It is served locally, not imported from a third-party CDN at runtime. No WebTorrent native package installation is required. ESLint excludes the vendored bundle; do not hand-edit it.
+The official distribution ESM bundle was copied from the npm tarball. It is served locally, not imported from a third-party CDN at runtime. No WebTorrent native package installation is required. The root ESLint config ignores `torrent/`; do not hand-edit the bundle. `assets/js/lib/browser-torrent.js` resolves it relative to its own URL.
 
-For upgrades, inspect the official release/API changes, retrieve the pinned npm package, preserve license notices, replace the versioned bundle, update the loader and this provenance record, then test the sample, file selection across shared pieces, stop/navigation cleanup, private/large-torrent rejection, tracker failures, and a controlled WebRTC swarm. Verify the MIME type and production import URL. Review memory limits before increasing the maximum size.
+For upgrades, inspect the official release/API changes, retrieve the pinned npm package, preserve license notices, replace the versioned bundle, update `ENGINE_URL` in `browser-torrent.js` and this provenance record, then test the sample, file selection across shared pieces, stop/navigation cleanup, private/large-torrent rejection, tracker failures, and a controlled WebRTC swarm. Verify the MIME type and production import URL. Review memory limits before increasing the maximum size.
 
 ## Protocol references
 
@@ -108,4 +164,21 @@ For upgrades, inspect the official release/API changes, retrieve the pinned npm 
 - [WebTorrent API documentation](https://webtorrent.io/docs) — client, torrent, file, and browser APIs.
 - [WebTorrent FAQ](https://webtorrent.io/faq) — browser/WebRTC compatibility and limitations.
 
-See [verification](VERIFICATION.md) before treating an external swarm, new browser, or deployment environment as tested.
+## Verification
+
+Checked on September 24, 2026, after the move to the static site:
+
+- `npm test`: 35 unit tests passed (bencode, hashing, Base32, parser bounds, creator piece boundaries, cancellation, calculators, chunk store, and demo bytes matching `assets/demo/readme.txt`).
+- Headless Chrome against the generated site served under `/alltools/torrent/`, as on GitHub Pages: all 16 pages loaded with no console errors or failed requests, and none overflowed horizontally at 1280px or 390px. A two-file torrent was created, downloaded, and re-parsed by the parser, BTIH, torrent-to-magnet, and extractor tools with matching info hashes. All six calculators produced the expected values. The downloader's sample completed through the real WebTorrent engine, the saved file matched the demo bytes, and Stop cleared the session.
+- Not verified: arbitrary internet swarms, external WebRTC transfers, trackers, the health checker against live peers, and Safari/Firefox.
+
+Release checklist:
+
+1. `npm test` and `npm run build`, then commit any regenerated pages.
+2. Open the directory and several tools at desktop and mobile widths. Check for console errors and horizontal overflow.
+3. Create a small multi-file torrent, save it, re-upload it to the parser/BTIH tools, and compare hashes and files. Try malformed inputs and reset, and check that stale results clear.
+4. Run every calculator, change its units, try invalid inputs, and copy/download the result.
+5. Start the downloader's sample, wait for completion, save, compare the bytes, then stop.
+6. In a controlled WebRTC test swarm, check metadata retrieval, per-file selection including shared boundary pieces, completion/save, and stop. Do not use unrelated private files for test seeding.
+7. Check the health checker with a known compatible seeder and with no peers. The no-peer case must stay inconclusive.
+8. On the deployed site, confirm HTTPS, that the vendor module loads as JavaScript, the sample bytes, the sitemap, and canonical URLs.

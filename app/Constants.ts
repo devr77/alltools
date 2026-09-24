@@ -1,5 +1,3 @@
-import { torrentTools } from "./torrent/tools";
-
 export const categories = [
   {
     name: "Trending Tools",
@@ -671,11 +669,4 @@ export const categories = [
   //   icon: "🎡",
   //   tools: [{ name: "Spinner Wheel", slug: "spinner-wheel", icon: "🎡" }],
   // },
-  {
-    name: "Torrent & Hashing",
-    slug: "torrent",
-    icon: "📡",
-    description: "Create and inspect torrents, magnet links, and info hashes.",
-    tools: [...torrentTools],
-  },
 ];
