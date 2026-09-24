@@ -214,7 +214,7 @@ export function renderMetadataTool(root, tool, related) {
   window.addEventListener("pagehide", () => controller?.abort());
 
   mount(root, h("div", { class: "workspace" },
-    h("div", { class: "panel" }, form, progressSlot, errorSlot, statusEl, resultSlot),
+    h("div", { class: "panel ph-no-capture ph-mask" }, form, progressSlot, errorSlot, statusEl, resultSlot),
     guide("How to use this tool", tool.help, [
       h("div", { class: "local-badge" }, "Processed on your device"),
       h("p", {}, "Your file contents are processed in this browser. These tools do not upload files or contact trackers."),

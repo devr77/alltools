@@ -293,7 +293,7 @@ export function renderBrowserTool(root, tool) {
 
   clear();
   mount(root, h("div", { class: "workspace" },
-    h("div", { class: "panel" },
+    h("div", { class: "panel ph-no-capture ph-mask" },
       h("p", { class: "connection-notice" },
         health
           ? "This check makes real peer connections and retrieves metadata, without selecting content for download."

@@ -148,7 +148,7 @@ export function renderCalculatorTool(root, tool, related) {
   }
 
   mount(root, h("div", { class: "workspace" },
-    h("div", { class: "panel" },
+    h("div", { class: "panel ph-no-capture ph-mask" },
       h("form", { onsubmit: calculate, oninput: clearOutput },
         h("div", { class: "calculator-fields" }, fieldNodes),
         h("div", { class: "actions" },

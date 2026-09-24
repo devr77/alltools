@@ -5,6 +5,10 @@ export const site = {
   parentUrl: "https://toolsbase.org/",
   // Public base URL, used for canonical links and the sitemap. Update it if the site moves.
   url: "https://devr77.github.io/alltools/torrent/",
+  // Google Search Console "HTML tag" token: the content="…" value only. Empty = no tag.
+  googleSiteVerification: "",
+  // PostHog public project key (same project as toolsbase.org; phc_ keys are public by design). Empty = no analytics.
+  posthog: { key: "phc_eXCuKwNYgQihmLDIdMR6cDiDlOj5goKTepN0O1pjN55", host: "https://us.i.posthog.com" },
   description: "Create magnet links, inspect torrent files, calculate info hashes, and build v1 torrents locally in your browser.",
 };
 

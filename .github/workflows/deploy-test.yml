@@ -40,7 +40,11 @@ jobs:
           for dir in torrent/*/; do
             if [ -f "${dir}index.html" ]; then cp -r "${dir%/}" _site/torrent/; fi
           done
-          echo '<!DOCTYPE html><meta http-equiv="refresh" content="0; url=torrent/">' > _site/index.html
+          # Search Console HTML-file verification, if one was added (google<token>.html).
+          cp torrent/google*.html _site/torrent/ 2>/dev/null || true
+          # GitHub Pages serves the project-root 404.html for any missing URL under /alltools/.
+          cp torrent/404.html _site/404.html
+          echo '<!DOCTYPE html><link rel="canonical" href="https://devr77.github.io/alltools/torrent/"><meta http-equiv="refresh" content="0; url=torrent/">' > _site/index.html
           ls -R _site | head -40
       - uses: actions/upload-pages-artifact@v3
         with:

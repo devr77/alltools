@@ -54,6 +54,17 @@ If the public URL changes (for example to a custom domain), update `site.url` in
 
 `.github/workflows/deploy-test.yml` runs on pushes to `main` that touch `torrent/`, or on demand from the Actions tab. It runs the tests, regenerates the pages, copies only the site files (pages, `assets/`, `sitemap.xml`) to `_site/torrent/`, adds a root redirect to `torrent/`, and deploys to GitHub Pages. Pages must be set to **Source: GitHub Actions** in the repository settings.
 
+## SEO and Search Console
+
+- The Search Console property is the URL-prefix `https://devr77.github.io/alltools/torrent/`. It is verified with the **HTML file** method: `google860b239bef5a8906.html` in `torrent/` is published by the workflow at `…/alltools/torrent/google860b239bef5a8906.html`. Do not delete it, or the property becomes unverified. The HTML tag method is also supported via `site.googleSiteVerification` in `catalog.js`. DNS verification is not possible on `github.io`.
+- Submit `sitemap.xml` in Search Console (Sitemaps → `sitemap.xml`). It lists the directory and all 15 tools.
+- There is no `robots.txt`: crawlers only read it from the host root (`devr77.github.io/robots.txt`), which this project site cannot serve. A missing root file means everything may be crawled, which is intended.
+- Every page has a canonical URL, a description, Open Graph and Twitter tags, and JSON-LD (`WebApplication` + `BreadcrumbList` on tools, `CollectionPage` + `ItemList` on the directory). `404.html` is `noindex` and is served by GitHub Pages for any missing URL under `/alltools/`.
+
+## Analytics
+
+PostHog is loaded on every page with the same project key and settings as toolsbase.org (`site.posthog` in `catalog.js`; set `key` to `""` to disable). Every event carries the property `site: "torrent-tools"`, so filter on it in PostHog to separate these pages from the main site. Tool panels have `ph-no-capture ph-mask`, so magnet links, file names, hashes, and results are excluded from autocapture and session replay. Keep those classes, and never send torrent data in explicit events.
+
 ## Design
 
 The site uses the ToolsBase design system described in [`docs/DESIGN.md`](../docs/DESIGN.md): white surfaces, `#18181b` headings, `#71717a` muted text, `#e4e4e7` borders, `#2563eb` blue actions, 1184px max width with 16px gutters, 10–12px card radii, and 7–8px control radii. The header and footer copy the main site's layout and link back to toolsbase.org. `torrent.css` includes a small reset in place of the Tailwind preflight the main site uses. Tool pages keep the two-column workspace (panel + 280px guide), which stacks below 850px.
