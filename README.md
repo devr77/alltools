@@ -2,6 +2,11 @@
 
 A Next.js application with free utilities for developers, creators, and everyday tasks. The interface uses a light, neutral theme with blue accents.
 
+## Live sites
+
+- ToolsBase: <https://toolsbase.org/>
+- Torrent & Hashing Tools: <https://devr77.github.io/alltools/torrent/> (sitemap: <https://devr77.github.io/alltools/torrent/sitemap.xml>)
+
 ## Start locally
 
 Use Node.js 22 LTS (or another version supported by the installed Next.js release) and npm.
