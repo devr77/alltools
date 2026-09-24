@@ -68,7 +68,7 @@ function RandomUsernameGen() {
         margin: "2rem auto",
         padding: "1rem",
         boxSizing: "border-box",
-        width: "95vw",
+        width: "100%",
       }}
     >
       <h1 style={{ fontSize: "1.6rem", textAlign: "center" }}>

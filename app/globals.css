@@ -46,6 +46,9 @@ body { font-size: 16px; line-height: 1.6; }
 .tool-content :is(button,input,textarea,select,a):focus-visible, .site-main a:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
 .tool-content :is(.text-xs,.text-sm) { font-size: 14px; }
 .tool-content button:disabled { cursor: not-allowed; }
+/* Keep button labels whole on narrow screens: rows of buttons wrap instead of squeezing labels letter by letter. */
+.tool-content button { overflow-wrap: normal; word-break: normal; flex-shrink: 0; max-width: 100%; }
+.tool-content :has(> button) { flex-wrap: wrap !important; }
 .info-page { border: 1px solid #e4e4e7; border-radius: 12px; padding: 28px; background: #fff; }
 .info-page p, .info-page li { font-size: 16px; line-height: 1.85; }
 @media (max-width: 600px) { .site-main { padding-top: 24px; } .info-page { padding: 20px; } }

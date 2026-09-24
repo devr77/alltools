@@ -49,7 +49,7 @@ function RandomNumGen() {
         maxWidth: 420,
         margin: "2rem auto",
         padding: "1rem",
-        width: "95vw",
+        width: "100%",
       }}
     >
       <h1 style={{ fontSize: "1.6rem", textAlign: "center" }}>

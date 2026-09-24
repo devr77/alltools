@@ -69,6 +69,7 @@ function AdsTxtGen() {
             key={idx}
             style={{
               display: "flex",
+              flexWrap: "wrap",
               gap: 8,
               marginBottom: 8,
               alignItems: "center",
