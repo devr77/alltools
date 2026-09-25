@@ -164,7 +164,7 @@ export function Faq({ index, faqs, title }: { index: string; faqs: string[][]; t
   );
 }
 
-export function ToolGrid({ index, list, title, subtitle, id }: { index: string; list: ShareTool[]; title: string; subtitle: string; id?: string }) {
+export function ToolGrid({ path, index, list, title, subtitle, id }: { path: string; index: string; list: ShareTool[]; title: string; subtitle: string; id?: string }) {
   return (
     <section className="section section-tint" id={id}>
       <div className="inner">
@@ -173,7 +173,7 @@ export function ToolGrid({ index, list, title, subtitle, id }: { index: string; 
         <p className="section-sub">{subtitle}</p>
         <div className="tool-grid">
           {list.map((tool) => (
-            <Link key={tool.slug} className="tool-card" href={`${site.path}/${tool.slug}`} style={hueStyle(tool.hue)}>
+            <Link key={tool.slug} className="tool-card" href={`${path}/${tool.slug}`} style={hueStyle(tool.hue)}>
               <span className="tool-icon"><Icon name={tool.icon} size={20} /></span>
               <strong>{tool.name}</strong>
               <small>{tool.lead.split(/(?<=\.)\s/)[0]}</small>

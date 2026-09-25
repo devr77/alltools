@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { categories } from "./Constants";
-import { SHARE_URL } from "./share/domain";
-import shareSitemapEntries from "./share/sitemap";
+import { CANONICAL_ON_DOMAIN } from "./share/domain";
+import { shareSitemap } from "./share/seo";
 
 const BASE_URL = "https://toolsbase.org";
 
@@ -50,8 +50,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: url === "/" ? 1 : 0.7,
   }));
 
-  // Share pages are listed in app/share/sitemap.ts. Without a dedicated share domain they live here too, at /share/sitemap.xml.
-  const shareSitemap: MetadataRoute.Sitemap = SHARE_URL ? [] : shareSitemapEntries();
-
-  return [...staticLinks, ...dynamicSitemap, ...shareSitemap];
+  // Share pages are listed by whichever host is canonical for them (app/share/domain.ts).
+  return [...staticLinks, ...dynamicSitemap, ...(CANONICAL_ON_DOMAIN ? [] : shareSitemap())];
 }
