@@ -24,7 +24,7 @@ Open <http://localhost:3000>. Existing installations can run `npm run dev` direc
 
 - [Maintenance and architecture guide](docs/MAINTENANCE.md): project structure, homepage design, footer, search, adding tools, environment configuration, SEO, verification, and troubleshooting.
 - [Verification record](docs/VERIFICATION.md): checks performed for the compact homepage and footer.
-- Share tools (`app/share/`): temporary file/text-to-URL pages at `/share` with their own layout. `components/SiteChrome.tsx` skips the main header/footer there. Copy and settings live in `app/share/catalog.ts`. Uploads call `https://app.toolsbase.org/v1/uploads` from the browser, so the API and the R2 bucket must allow the site's origin via CORS.
+- Share tools (`app/share/`): temporary file/text-to-URL pages with their own layout; the main site's pages live in the `app/(site)/` route group, which owns the ToolsBase header/footer. Share is served at `/share` by default. Set `NEXT_PUBLIC_SHARE_URL` (for example `https://share.toolsbase.org`) at build time and add that domain to the deployment to serve it at the root of its own domain: `proxy.ts` maps the domain onto `app/share`, serves its own `robots.txt` and `sitemap.xml`, and 308-redirects `toolsbase.org/share/*` there. Copy and settings live in `app/share/catalog.ts`. Uploads call `https://app.toolsbase.org/v1/uploads` from the browser, so the API and the R2 bucket must allow the site's origin via CORS.
 - [Torrent tools](torrent/README.md): the torrent and hashing tools are a separate static site in `torrent/`, deployed to GitHub Pages. They are no longer part of this Next.js app; old `/torrent` URLs redirect there.
 
 ## Commands
@@ -41,4 +41,4 @@ AI generators use the server-side `GROQ_API_KEY` (the existing `NEXT_GROQ_KEY` i
 
 ## Page structure
 
-Keep metadata in server route files. Use a single descriptive H1 per page and a logical H2/H3 hierarchy. The shared site header and footer belong to `app/layout.tsx`; tool pages should not duplicate them.
+Keep metadata in server route files. Use a single descriptive H1 per page and a logical H2/H3 hierarchy. The shared site header and footer belong to `app/(site)/layout.tsx`; tool pages should not duplicate them.

@@ -15,12 +15,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tool = findTool((await params).tool);
   if (!tool) return {};
-  const path = `${site.path}/${tool.slug}`;
+  const url = `${site.url}/${tool.slug}`;
   return {
     title: tool.title,
     description: tool.description,
-    alternates: { canonical: path },
-    openGraph: { title: tool.title, description: tool.description, url: path },
+    alternates: { canonical: url },
+    openGraph: { title: tool.title, description: tool.description, url },
     twitter: { title: tool.title, description: tool.description },
   };
 }
@@ -67,13 +67,13 @@ export default async function ShareToolPage({ params }: Props) {
             isPartOf: { "@type": "WebSite", name: site.brand, url: site.url },
           },
           faqPage(faqs),
-          breadcrumb([["ToolsBase", "https://toolsbase.org/"], ["Share", site.url], [tool.name, url]]),
+          breadcrumb([[site.brand, site.url], [tool.name, url]]),
         ],
       }} />
       <section className="hero">
         <div className="inner hero-center">
           <nav className="crumbs" aria-label="Breadcrumb">
-            <Link href="/">ToolsBase</Link><span aria-hidden="true">/</span><Link href={site.path}>Share</Link>
+            <Link href={site.home}>{site.brand}</Link>
             <span aria-hidden="true">/</span><span aria-current="page">{tool.name}</span>
           </nav>
           <h1><mark>{tool.name}</mark> Converter</h1>

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { categories } from "./Constants";
-import { tools as shareTools } from "./share/catalog";
+import { SHARE_URL } from "./share/domain";
+import shareSitemapEntries from "./share/sitemap";
 
 const BASE_URL = "https://toolsbase.org";
 
@@ -40,8 +41,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/", // Home page
     ...categoryUrls,
     ...toolUrls,
-    "/share",
-    ...shareTools.map((tool) => `/share/${tool.slug}`),
   ];
 
   const dynamicSitemap: MetadataRoute.Sitemap = dynamicUrls.map((url) => ({
@@ -51,5 +50,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: url === "/" ? 1 : 0.7,
   }));
 
-  return [...staticLinks, ...dynamicSitemap];
+  // Share pages are listed in app/share/sitemap.ts. Without a dedicated share domain they live here too, at /share/sitemap.xml.
+  const shareSitemap: MetadataRoute.Sitemap = SHARE_URL ? [] : shareSitemapEntries();
+
+  return [...staticLinks, ...dynamicSitemap, ...shareSitemap];
 }

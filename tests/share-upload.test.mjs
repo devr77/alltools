@@ -8,7 +8,8 @@ function load(file) {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
   }).outputText;
   const loaded = { exports: {} };
-  new Function("module", "exports", code)(loaded, loaded.exports);
+  const dir = file.includes("/") ? file.slice(0, file.lastIndexOf("/") + 1) : "";
+  new Function("require", "module", "exports", code)((name) => load(`${dir}${name.replace(/^\.\//, "")}.ts`), loaded, loaded.exports);
   return loaded.exports;
 }
 const up = load("lib/upload.ts");

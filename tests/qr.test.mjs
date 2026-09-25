@@ -57,7 +57,7 @@ test("Wi-Fi, email, phone, SMS, contact, and location codes are parsed", () => {
   assert.match(geo.href, /^https:\/\/www\.openstreetmap\.org\/\?mlat=48\.8584&mlon=2\.2945/);
 });
 
-const exportCode = ts.transpileModule(readFileSync(new URL("../app/trending-tools/qr-code-reader/export.ts", import.meta.url), "utf8"), {
+const exportCode = ts.transpileModule(readFileSync(new URL("../app/(site)/trending-tools/qr-code-reader/export.ts", import.meta.url), "utf8"), {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
 const exporter = { exports: {} };

@@ -5,8 +5,10 @@ import { Bricolage_Grotesque } from "next/font/google";
 import Icon from "./Icon";
 import { findTool, navSlugs, site, tools } from "./catalog";
 
-// The root layout skips the main site header/footer for /share (components/SiteChrome.tsx); this layout provides its own.
+// /share sits outside the app/(site) route group, so it gets this header and footer instead of the main site's.
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  publisher: site.brand,
   openGraph: { siteName: site.brand, type: "website" },
   twitter: { card: "summary" },
 };
@@ -18,9 +20,9 @@ const docs = tools.filter((tool) => !media.includes(tool));
 
 function Brand() {
   return (
-    <Link className="brand" href={site.path}>
+    <Link className="brand" href={site.home}>
       <span className="logo"><Icon name="link" size={18} /></span>
-      <span>ToolsBase <b>Share</b></span>
+      <span><b>{site.brand}</b></span>
     </Link>
   );
 }
@@ -36,9 +38,8 @@ export default function ShareLayout({ children }: { children: React.ReactNode })
             {navSlugs.map(findTool).map((tool) => (
               <Link key={tool.slug} href={`${site.path}/${tool.slug}`} style={{ "--dot": tool.hue[0] } as React.CSSProperties}>{tool.name}</Link>
             ))}
-            <Link href={`${site.path}#all-tools`}>All tools</Link>
+            <Link href={`${site.home}#all-tools`}>All tools</Link>
           </nav>
-          <Link className="parent-link" href="/">ToolsBase <Icon name="external" size={14} /></Link>
         </div>
       </header>
 
@@ -77,16 +78,15 @@ export default function ShareLayout({ children }: { children: React.ReactNode })
               <h2>Documents &amp; data</h2>
               {docs.map((tool) => <Link key={tool.slug} href={`${site.path}/${tool.slug}`}>{tool.name}</Link>)}
             </nav>
-            <nav aria-label="ToolsBase">
-              <h2>ToolsBase</h2>
-              <Link href="/">All ToolsBase tools</Link>
-              <Link href="/about">About</Link>
-              <Link href="/privacy">Privacy policy</Link>
-              <Link href="/contact">Contact &amp; report abuse</Link>
+            <nav aria-label="Help and policies">
+              <h2>Help</h2>
+              <Link href={`${site.main}/about`}>About</Link>
+              <Link href={`${site.main}/privacy`}>Privacy policy</Link>
+              <Link href={site.contactUrl}>Contact &amp; report abuse</Link>
             </nav>
           </div>
           <div className="footer-bottom">
-            <p>© {new Date().getFullYear()} ToolsBase. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {site.brand}. All rights reserved.</p>
             <p>Provided “as is”, without warranties. Uploads are deleted automatically when their link expires.</p>
           </div>
         </div>

@@ -2,17 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { PostHogProvider } from "./provider";
 import { GoogleTagManager } from "@next/third-parties/google";
-import SiteHeader from "./components/SiteHeader";
-import SiteFooter from "./components/SiteFooter";
-import SiteChrome from "./components/SiteChrome";
-
-const jsonLdWebsite = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "ToolsBase",
-  alternateName: "ToolsBase",
-  url: "https://toolsbase.org/",
-};
 
 // Fallback metadata for any route that does not export its own.
 // A page's `metadata` export overrides these fields.
@@ -29,6 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
+// Header and footer live in section layouts: app/(site)/layout.tsx for the main site, app/share/layout.tsx for Share.
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,18 +32,12 @@ export default function RootLayout({
           content="ca-pub-2636230803963138"
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
-        />
       </head>
       <body className="bg-white text-gray-900 min-h-screen flex flex-col">
         <GoogleTagManager gtmId="GTM-N8G5XC2K" />
 
         <PostHogProvider>
-          <SiteChrome header={<SiteHeader />} footer={<SiteFooter />}>
-            {children}
-          </SiteChrome>
+          {children}
         </PostHogProvider>
       </body>
     </html>

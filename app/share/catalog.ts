@@ -11,11 +11,17 @@ export type ShareTool = {
   features: string[][]; useCases: string[][]; faqs: string[][];
 };
 
+import { MAIN_URL, SHARE_URL } from "./domain";
+
 export const site = {
   name: "Temporary File to URL Tools",
-  brand: "ToolsBase Share",
-  path: "/share",
-  url: "https://toolsbase.org/share",
+  brand: "Share",
+  // Prefix for tool links (/share/<slug>, or /<slug> on the dedicated domain) and the hub's own href.
+  path: SHARE_URL ? "" : "/share",
+  home: SHARE_URL ? "/" : "/share",
+  url: SHARE_URL || `${MAIN_URL}/share`,
+  // Prefix for links to the main ToolsBase site: absolute on the dedicated domain, root-relative otherwise.
+  main: SHARE_URL ? MAIN_URL : "",
   api: "https://app.toolsbase.org/v1/uploads",
   // Seconds the presigned upload URL stays valid (the upload must start within this window).
   uploadWindow: 300,
@@ -29,7 +35,7 @@ export const site = {
   maxBytes: 100 * 1000 * 1000,
   // Files per batch; the API currently allows 10 upload requests per rate-limit window.
   maxFiles: 10,
-  contactUrl: "/contact",
+  contactUrl: `${SHARE_URL ? MAIN_URL : ""}/contact`,
   title: "Upload a File and Get a Temporary Link – Free, No Sign-up",
   description: "Upload images, videos, PDFs, audio, documents, or text and get a shareable temporary URL in seconds. Links delete themselves automatically. Free, no account.",
 };

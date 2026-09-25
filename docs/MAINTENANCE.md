@@ -22,8 +22,9 @@ TypeScript validation is enabled in production builds. Do not add `ignoreBuildEr
 | File | Responsibility |
 | --- | --- |
 | `app/Constants.ts` | Main category/tool catalog; imported by home, menus, category pages, and sitemap |
-| `app/Home.tsx`, `app/Home.module.css` | Compact hero, featured tools, search, category filtering, tool directory |
-| `app/layout.tsx` | One site header, main area, footer, base metadata, and analytics wrappers |
+| `app/(site)/Home.tsx`, `app/(site)/Home.module.css` | Compact hero, featured tools, search, category filtering, tool directory |
+| `app/layout.tsx` | Base metadata and analytics wrappers |
+| `app/(site)/layout.tsx` | Main site header, main area, and footer for every page except `/share` |
 | `app/globals.css` | Existing light-theme colors, base type size, common tool controls and content width |
 | `app/components/SiteHeader.tsx`, `MobileSidebar.tsx` | Desktop navigation and mobile navigation dialog |
 | `app/components/SiteFooter.tsx`, `SiteFooter.module.css` | Shared responsive footer and policy/contact links |
@@ -46,7 +47,7 @@ Home search uses Fuse over tool names, category names, and optional `keywords`. 
 For a normal tool:
 
 1. Add a unique slug, name, icon, and useful description to its category in `app/Constants.ts`.
-2. Create `app/<category>/<slug>/page.tsx`. Keep metadata in the server page and browser interactions in a client component.
+2. Create `app/(site)/<category>/<slug>/page.tsx`. Keep metadata in the server page and browser interactions in a client component.
 3. Use the category layout; do not duplicate site navigation, footer, or related-tool blocks.
 4. Give the page a descriptive H1 and labels for inputs. Include empty, invalid, working, successful, and reset states where applicable.
 5. Verify the category card, home search, mobile menu, sitemap URL, and direct route.

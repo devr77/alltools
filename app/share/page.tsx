@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { findTool, sharedFaqs, site, tools } from "./catalog";
-import { breadcrumb, Eyebrow, Faq, faqPage, Features, hueStyle, JsonLd, lifetimes, sharedFeatures, Steps, ToolGrid, TrustRow, UploadCard } from "./sections";
+import { Eyebrow, Faq, faqPage, Features, hueStyle, JsonLd, lifetimes, sharedFeatures, Steps, ToolGrid, TrustRow, UploadCard } from "./sections";
 
 export const metadata: Metadata = {
   title: site.title,
   description: site.description,
-  alternates: { canonical: site.path },
-  openGraph: { title: site.title, description: site.description, url: site.path },
+  alternates: { canonical: site.url },
+  openGraph: { title: site.title, description: site.description, url: site.url },
   twitter: { title: site.title, description: site.description },
 };
 
@@ -19,14 +19,13 @@ export default function ShareHub() {
         "@graph": [
           {
             "@type": "CollectionPage", name: site.name, description: site.description, url: site.url,
-            isPartOf: { "@type": "WebSite", name: "ToolsBase", url: "https://toolsbase.org/" },
+            isPartOf: { "@type": "WebSite", name: site.brand, url: site.url },
             mainEntity: {
               "@type": "ItemList",
               itemListElement: tools.map((tool, index) => ({ "@type": "ListItem", position: index + 1, name: tool.name, url: `${site.url}/${tool.slug}` })),
             },
           },
           faqPage(faqs),
-          breadcrumb([["ToolsBase", "https://toolsbase.org/"], ["Share", site.url]]),
         ],
       }} />
       <section className="hero">
