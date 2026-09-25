@@ -26,7 +26,7 @@ export const site = {
     { days: 1, label: "24 hours" },
     { days: 7, label: "7 days" },
   ],
-  defaultLifetime: 7,
+  defaultLifetime: 1,
   // Per-file limit enforced in the browser. Keep it at or below the API's own limit.
   maxBytes: 100 * 1000 * 1000,
   // Files per batch; the API currently allows 10 upload requests per rate-limit window.
