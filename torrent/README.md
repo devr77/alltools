@@ -84,12 +84,8 @@ Each tool lives at `<site>/<slug>/`.
 | `torrent-file-parser` | Choose a `.torrent` file | File list, sizes, piece metadata, trackers, info hash, downloadable metadata JSON |
 | `torrent-file-creator` | Select local files; choose name, piece size, trackers, and optional private flag | Downloadable v1 `.torrent`; requires a separate client with the originals to seed |
 | `info-hash-extractor` | Paste a magnet or choose a `.torrent` | Normalized hexadecimal and Base32 v1 identifier |
-| `torrent-download-time-calculator` | Enter total size, speed, efficiency, and completed percentage | Remaining size and estimated duration |
 | `torrent-health-checker` | Supply a public magnet/torrent and WSS tracker; start check | Real 30-second browser peer observation; no global seed count or malware verdict |
-| `internet-to-torrent-speed-converter` | Choose connection rate/unit and efficiency | Decimal MB/s, binary MiB/s, and decimal GB/hour |
-| `video-file-size-reduction-estimator` | Enter duration, target video/audio bitrates, original size, and container overhead | Estimated output size and savings; negative savings indicate growth; no encoding |
 | `torrent-to-direct-download` | Connect, select original files, wait for verification, then save | Same real browser engine as the downloader; no permanent hosted URL |
-| `storage-requirement-calculator` | Enter originals, extracted-data multiplier, backups, headroom, and optional price | Required decimal GB and estimated monthly storage cost |
 | `isp-throttling-detector` | Enter 3–20 direct, VPN, and reference Mbps measurements per group | Median comparison and cautious interpretation; displayed as ISP Throttling Comparison |
 | `torrent-naming-standard-generator` | Enter title and optional release details; select movie/TV/general | Sanitized conventional name, including `SxxExx` for TV; copy/download text |
 | `browser-torrent-downloader` | Paste magnet or upload torrent, connect, select files, save when complete | Actual downloads from WebRTC peers or accessible HTTP web seeds; 256 MiB total torrent limit |

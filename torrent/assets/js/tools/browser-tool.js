@@ -302,7 +302,7 @@ export function renderBrowserTool(root, tool) {
       form, stopSlot, statusEl, warningEl, errorSlot, liveSlot),
     guide("How this works", tool.help, guideExtra, [
       { href: toolHref("torrent-file-to-magnet"), name: "Convert torrent to magnet" },
-      { href: toolHref("torrent-download-time-calculator"), name: "Estimate download time" },
+      { href: toolHref("torrent-file-parser"), name: "Inspect torrent files" },
     ]),
   ));
 }

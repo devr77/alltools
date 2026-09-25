@@ -1,59 +1,7 @@
-/** Pure calculator and naming functions for the torrent calculator tools. */
-export const sizeUnits = { MB: 1e6, GB: 1e9, TB: 1e12, MiB: 1024 ** 2, GiB: 1024 ** 3, TiB: 1024 ** 4 };
-export const speedUnits = { Mbps: 1e6 / 8, Gbps: 1e9 / 8, "MB/s": 1e6, "MiB/s": 1024 ** 2 };
-function finite(value, name, min = 0) {
-    if (!Number.isFinite(value) || value < min)
-        throw new Error(`${name} must be ${min > 0 ? "greater than zero" : "zero or greater"}.`);
-    return value;
-}
+/** Pure comparison and naming functions for the torrent calculator tools. */
 function ensureRange(...values) {
     if (values.some((value) => !Number.isFinite(value)))
         throw new Error("The result is outside the supported number range. Use smaller input values.");
-}
-export function downloadEstimate(size, unit, speed, speedUnit, efficiency, completed = 0) {
-    finite(size, "File size", Number.MIN_VALUE);
-    finite(speed, "Speed", Number.MIN_VALUE);
-    finite(efficiency, "Efficiency", Number.MIN_VALUE);
-    finite(completed, "Completed percentage");
-    if (efficiency > 100 || completed > 100)
-        throw new Error("Percentages cannot exceed 100.");
-    const bytes = size * sizeUnits[unit];
-    const bytesPerSecond = speed * speedUnits[speedUnit] * efficiency / 100;
-    ensureRange(bytes, bytesPerSecond, bytes / bytesPerSecond);
-    return { bytes, bytesPerSecond, remainingBytes: bytes * (1 - completed / 100), seconds: bytes * (1 - completed / 100) / bytesPerSecond };
-}
-export function speedEstimate(speed, unit, efficiency) {
-    const { bytesPerSecond } = downloadEstimate(1, "GB", speed, unit, efficiency);
-    ensureRange(bytesPerSecond * 3600);
-    return { megabytes: bytesPerSecond / 1e6, mebibytes: bytesPerSecond / 1024 ** 2, gigabytesPerHour: bytesPerSecond * 3600 / 1e9 };
-}
-export function videoEstimate(minutes, videoMbps, audioKbps, originalGB, overhead) {
-    finite(minutes, "Duration", Number.MIN_VALUE);
-    finite(videoMbps, "Video bitrate", Number.MIN_VALUE);
-    finite(audioKbps, "Audio bitrate");
-    finite(originalGB, "Original size", Number.MIN_VALUE);
-    finite(overhead, "Container overhead");
-    if (overhead > 100)
-        throw new Error("Overhead cannot exceed 100%.");
-    const bytes = minutes * 60 * (videoMbps * 1e6 + audioKbps * 1000) / 8 * (1 + overhead / 100);
-    ensureRange(bytes, originalGB * 1e9, bytes / (originalGB * 1e9));
-    return { bytes, savedBytes: originalGB * 1e9 - bytes, reductionPercent: (1 - bytes / (originalGB * 1e9)) * 100 };
-}
-export function storageEstimate(sizeGB, expansion, copies, headroom, monthlyPrice) {
-    finite(sizeGB, "Download size", Number.MIN_VALUE);
-    finite(expansion, "Expansion multiplier");
-    finite(copies, "Backup copies");
-    finite(headroom, "Headroom");
-    finite(monthlyPrice, "Monthly price");
-    if (!Number.isInteger(copies) || copies > 100)
-        throw new Error("Backup copies must be a whole number from 0 to 100.");
-    if (headroom > 100)
-        throw new Error("Headroom cannot exceed 100%.");
-    const originalAndExtractedGB = sizeGB * (1 + expansion);
-    const backupGB = originalAndExtractedGB * copies;
-    const totalGB = (originalAndExtractedGB + backupGB) * (1 + headroom / 100);
-    ensureRange(totalGB, totalGB * monthlyPrice);
-    return { originalAndExtractedGB, backupGB, totalGB, monthlyCost: totalGB * monthlyPrice };
 }
 export function parseMeasurements(text) {
     const values = text.trim().split(/[\s,;]+/).map(Number);
@@ -82,20 +30,4 @@ export function standardName(title, year, type, season, episode, resolution, sou
     if (name.length > 220)
         throw new Error("Shorten the title or tags to keep the name under 220 characters.");
     return name;
-}
-export function durationLabel(seconds) {
-    if (seconds === 0)
-        return "Complete";
-    if (!Number.isFinite(seconds) || seconds < 0)
-        throw new Error("Duration is outside the supported range.");
-    if (seconds < 1)
-        return "Less than a second";
-    let remainder = Math.ceil(seconds);
-    const days = Math.floor(remainder / 86400);
-    remainder %= 86400;
-    const hours = Math.floor(remainder / 3600);
-    remainder %= 3600;
-    const minutes = Math.floor(remainder / 60);
-    remainder %= 60;
-    return [days ? `${days}d` : "", hours ? `${hours}h` : "", minutes ? `${minutes}m` : "", `${remainder}s`].filter(Boolean).join(" ");
 }

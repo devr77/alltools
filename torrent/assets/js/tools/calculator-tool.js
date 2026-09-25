@@ -1,40 +1,8 @@
-/** Calculator tools: download time, speed, video size, storage, ISP comparison, naming. */
-import {
-  compareConnections, downloadEstimate, durationLabel, sizeUnits, speedEstimate, speedUnits,
-  standardName, storageEstimate, videoEstimate,
-} from "../lib/calculators.js";
-import { formatBytes } from "../lib/torrent.js";
+/** Calculator tools: ISP comparison, naming. */
+import { compareConnections, standardName } from "../lib/calculators.js";
 import { copyText, errorMessage, guide, h, mount, saveFile } from "../dom.js";
 
-const speedFields = [
-  { key: "speed", label: "Connection speed", value: "100", min: 0.001 },
-  { key: "speedUnit", label: "Speed unit", value: "Mbps", options: Object.keys(speedUnits) },
-  { key: "efficiency", label: "Usable bandwidth (%)", value: "85", min: 0.1, max: 100, hint: "An assumption for overhead and swarm conditions; not a measured speed." },
-];
-
 const fieldSets = {
-  "torrent-download-time-calculator": [
-    { key: "size", label: "Total file size", value: "10", min: 0.001 },
-    { key: "unit", label: "Size unit", value: "GB", options: Object.keys(sizeUnits) },
-    ...speedFields,
-    { key: "completed", label: "Already downloaded (%)", value: "0", min: 0, max: 100 },
-  ],
-  "internet-to-torrent-speed-converter": speedFields,
-  "video-file-size-reduction-estimator": [
-    { key: "minutes", label: "Video duration (minutes)", value: "120", min: 0.01 },
-    { key: "video", label: "Target video bitrate (Mbps)", value: "3", min: 0.001 },
-    { key: "audio", label: "Total audio bitrate (Kbps)", value: "128", min: 0, hint: "Sum the bitrates if keeping multiple audio tracks." },
-    { key: "original", label: "Original file size (GB)", value: "8", min: 0.001 },
-    { key: "overhead", label: "Container overhead (%)", value: "1", min: 0, max: 100 },
-  ],
-  "storage-requirement-calculator": [
-    { key: "size", label: "Original downloads (GB)", value: "100", min: 0.001 },
-    { key: "expansion", label: "Additional extracted size (× originals)", value: "1", min: 0, hint: "Use 0 when you do not need an extracted copy; 2 means extracted files take twice the original space." },
-    { key: "copies", label: "Additional backup copies", value: "1", min: 0, max: 100, step: "1" },
-    { key: "headroom", label: "Extra free-space allowance (%)", value: "20", min: 0, max: 100 },
-    { key: "price", label: "Monthly price per GB", value: "0.02", min: 0 },
-    { key: "currency", label: "Price currency", value: "USD", options: ["USD", "INR", "EUR", "GBP"] },
-  ],
   "isp-throttling-detector": [
     { key: "direct", label: "Torrent speeds without VPN (Mbps)", value: "20, 22, 18", type: "textarea" },
     { key: "vpn", label: "Same torrent with VPN (Mbps)", value: "40, 42, 38", type: "textarea" },
@@ -56,22 +24,6 @@ const fieldSets = {
 function compute(slug, values) {
   const n = (key) => Number(values[key]);
   switch (slug) {
-    case "torrent-download-time-calculator": {
-      const estimate = downloadEstimate(n("size"), values.unit, n("speed"), values.speedUnit, n("efficiency"), n("completed"));
-      return { metrics: [["Estimated remaining time", durationLabel(estimate.seconds)], ["Remaining data", formatBytes(estimate.remainingBytes)], ["Usable speed", `${formatBytes(estimate.bytesPerSecond)}/s`]], note: "Assumes a sustained download rate. Peer availability, congestion, and disk speed may increase the time." };
-    }
-    case "internet-to-torrent-speed-converter": {
-      const estimate = speedEstimate(n("speed"), values.speedUnit, n("efficiency"));
-      return { metrics: [["Decimal download rate", `${estimate.megabytes.toFixed(2)} MB/s`], ["Binary download rate", `${estimate.mebibytes.toFixed(2)} MiB/s`], ["Data per hour", `${estimate.gigabytesPerHour.toFixed(2)} GB`]], note: "Mbps ÷ 8 = MB/s before applying your efficiency factor. MB is decimal; MiB is binary." };
-    }
-    case "video-file-size-reduction-estimator": {
-      const estimate = videoEstimate(n("minutes"), n("video"), n("audio"), n("original"), n("overhead"));
-      return { metrics: [["Estimated output", formatBytes(estimate.bytes)], [estimate.savedBytes >= 0 ? "Estimated saving" : "Estimated increase", formatBytes(Math.abs(estimate.savedBytes))], ["Size change", `${Math.abs(estimate.reductionPercent).toFixed(1)}% ${estimate.reductionPercent >= 0 ? "smaller" : "larger"}`]], note: "Estimate = duration × total bitrate ÷ 8, plus container overhead. Quality and variable-bitrate output depend on the encoder and content." };
-    }
-    case "storage-requirement-calculator": {
-      const estimate = storageEstimate(n("size"), n("expansion"), n("copies"), n("headroom"), n("price"));
-      return { metrics: [["Originals + extracted files", `${estimate.originalAndExtractedGB.toFixed(2)} GB`], ["Backups", `${estimate.backupGB.toFixed(2)} GB`], ["Recommended capacity", `${estimate.totalGB.toFixed(2)} GB`], ["Monthly storage estimate", new Intl.NumberFormat("en-US", { style: "currency", currency: values.currency }).format(estimate.monthlyCost)]], note: "Backups include originals and extracted copies. Headroom is an additional allowance, not a target free-space percentage. Pricing uses your entered rate; egress, requests, taxes, and minimum charges are excluded." };
-    }
     case "isp-throttling-detector": {
       const estimate = compareConnections(values.direct, values.vpn, values.reference);
       return { metrics: [["Direct median", `${estimate.directMbps.toFixed(2)} Mbps`], ["VPN median", `${estimate.vpnMbps.toFixed(2)} Mbps`], ["Reference median", `${estimate.referenceMbps.toFixed(2)} Mbps`], ["VPN difference", `${estimate.improvement >= 0 ? "+" : ""}${estimate.improvement.toFixed(1)}%`]], note: estimate.interpretation };
