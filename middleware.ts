@@ -2,13 +2,16 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SHARE_HOST, SHARE_URL } from "./app/share/domain";
 
 /**
+ * middleware.ts, not Next 16's proxy.ts: proxy always runs on Node.js, and Cloudflare Pages (@cloudflare/next-on-pages)
+ * only accepts the Edge runtime, which middleware uses by default.
+ *
  * Serves app/share at the root of its own domain when NEXT_PUBLIC_SHARE_URL is set (see app/share/domain.ts).
  *   share domain:   /            -> /share (rewrite)      /robots.txt  -> /share/robots.txt
  *                   /<tool>      -> /share/<tool>         /sitemap.xml -> /share/sitemap.xml
  *                   /share/<x>   -> /<x> (308, one clean URL per page)
  *   other domains:  /share/<x>   -> share domain /<x> (308, so link equity moves to the canonical URLs)
  */
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   if (!SHARE_HOST) return NextResponse.next();
   const { pathname, search } = request.nextUrl;
   const underShare = pathname === "/share" || pathname.startsWith("/share/");
