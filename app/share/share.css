@@ -35,6 +35,9 @@
     color-scheme: dark;
   }
 }
+/* The root layout's body is bg-white; match it to Share so overscroll and gaps don't flash white in dark mode. */
+html:has(.share-root), html:has(.share-root) body { background: #fffdf8; }
+@media (prefers-color-scheme: dark) { html:has(.share-root), html:has(.share-root) body { background: #14120f; } }
 @keyframes share-pop { from { transform: translateY(4px); opacity: .5; } to { transform: none; opacity: 1; } }
 
 .share-root {

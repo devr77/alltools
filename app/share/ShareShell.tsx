@@ -1,6 +1,6 @@
 import "./share.css";
 import Link from "next/link";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import Icon from "./Icon";
 import { findTool, navSlugs, site, tools } from "./catalog";
@@ -14,6 +14,10 @@ export const shellMetadata: Metadata = {
   openGraph: { siteName: site.brand, type: "website" },
   twitter: { card: "summary" },
 };
+
+// Declares that Share ships its own dark theme, so browsers with forced/auto dark mode (e.g. Chrome on Android)
+// use share.css's dark tokens instead of algorithmically inverting the light theme.
+export const shellViewport: Viewport = { colorScheme: "light dark" };
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-display" });
 
