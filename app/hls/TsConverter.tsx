@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePostHog } from "posthog-js/react";
 import Icon from "./Icon";
-import { createAssembler, sniffContainer } from "./lib/remux";
+import { sniffContainer } from "./lib/remux";
+import { remuxToMp4, unsupportedCodecs } from "./lib/mp4";
 import { fileBase, formatBytes } from "./lib/format";
 
 type Result = { url: string; name: string; size: number };
@@ -47,27 +48,18 @@ export default function TsConverter() {
     clearResult();
     setError("");
     setProgress(0);
-    let read = 0;
     try {
-      const { default: mux } = await import("mux.js");
-      const assembler = createAssembler("ts", "mp4", mux);
       for (const file of files) {
         if (sniffContainer(new Uint8Array(await file.slice(0, 376).arrayBuffer())) !== "ts") {
           throw new Error(`${file.name} isn't an MPEG-TS file, so it can't be converted. Remove it and try again.`);
         }
-        // Read in chunks rather than all at once, so large files don't need one huge buffer.
-        const reader = file.stream().getReader();
-        for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
-          assembler.push(chunk.value);
-          read += chunk.value.byteLength;
-          setProgress(read / total);
-        }
-        assembler.flush();
       }
-      if (!assembler.produced()) {
-        throw new Error("Nothing could be converted. The files may use codecs the in-browser converter can't read (it supports H.264 video with AAC audio), such as H.265, MPEG-2, or AC-3.");
+      const unsupported = await unsupportedCodecs(files[0], "ts").catch(() => ["a format the converter can't read"]);
+      if (unsupported.length) {
+        throw new Error(`${files[0].name} uses ${unsupported.join(" and ")}, which can't be converted here. MPEG-2 video (common in older TV recordings) isn't supported; ffmpeg or HandBrake can convert it.`);
       }
-      const blob = assembler.finish();
+      // The files are read from disk in pieces as the MP4 is built, so large files never sit in memory whole.
+      const blob = await remuxToMp4([new Blob(files)], { container: "ts", onProgress: setProgress });
       const name = `${outputName(files)}.mp4`;
       const url = URL.createObjectURL(blob);
       setResult({ url, name, size: blob.size });

@@ -138,7 +138,7 @@ export default function Downloader({ links }: { links: ToolLinks }) {
     clearResult();
     setError("");
     const begin = performance.now();
-    setProgress({ done: 0, total: media.segments.length, bytes: 0, seconds: 0, elapsed: 0 });
+    setProgress({ phase: "download", done: 0, total: media.segments.length, bytes: 0, seconds: 0, converted: 0, elapsed: 0 });
     try {
       const output = await downloadStream(media, {
         format: effectiveFormat, signal: controller.signal,
@@ -169,7 +169,9 @@ export default function Downloader({ links }: { links: ToolLinks }) {
     setProgress(null);
   };
 
-  const percent = progress?.total ? Math.floor((progress.done / progress.total) * 100) : 0;
+  // Two phases: segments arriving, then (for MP4) the file being built from them.
+  const converting = progress?.phase === "convert";
+  const percent = !progress ? 0 : converting ? Math.floor(progress.converted * 100) : progress.total ? Math.floor((progress.done / progress.total) * 100) : 0;
   const speed = progress?.bytes && progress.elapsed > 1 ? progress.bytes / progress.elapsed : 0;
   const eta = progress?.done ? (progress.elapsed / progress.done) * (progress.total - progress.done) : 0;
 
@@ -222,7 +224,7 @@ export default function Downloader({ links }: { links: ToolLinks }) {
               </fieldset>
             )}
           </div>
-          {!canMp4 && !fmp4 && <p className="note"><Icon name="alert" size={16} /> This quality uses {describeCodecs(option?.codecs)}, which the in-browser MP4 converter can&apos;t rewrap, so it saves as TS. VLC plays it; ffmpeg can convert it.</p>}
+          {!canMp4 && !fmp4 && <p className="note"><Icon name="alert" size={16} /> This quality uses {describeCodecs(option?.codecs)}, which can&apos;t be saved as MP4 here, so it saves as TS. VLC plays it; ffmpeg can convert it.</p>}
 
           {!downloading && !result && (
             <div className="actions">
@@ -237,13 +239,17 @@ export default function Downloader({ links }: { links: ToolLinks }) {
 
       {downloading && (
         <div className="progress">
-          <div className="bar" role="progressbar" aria-label="Download progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><span style={{ width: `${percent}%` }} /></div>
+          <div className="bar" role="progressbar" aria-label={converting ? "MP4 build progress" : "Download progress"} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><span style={{ width: `${percent}%` }} /></div>
           <div className="progress-row">
-            <p>
-              <b>{percent}%</b> · {progress.done} of {progress.total} segments · {formatBytes(progress.bytes)}
-              {speed > 0 && <> · {formatBytes(speed)}/s</>}
-              {progress.done > 0 && progress.done < progress.total && <> · about {formatDuration(eta)} left</>}
-            </p>
+            {converting ? (
+              <p><b>{percent}%</b> · Building the MP4 from {formatBytes(progress.bytes)} of segments</p>
+            ) : (
+              <p>
+                <b>{percent}%</b> · {progress.done} of {progress.total} segments · {formatBytes(progress.bytes)}
+                {speed > 0 && <> · {formatBytes(speed)}/s</>}
+                {progress.done > 0 && progress.done < progress.total && <> · about {formatDuration(eta)} left</>}
+              </p>
+            )}
             <button type="button" className="button button-ghost" onClick={() => job.current?.abort("cancel")}><Icon name="x" size={16} /> Cancel</button>
           </div>
           <p className="muted">Keep this tab open until the download finishes.</p>

@@ -43,7 +43,7 @@ const facts: Record<HlsTool["mode"], [string, string, string][]> = {
   download: [["video", "Output", "MP4 or TS, original quality"], ["lock", "Encryption", "AES-128 supported, DRM not"], ["shield", "Private", "Built on your device"]],
   player: [["layers", "Quality", "Auto or locked rendition"], ["stream", "Streams", "VOD and live HLS"], ["shield", "Private", "Plays straight from the source"]],
   checker: [["list", "Reads", "Master and media playlists"], ["alert", "Flags", "Spec issues, DRM, CORS"], ["zap", "Light", "Fetches playlists only"]],
-  convert: [["convert", "Output", "MP4, no re-encoding"], ["video", "Input", "H.264 + AAC in .ts"], ["shield", "Private", "Files never leave your device"]],
+  convert: [["convert", "Output", "MP4, no re-encoding"], ["video", "Input", "H.264 or H.265 in .ts"], ["shield", "Private", "Files never leave your device"]],
 };
 
 export function ToolPanel({ tool, place, heading }: { tool: HlsTool; place: Place; heading: string }) {

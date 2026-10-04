@@ -36,7 +36,7 @@ export const tools: HlsTool[] = [
     lead: "Paste an .m3u8 link, choose a quality, and save the stream as one MP4 file. Segments are downloaded and joined in your browser, without re-encoding.",
     intro: [
       "HLS (HTTP Live Streaming) doesn't deliver a video as one file. A playlist ending in .m3u8 lists hundreds of short segments, often in several qualities, and the player fetches them one by one. That's why most streams have no Save button.",
-      "This downloader reads the playlist, fetches every segment of the quality you pick, decrypts AES-128 segments when the key is available, and joins them. MPEG-TS streams are rewrapped as MP4 (H.264 and AAC, with no quality loss) or kept as TS if you prefer. Fragmented MP4 streams are joined as they are. Everything runs in your browser, so the stream's server must allow cross-origin access (CORS).",
+      "This downloader reads the playlist, fetches every segment of the quality you pick, decrypts AES-128 segments when the key is available, and joins them. MPEG-TS and fragmented MP4 streams are rebuilt as a standard MP4 that plays in QuickTime, on phones, and in editors, with no quality loss; or keep TS, the stream's original format. Everything runs in your browser, so the stream's server must allow cross-origin access (CORS).",
     ],
     steps: [
       ["Paste the M3U8 link", "Copy the playlist address from the video page or your browser's Network tab, paste it in, and click Load."],
@@ -45,7 +45,7 @@ export const tools: HlsTool[] = [
     ],
     features: [
       ["Pick the quality", "Master playlists list every resolution and bitrate. Choose the one you want, or keep the best."],
-      ["MP4 without re-encoding", "TS segments are rewrapped into MP4 in your browser, keeping the original picture and sound."],
+      ["MP4 without re-encoding", "Segments are rewrapped into a standard MP4 in your browser, keeping the original picture and sound."],
       ["AES-128 decryption", "Streams encrypted with standard HLS AES-128 are decrypted automatically when the key is accessible."],
     ],
     useCases: [
@@ -59,7 +59,7 @@ export const tools: HlsTool[] = [
       ["Where do I find the .m3u8 link?", "Open the page with the video, open your browser's developer tools (F12), go to the Network tab, type m3u8 in the filter box, and start the video. Right-click the playlist request and copy its URL. The master playlist, which lists several qualities, is the best one to copy."],
       ["Why does it say the server doesn't allow other websites to load it?", "Browsers only let a page read a stream from another site if that site sends CORS headers allowing it. Many streams do, because their players run on other domains, but some are locked to their own site. Those can't be downloaded from a web page; a desktop tool such as ffmpeg can read them instead."],
       ["Can it download DRM-protected streams?", "No. Streams protected with Widevine, FairPlay, PlayReady, or SAMPLE-AES are refused. Only unencrypted streams and standard AES-128 encryption with an accessible key are supported."],
-      ["Should I choose MP4 or TS?", "MP4 plays almost everywhere, including phones, browsers, and video editors, so it's the default. TS is the stream's original format. Choose it if MP4 conversion fails, if the stream uses codecs other than H.264 and AAC (such as H.265 or Dolby audio), or if the MP4 stutters at ad breaks."],
+      ["Should I choose MP4 or TS?", "MP4 plays almost everywhere, including QuickTime, phones, browsers, and video editors, so it's the default. TS is the stream's original format, which VLC plays. Choose it if the MP4 can't be built (for example, for MPEG-2 video) or if the MP4 glitches at ad breaks."],
       ["Is there a size or length limit?", "There's no fixed limit, but the file is assembled in your browser before it's saved. Desktop Chrome and Edge handle several gigabytes; Safari and phones have less room. For very long streams, pick a lower quality."],
       ["Can I download live streams?", "Partly. A live playlist lists only the last few segments, so you get the stretch that's available when you click Download. To save a whole event, use its recording (VOD) playlist once the event ends."],
       ["Is my stream sent to your servers?", "No. Your browser fetches the segments directly from the stream's server and builds the file on your device. Nothing passes through ToolsBase."],
@@ -153,8 +153,8 @@ export const tools: HlsTool[] = [
     description: "Convert .ts video files to MP4 in your browser. Join several TS segments into one MP4 without re-encoding or uploading anything. Free, private, no sign-up.",
     lead: "Turn .ts files into an MP4 that plays everywhere. Choose one file or a whole set of segments; they're joined in order and rewrapped on your device, without re-encoding.",
     intro: [
-      "MPEG-TS (.ts) is the format broadcast TV and HLS streams use. Players such as VLC open it, but phones, editors, and many apps expect MP4. The video and audio inside are usually H.264 and AAC, which MP4 uses too, so the file only needs a new container.",
-      "This converter does exactly that, in your browser with mux.js: it reads the TS packets and writes the same video and audio into an MP4 file. Nothing is re-encoded, so it's quick and keeps the original quality, and nothing is uploaded. Choose several segment files to join them into one video, in file-name order.",
+      "MPEG-TS (.ts) is the format broadcast TV and HLS streams use. Players such as VLC open it, but QuickTime, phones, editors, and many apps expect MP4. The video and audio inside are usually H.264 or H.265 with AAC, which MP4 holds too, so the file only needs a new container.",
+      "This converter does exactly that, in your browser with Mediabunny: it reads the TS packets and writes the same video and audio into a standard MP4 file. Nothing is re-encoded, so it's quick and keeps the original quality, and nothing is uploaded. Choose several segment files to join them into one video, in file-name order.",
     ],
     steps: [
       ["Choose TS files", "Drop one .ts file or a set of segments, or click to browse."],
@@ -175,10 +175,10 @@ export const tools: HlsTool[] = [
     faqs: [
       ["How do I convert TS to MP4?", "Drop your .ts file, or several segment files, into the box. Check the order, then click Convert. When it finishes, save the MP4."],
       ["Does converting reduce quality?", "No. The video and audio are copied into the MP4 container unchanged; nothing is re-encoded."],
-      ["Which TS files can it convert?", "Files with H.264 video and AAC audio, the most common combination for HLS and broadcast. H.265 (HEVC), MPEG-2 video, AC-3, and MP3 audio aren't supported by the in-browser converter; use a desktop tool such as ffmpeg or HandBrake for those."],
+      ["Which TS files can it convert?", "Files with H.264 or H.265 video and AAC, MP3, AC-3, or E-AC-3 audio, which covers HLS streams and most recordings. MPEG-2 video, common in older TV recordings, isn't supported; use a desktop tool such as ffmpeg or HandBrake for those."],
       ["Are my files uploaded?", "No. Conversion runs in your browser and the files stay on your device. Once the page has loaded, it even works offline."],
       ["How do I join TS segments in the right order?", "Choose all the segment files at once. They're sorted by name in natural number order, so segment2 comes before segment10. Check the list before converting and remove any file you don't want."],
-      ["Is there a size limit?", "There's no fixed limit. Files are read one at a time and the MP4 is assembled in browser storage; desktop Chrome and Edge handle several gigabytes."],
+      ["Is there a size limit?", "There's no fixed limit. The files are read in pieces and the MP4 is assembled in browser storage, so desktop Chrome and Edge handle several gigabytes."],
     ],
   },
 ];

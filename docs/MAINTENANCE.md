@@ -68,18 +68,20 @@ Avoid duplicate tools for spelling variations or search phrases. Add accurate se
 | `m3u8-checker` | `Checker.tsx` | Shows variants, renditions, segment facts, warnings, and the raw playlist; can load every variant |
 | `ts-to-mp4` | `TsConverter.tsx` | Rewraps local `.ts` files (one or many, natural name order) into one MP4 |
 
-The engine is in `app/hls/lib/`: `m3u8.ts` (parser and helpers, no browser APIs), `download.ts` (fetching with retries, byte ranges, AES-128 decryption with Web Crypto, and the downloader that fetches six segments at a time but writes them in order), `remux.ts` (container detection and output assembly), and `format.ts`. Tools hand a stream to each other with `?url=`, read once on mount by `useStreamParam` in `UrlForm.tsx`.
+The engine is in `app/hls/lib/`: `m3u8.ts` (parser and helpers, no browser APIs), `download.ts` (fetching with retries, byte ranges, AES-128 decryption with Web Crypto, and the downloader that fetches six segments at a time but writes them in order), `remux.ts` (container detection and output assembly), `mp4.ts` (standard MP4 builder), and `format.ts`. Tools hand a stream to each other with `?url=`, read once on mount by `useStreamParam` in `UrlForm.tsx`.
 
 Behavior and limits to keep in mind:
 
 - Everything runs in the visitor's browser. There is no proxy, so the stream's server must allow cross-origin reads (CORS); errors say so. Adding a proxy would make ToolsBase relay third-party video, with bandwidth and legal consequences, so don't add one casually.
 - DRM is refused, not worked around: SAMPLE-AES, Widevine, FairPlay, and PlayReady streams fail with a message. Only unencrypted streams and AES-128 with a reachable key are supported.
-- TS to MP4 uses mux.js (lazy-loaded) and supports H.264 with AAC only; other codecs fall back to TS with a message. fMP4 (`EXT-X-MAP`) streams are joined as they are. A discontinuity starts a fresh mux.js transmuxer at the end time of the previous output, because mux.js applies `baseMediaDecodeTime` only to tracks it hasn't seen yet.
+- MP4 output is a standard MP4 (one `moov` with full sample tables, then `mdat`), built by `mp4.ts` with Mediabunny (MPL-2.0, lazy-loaded) without re-encoding, for both TS and fMP4 streams. Don't switch back to fragmented MP4 output: QuickTime, Safari, and iPhone read the fragmented MP4 that mux.js wrote as a 24-hour file with no video frames. Segments are collected per timeline and rebuilt after the download; each discontinuity starts a timeline that continues where the previous one ended, and fMP4 timelines start with their init section.
+- The first segment is fetched alone and checked before the rest: H.264, H.265, AV1, VP9, AAC, MP3, AC-3, E-AC-3, Opus, and FLAC fit in the MP4. Mediabunny silently skips TS streams it can't read, so `tsStreamTypes` reads the TS program map and refuses MPEG-2 and other unsupported video instead of saving audio only. Unsupported TS falls back to "TS (original)" with a message; fMP4 that can't be rebuilt is joined as it is, with a warning.
+- Every request (playlist, key, init, segment) is abandoned if no data arrives for 30 seconds (`STALL_MS` in `download.ts`) and retried up to three times, so a stalled CDN connection can't freeze a download.
 - Live playlists download only the segments listed when the download starts. Downloads are assembled as Blob parts in browser storage, so very long streams depend on the browser's limits.
 - The sample stream is Mux's public Big Buck Bunny test stream (CC BY, CORS enabled), `SAMPLE_STREAM` in `UrlForm.tsx`. Replace it if that URL stops working.
 - Analytics events (`hls_*`) never include stream URLs or file names.
 
-`tests/hls.test.mjs` covers the parser, IV derivation, container sniffing, naming, and catalog completeness. Before a release, also try the tools in a browser against a few streams: plain TS, AES-128, fMP4, byte ranges, a discontinuity, a blocked (no CORS) server, and the sample stream. Play the saved files and check their length.
+`tests/hls.test.mjs` covers the parser, IV derivation, container sniffing, naming, and catalog completeness. Before a release, also try the tools in a browser against a few streams: plain TS, AES-128, fMP4, byte ranges, a discontinuity, H.265, a blocked (no CORS) server, and the sample stream. Open the saved MP4s in QuickTime as well as a browser (Chrome and VLC tolerate files that QuickTime rejects), and check their length.
 
 ## Configuration, analytics, and privacy
 

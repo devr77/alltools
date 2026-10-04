@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import ts from "typescript";
+
+const requirePackage = createRequire(import.meta.url);
 
 function load(file) {
   const code = ts.transpileModule(readFileSync(new URL(`../app/hls/${file}`, import.meta.url), "utf8"), {
@@ -9,11 +12,13 @@ function load(file) {
   }).outputText;
   const loaded = { exports: {} };
   const dir = file.includes("/") ? file.slice(0, file.lastIndexOf("/") + 1) : "";
-  new Function("require", "module", "exports", code)((name) => load(`${dir}${name.replace(/^\.\//, "")}.ts`), loaded, loaded.exports);
+  const resolve = (name) => (name.startsWith(".") ? load(`${dir}${name.replace(/^\.\//, "")}.ts`) : requirePackage(name));
+  new Function("require", "module", "exports", code)(resolve, loaded, loaded.exports);
   return loaded.exports;
 }
 const m3u8 = load("lib/m3u8.ts");
 const remux = load("lib/remux.ts");
+const mp4 = load("lib/mp4.ts");
 const format = load("lib/format.ts");
 const { tools, findTool } = load("catalog.ts");
 
@@ -50,13 +55,14 @@ test("master playlists list variants, renditions, and resolve relative URIs", ()
   assert.deepEqual(m3u8.rankVariants(playlist.variants).map((variant) => variant.resolution.height), [1080, 720, 360]);
 });
 
-test("codec helpers describe codecs and know what mux.js can rewrap", () => {
+test("codec helpers describe codecs and know what fits in the MP4", () => {
   assert.equal(m3u8.describeCodecs("avc1.640028,mp4a.40.2"), "H.264 + AAC");
   assert.equal(m3u8.describeCodecs("hvc1.2.4.L123.B0,ec-3"), "H.265 + Dolby Digital Plus");
   assert.equal(m3u8.describeCodecs("mp4a.40.2,avc1.64001f"), "H.264 + AAC");
   assert.equal(m3u8.mp4Compatible("avc1.640028,mp4a.40.5"), true);
-  assert.equal(m3u8.mp4Compatible("hvc1.2.4.L123.B0,mp4a.40.2"), false);
-  assert.equal(m3u8.mp4Compatible("avc1.640028,ac-3"), false);
+  assert.equal(m3u8.mp4Compatible("hvc1.2.4.L123.B0,ec-3"), true);
+  assert.equal(m3u8.mp4Compatible("avc1.640028,ac-3,wvtt"), true);
+  assert.equal(m3u8.mp4Compatible("mp4v.20.9,mp4a.40.2"), false);
   assert.equal(m3u8.mp4Compatible(undefined), true);
 });
 
@@ -188,4 +194,39 @@ test("every tool has complete copy and a unique slug", () => {
     assert.ok(tool.description.length <= 170, `${tool.slug} description is ${tool.description.length} chars`);
     for (const key of ["intro", "steps", "features", "useCases", "faqs"]) assert.ok(tool[key].length >= 2, `${tool.slug}.${key}`);
   }
+});
+
+/** A 188-byte TS packet carrying one PSI section (PAT or PMT) on `pid`, padded with 0xff. */
+function psiPacket(pid, section) {
+  const packet = new Uint8Array(188).fill(0xff);
+  packet.set([0x47, 0x40 | (pid >> 8), pid & 0xff, 0x10, 0x00, ...section, 0, 0, 0, 0]);
+  return packet;
+}
+
+test("TS program maps reveal every stream, including ones the MP4 builder can't hold", () => {
+  // PAT: program 1 -> PMT on PID 0x1000. PMT: MPEG-2 video (0x02) on 0x100 and AAC (0x0f) on 0x101.
+  const pat = psiPacket(0, [0x00, 0xb0, 13, 0x00, 0x01, 0xc1, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00]);
+  const pmt = psiPacket(0x1000, [0x02, 0xb0, 23, 0x00, 0x01, 0xc1, 0x00, 0x00, 0xe1, 0x00, 0xf0, 0x00, 0x02, 0xe1, 0x00, 0xf0, 0x00, 0x0f, 0xe1, 0x01, 0xf0, 0x00]);
+  assert.deepEqual(mp4.tsStreamTypes(new Uint8Array([...pat, ...pmt])), [0x02, 0x0f]);
+  assert.deepEqual(mp4.tsStreamTypes(new Uint8Array([...pmt, ...pat])), [], "a PMT before its PAT isn't recognized");
+  assert.deepEqual(mp4.tsStreamTypes(new Uint8Array(10)), []);
+});
+
+test("the blob writer appends, patches earlier bytes, and fills gaps", async () => {
+  const writer = new mp4.BlobWriter();
+  writer.write(0, new Uint8Array([1, 2, 3, 4]));
+  writer.write(4, new Uint8Array([5, 6, 7, 8]));
+  writer.write(2, new Uint8Array([9, 9, 9])); // spans the two parts, like an mdat size patch
+  writer.write(10, new Uint8Array([7]));
+  const bytes = [...new Uint8Array(await writer.finish("video/mp4").arrayBuffer())];
+  assert.deepEqual(bytes, [1, 2, 9, 9, 9, 6, 7, 8, 0, 0, 7]);
+});
+
+test("MP4 output is rebuilt for TS and fMP4 only", () => {
+  assert.equal(remux.remuxes("ts", "mp4"), true);
+  assert.equal(remux.remuxes("fmp4", "mp4"), true);
+  assert.equal(remux.remuxes("ts", "original"), false);
+  assert.equal(remux.remuxes("aac", "mp4"), false);
+  assert.equal(remux.createAssembler("aac", "mp4").extension, "aac");
+  assert.equal(remux.createAssembler("ts", "original").extension, "ts");
 });

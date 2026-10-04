@@ -4,7 +4,8 @@
  * Everything runs in the visitor's browser, so the stream's server must allow cross-origin reads (CORS).
  */
 import { ivFor, parsePlaylist, SUPPORTED_KEY_METHODS, type InitMap, type MediaPlaylist, type Segment } from "./m3u8";
-import { createAssembler, sniffContainer, type Format } from "./remux";
+import { createAssembler, remuxes, sniffContainer, type Assembler, type Format } from "./remux";
+import { unsupportedCodecs } from "./mp4";
 
 type Bytes = Uint8Array<ArrayBuffer>;
 
@@ -21,11 +22,14 @@ export function checkStreamUrl(input: string): string {
   return url.href;
 }
 
+/** A final HTTP failure: not retried, and reported as it is. */
+class HttpError extends Error {}
+
 function httpError(status: number, what: string) {
-  if (status === 401 || status === 403) return new Error(`The server refused access to the ${what} (HTTP ${status}). The link may have expired, or it only works on the site it came from. Copy a fresh address and try again.`);
-  if (status === 404 || status === 410) return new Error(`The ${what} wasn't found (HTTP ${status}). The link may have expired.`);
-  if (status === 429) return new Error(`The server is rate-limiting requests for the ${what} (HTTP 429). Wait a minute and try again.`);
-  return new Error(`The server returned HTTP ${status} for the ${what}.`);
+  if (status === 401 || status === 403) return new HttpError(`The server refused access to the ${what} (HTTP ${status}). The link may have expired, or it only works on the site it came from. Copy a fresh address and try again.`);
+  if (status === 404 || status === 410) return new HttpError(`The ${what} wasn't found (HTTP ${status}). The link may have expired.`);
+  if (status === 429) return new HttpError(`The server is rate-limiting requests for the ${what} (HTTP 429). Wait a minute and try again.`);
+  return new HttpError(`The server returned HTTP ${status} for the ${what}.`);
 }
 
 const blockedMessage = (what: string) => `Couldn't read the ${what}. The server doesn't allow other websites to load it (CORS), the address is wrong, or you're offline. Streams that only play on their own website can't be loaded here.`;
@@ -36,39 +40,81 @@ const pause = (ms: number, signal?: AbortSignal) => new Promise<void>((done, fai
   signal?.addEventListener("abort", () => { clearTimeout(timer); fail(signal.reason); }, { once: true });
 });
 
-/** GET with up to three attempts for network errors and 408/429/5xx. Byte ranges use a Range header. */
-async function request(url: string, what: string, signal?: AbortSignal, range?: { offset: number; length: number }): Promise<Response> {
+/** How long a request may go without receiving any data before it's abandoned and retried. */
+export const STALL_MS = 30_000;
+
+type Fetched = { bytes: Bytes; status: number; url: string };
+
+/** Reads a response body, aborting through `stall` if no data arrives for STALL_MS. */
+async function readBody(response: Response, arm: () => void): Promise<Bytes> {
+  if (!response.body) return new Uint8Array(await response.arrayBuffer());
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let length = 0;
+  for (;;) {
+    arm();
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    length += value.byteLength;
+  }
+  const bytes = new Uint8Array(length);
+  let at = 0;
+  for (const chunk of chunks) { bytes.set(chunk, at); at += chunk.byteLength; }
+  return bytes;
+}
+
+/**
+ * GET with up to three attempts for network errors, stalls (no data for STALL_MS), and 408/429/5xx.
+ * Byte ranges use a Range header; a server that ignores it and sends the whole file is handled too.
+ */
+async function request(url: string, what: string, signal?: AbortSignal, range?: { offset: number; length: number }): Promise<Fetched> {
   const headers = range ? { Range: `bytes=${range.offset}-${range.offset + range.length - 1}` } : undefined;
   for (let attempt = 1; ; attempt++) {
-    let response: Response;
+    const attemptControl = new AbortController();
+    const forward = () => attemptControl.abort(signal.reason);
+    signal?.addEventListener("abort", forward, { once: true });
+    let stalled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { stalled = true; attemptControl.abort(); }, STALL_MS);
+    };
     try {
-      response = await fetch(url, { signal, headers, credentials: "omit" });
+      arm();
+      const response = await fetch(url, { signal: attemptControl.signal, headers, credentials: "omit" });
+      if (!response.ok) {
+        response.body?.cancel().catch(() => undefined);
+        if (attempt < 3 && retryable(response.status)) { await pause(800 * attempt, signal); continue; }
+        throw httpError(response.status, what);
+      }
+      let bytes = await readBody(response, arm);
+      // A server that ignores Range sends the whole file with 200; cut the requested part out of it.
+      if (range && response.status === 200 && bytes.byteLength > range.length) bytes = bytes.slice(range.offset, range.offset + range.length);
+      return { bytes, status: response.status, url: response.url || url };
     } catch (cause) {
       if (signal?.aborted) throw signal.reason;
+      if (cause instanceof HttpError) throw cause;
       if (attempt < 3) { await pause(600 * attempt, signal); continue; }
+      if (stalled) throw new Error(`The server stopped sending the ${what} (nothing arrived for ${STALL_MS / 1000} seconds, three times). Check your connection and try again.`, { cause });
       throw new Error(blockedMessage(what), { cause });
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", forward);
     }
-    if (response.ok) return response;
-    if (attempt < 3 && retryable(response.status)) { await pause(800 * attempt, signal); continue; }
-    throw httpError(response.status, what);
   }
 }
 
 /** Fetches and parses a playlist. The final URL (after redirects) is the base for its relative links. */
 export async function loadPlaylist(input: string, signal?: AbortSignal) {
   const url = checkStreamUrl(input);
-  const response = await request(url, "playlist", signal);
-  const text = await response.text();
-  return { text, playlist: parsePlaylist(text, response.url || url) };
+  const fetched = await request(url, "playlist", signal);
+  const text = new TextDecoder().decode(fetched.bytes);
+  return { text, playlist: parsePlaylist(text, fetched.url) };
 }
 
-async function readRange(response: Response, range?: { offset: number; length: number }): Promise<Bytes> {
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  // A server that ignores Range sends the whole file with 200; cut the requested part out of it.
-  return range && response.status === 200 && bytes.byteLength > range.length ? bytes.slice(range.offset, range.offset + range.length) : bytes;
-}
-
-export type DownloadProgress = { done: number; total: number; bytes: number; seconds: number };
+/** `phase` is "download" while segments arrive, then "convert" while an MP4 is built (`converted` from 0 to 1). */
+export type DownloadProgress = { phase: "download" | "convert"; done: number; total: number; bytes: number; seconds: number; converted: number };
 
 export type DownloadResult = { blob: Blob; extension: string; warnings: string[] };
 
@@ -102,7 +148,7 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
   const inits = new Map<string, Promise<Bytes>>();
   const key = (uri: string) => {
     if (!keys.has(uri)) {
-      keys.set(uri, request(uri, "decryption key", signal).then(readRange).then((raw) => {
+      keys.set(uri, request(uri, "decryption key", signal).then(({ bytes: raw }) => {
         if (raw.byteLength !== 16) throw new Error(`The decryption key should be 16 bytes but is ${raw.byteLength}. The key URL may need the original site's login.`);
         return crypto.subtle.importKey("raw", raw, "AES-CBC", false, ["decrypt"]);
       }));
@@ -111,13 +157,12 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
   };
   const init = (map: InitMap) => {
     const id = mapKey(map);
-    if (!inits.has(id)) inits.set(id, request(map.uri, "init segment", signal, map.byteRange).then((response) => readRange(response, map.byteRange)));
+    if (!inits.has(id)) inits.set(id, request(map.uri, "init segment", signal, map.byteRange).then((fetched) => fetched.bytes));
     return inits.get(id);
   };
 
   async function fetchSegment(segment: Segment, index: number): Promise<Bytes> {
-    const response = await request(segment.uri, `segment ${index + 1}`, signal, segment.byteRange);
-    let bytes = await readRange(response, segment.byteRange);
+    let { bytes } = await request(segment.uri, `segment ${index + 1}`, signal, segment.byteRange);
     if (segment.key) {
       try {
         bytes = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-CBC", iv: ivFor(segment) }, await key(segment.key.uri), bytes));
@@ -130,9 +175,13 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
     return bytes;
   }
 
-  const mux = options.format === "mp4" ? (await import("mux.js")).default : null;
   const extensionFromUrl = (/\.([a-z0-9]{2,4})(?:[?#]|$)/i.exec(segments[0].uri)?.[1] || "bin").toLowerCase();
-  let assembler: ReturnType<typeof createAssembler> | null = null;
+  const needsInit = (index: number) => {
+    const segment = segments[index];
+    // Each timeline of a rebuilt MP4 starts with an init section, so a discontinuity needs one even if the map is unchanged.
+    return segment.map && (index === 0 || segment.discontinuity || mapKey(segments[index - 1].map) !== mapKey(segment.map));
+  };
+  let assembler: Assembler;
   let writtenInit = "";
   let elapsed = 0;
   let written = 0;
@@ -142,6 +191,8 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
   let waiting: (() => void)[] = [];
   const wake = () => waiting.splice(0).forEach((resume) => resume());
   signal.addEventListener("abort", wake, { once: true });
+  const report = (phase: DownloadProgress["phase"], converted = 0) =>
+    options.onProgress({ phase, done: written, total: segments.length, bytes, seconds: elapsed, converted });
 
   // Writes every segment that is next in line. Runs synchronously, so writes never interleave.
   const drain = () => {
@@ -149,29 +200,29 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
       const { data, init: initBytes } = ready.get(written);
       ready.delete(written);
       const segment = segments[written];
-      if (!assembler) {
-        const container = initBytes ? "fmp4" : sniffContainer(data);
-        if (container === "ts" && options.format === "mp4" && playlist.discontinuities) {
-          warnings.push("This stream has discontinuities (often ad breaks). If the MP4 skips or stalls at those points, download it as TS instead.");
-        }
-        assembler = createAssembler(container, options.format, mux, extensionFromUrl);
-      }
+      const discontinuity = written > 0 && segment.discontinuity;
       if (initBytes) {
         const id = mapKey(segment.map);
-        if (!writtenInit) assembler.write(initBytes);
+        if (assembler.timelines) assembler.write(initBytes, discontinuity || (written > 0 && id !== writtenInit));
+        else if (!writtenInit) assembler.write(initBytes);
         else if (id !== writtenInit) warnings.push("The stream switches format partway through, so the file may stop playing at that point.");
-        writtenInit = writtenInit || id;
-      }
-      assembler.write(data, written > 0 && segment.discontinuity);
-      // A TS stream mux.js can't read (H.265, AC-3, MP3...) yields nothing; say so early rather than after the download.
-      if (mux && written === 2 && !assembler.produced()) {
-        throw new Error("These segments use codecs the in-browser MP4 converter can't read (it supports H.264 video with AAC audio). Choose TS (original) instead.");
+        writtenInit = assembler.timelines ? id : writtenInit || id;
+        assembler.write(data);
+      } else {
+        assembler.write(data, discontinuity);
       }
       elapsed += segment.duration;
       written++;
-      options.onProgress({ done: written, total: segments.length, bytes, seconds: elapsed });
+      report("download");
     }
     wake();
+  };
+
+  const fetchWithInit = async (index: number) => {
+    const segment = segments[index];
+    const [data, initBytes] = await Promise.all([fetchSegment(segment, index), needsInit(index) ? init(segment.map) : undefined]);
+    bytes += data.byteLength + (initBytes?.byteLength ?? 0);
+    return { data, init: initBytes };
   };
 
   const worker = async () => {
@@ -179,20 +230,45 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
       const index = nextIndex++;
       while (index - written >= window && !signal.aborted) await new Promise<void>((resume) => waiting.push(resume));
       if (signal.aborted) throw signal.reason;
-      const segment = segments[index];
-      const needsInit = segment.map && (index === 0 || mapKey(segments[index - 1].map) !== mapKey(segment.map));
-      const [data, initBytes] = await Promise.all([fetchSegment(segment, index), needsInit ? init(segment.map) : undefined]);
-      bytes += data.byteLength + (initBytes?.byteLength ?? 0);
-      ready.set(index, { data, init: initBytes });
+      ready.set(index, await fetchWithInit(index));
       drain();
     }
   };
 
   try {
-    options.onProgress({ done: 0, total: segments.length, bytes: 0, seconds: 0 });
-    await Promise.all(Array.from({ length: Math.min(concurrency, segments.length) }, async () => {
+    report("download");
+    // The first segment comes alone: it identifies the container and, for MP4, shows whether the codecs fit,
+    // so an unsupported stream fails now rather than after the whole download.
+    const first = await fetchWithInit(0);
+    let container = first.init ? "fmp4" : sniffContainer(first.data);
+    let format = options.format;
+    if (remuxes(container, format)) {
+      const sample = new Blob(first.init ? [first.init, first.data] : [first.data]);
+      const unsupported = await unsupportedCodecs(sample, container as "ts" | "fmp4").catch(() => ["a format the converter can't read"]);
+      if (unsupported.length && container === "fmp4") {
+        // fMP4 is already MP4: join it as it is rather than fail.
+        format = "original";
+        warnings.push("The stream couldn't be rebuilt as a standard MP4, so its fragments were joined as they are. If it doesn't play, try VLC.");
+      } else if (unsupported.length) {
+        throw new Error(`These segments use ${unsupported.join(" and ")}, which can't be saved as MP4 here. Choose TS (original) instead.`);
+      }
+    }
+    if (container === "ts" && remuxes(container, format) && playlist.discontinuities) {
+      warnings.push("This stream has discontinuities (often ad breaks). They're joined into one timeline; if the MP4 glitches at those points, download it as TS instead.");
+    }
+    if (container === "unknown" && first.init) container = "fmp4";
+    assembler = createAssembler(container, format, extensionFromUrl);
+    ready.set(0, first);
+    nextIndex = 1;
+    drain();
+    await Promise.all(Array.from({ length: Math.min(concurrency, segments.length - 1) }, async () => {
       try { await worker(); } catch (cause) { controller.abort(cause); throw cause; }
     }));
+    report("convert", 0);
+    const blob = await assembler.finish({ signal, onProgress: (fraction) => report("convert", fraction) });
+    if (!blob.size) throw new Error("No playable data came out of the download. Try TS (original) instead.");
+    if (!playlist.endList) warnings.push("This is a live stream: the file holds only the segments the playlist listed when the download started.");
+    return { blob, extension: assembler.extension, warnings };
   } catch (cause) {
     // The first failure aborts the rest; report it rather than the abort it caused in other workers.
     throw options.signal.aborted ? options.signal.reason : signal.reason ?? cause;
@@ -200,7 +276,4 @@ export async function downloadStream(playlist: MediaPlaylist, options: {
     options.signal.removeEventListener("abort", stop);
     waiting = [];
   }
-  if (!assembler.produced()) throw new Error("No playable data came out of the download. Try TS (original) instead.");
-  if (!playlist.endList) warnings.push("This is a live stream: the file holds only the segments the playlist listed when the download started.");
-  return { blob: assembler.finish(), extension: assembler.extension, warnings };
 }

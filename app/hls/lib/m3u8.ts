@@ -219,10 +219,14 @@ export function separateAudio(master: MasterPlaylist, variant: Variant) {
   return master.renditions.filter((rendition) => rendition.type === "AUDIO" && rendition.groupId === variant.audio && rendition.uri);
 }
 
-/** Codecs the in-browser MP4 converter (mux.js) can rewrap: H.264 video and AAC audio. Unknown codecs are assumed fine. */
+/**
+ * Whether declared codecs fit in the MP4 the downloader builds (mp4.ts): H.264, H.265, AV1, VP9, AAC, MP3, AC-3,
+ * E-AC-3, Opus, FLAC; subtitle codecs are ignored. Undeclared codecs pass; the first segment is checked anyway.
+ */
 export function mp4Compatible(codecs?: string) {
   if (!codecs) return true;
-  return codecs.split(",").map((codec) => codec.trim().toLowerCase()).every((codec) => /^(avc1|avc3|mp4a\.40\.(2|5|29))/.test(codec));
+  return codecs.split(",").map((codec) => codec.trim().toLowerCase())
+    .every((codec) => /^(avc[13]|hvc1|hev1|dvh1|dvhe|av01|vp09|mp4a|ac-3|ec-3|opus|flac|wvtt|stpp)/.test(codec));
 }
 
 const VIDEO_NAMES = ["H.264", "H.265", "AV1", "VP9"];
