@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import MobileSidebar from "./MobileSidebar";
+import SiteSearch from "./SiteSearch";
+import type { SearchTool } from "@/app/lib/tool-index";
 
-export default function SiteHeader() {
+export default function SiteHeader({ tools }: { tools: SearchTool[] }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -44,10 +46,13 @@ export default function SiteHeader() {
             </Link>
           </div>
 
-          <nav aria-label="Main navigation" className="text-sm text-muted flex items-center gap-5">
-            <Link href="/#tool-directory">All tools</Link>
-            <Link href="/about">About</Link>
-          </nav>
+          <div className="flex items-center gap-3">
+            <nav aria-label="Main navigation" className="text-sm text-muted flex items-center gap-5">
+              <Link href="/#tool-directory">All tools</Link>
+              <Link href="/about">About</Link>
+            </nav>
+            <SiteSearch tools={tools} />
+          </div>
         </div>
       </header>
     </>

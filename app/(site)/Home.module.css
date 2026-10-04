@@ -8,34 +8,9 @@
 }
 .home a { text-decoration: none; }
 .home button { cursor: pointer; }
-.home :is(a, button, input):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.hero {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 40px;
-  align-items: center;
-  padding: 0 0 24px;
-  border-bottom: 1px solid var(--line);
-}
-.eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; font-weight: 600; letter-spacing: 1.6px; }
-.statusDot { width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 0 4px #eff6ff; margin-right: 4px; }
-.hero h1 { margin: 10px 0; font-size: clamp(28px, 3vw, 36px); line-height: 1.2; letter-spacing: -1.4px; font-weight: 600; }
-.hero h1 > span { color: #a1a1aa; }
-.heroDescription { max-width: 480px; font-size: 16px; line-height: 1.7; color: #71717a; }
-.heroSearch { min-width: 0; }
+.home :is(a, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-.searchBox { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 18px; margin-top: 0; border: 1px solid #d4d4d8; border-radius: 10px; background: white; box-shadow: 0 3px 8px #18181b06; color: #a1a1aa; }
-.searchBox:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px #eff6ff; }
-.searchBox > svg { flex-shrink: 0; }
-.searchBox input { min-width: 0; flex: 1; padding: 12px 0; border: 0; outline: none !important; color: #18181b; font-size: 16px; background: transparent; }
-.searchBox input::placeholder { color: #71717a; }
-.searchBox kbd { white-space: nowrap; padding: 4px 6px; font: 11px Arial, sans-serif; color: #71717a; border: 1px solid #e4e4e7; border-radius: 4px; background: #fafafa; }
-.suggestions { display: flex; align-items: center; gap: 13px; flex-wrap: wrap; margin-top: 13px; color: #71717a; font-size: 14px; }
-.suggestions > span { color: #71717a; }
-.suggestions button { display: inline-flex; gap: 6px; align-items: center; padding: 3px 0; }
-.suggestions button:hover { color: var(--accent); }
-.suggestions button span { color: #a1a1aa; }
-.featured { padding: 24px 0; border-bottom: 1px solid var(--line); }
+.featured { padding: 0 0 24px; border-bottom: 1px solid var(--line); }
 .sectionHeader, .directoryHeading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 22px; }
 .sectionHeader h2, .directoryHeading h2 { margin-top: 7px; font-size: 23px; font-weight: 600; letter-spacing: -.7px; }
 .textLink { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: #52525b; padding-bottom: 3px; }
@@ -95,24 +70,14 @@
 .filterSummary { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 8px 0 20px; font-size: 16px; overflow-wrap: anywhere; }
 .filterSummary button { flex-shrink: 0; color: #2563eb; font-size: 14px; }
 .filterSummary button span { margin-left: 6px; }
-.emptyState { border: 1px dashed #d4d4d8; border-radius: 12px; text-align: center; padding: 60px 20px; }
-.emptyState > svg { margin: 0 auto 18px; color: #a1a1aa; }
-.emptyState h3 { font-size: 18px; font-weight: 500; }
-.emptyState p { color: #71717a; margin-top: 8px; font-size: 16px; }
-.emptyState button { display: inline-flex; align-items: center; gap: 8px; background: #18181b; color: white; padding: 10px 16px; border-radius: 7px; font-size: 15px; margin-top: 22px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (max-width: 1000px) {
-  .hero { gap: 35px; }
   .directoryLayout { grid-template-columns: 190px minmax(0, 1fr); gap: 20px; }
   .toolGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
-  .hero { grid-template-columns: 1fr; gap: 20px; padding: 0 0 24px; }
-  .hero h1 { font-size: 30px; letter-spacing: -1px; }
-  .heroDescription { max-width: 420px; font-size: 17px; }
-  .featured { padding: 28px 0; }
+  .featured { padding: 0 0 28px; }
   .sectionHeader h2, .directoryHeading h2 { font-size: 21px; }
-  .eyebrow { font-size: 11px; letter-spacing: 1.2px; }
   .featuredGrid { grid-template-columns: 1fr; gap: 10px; }
   .suites { margin-top: 28px; padding-top: 28px; }
   .suiteGrid { grid-template-columns: 1fr; gap: 10px; }
@@ -137,7 +102,6 @@
 }
 @media (max-width: 380px) {
   .toolGrid { grid-template-columns: 1fr; }
-  .searchBox kbd { display: none; }
   .groupHeading > h3 { font-size: 16px; }
   .sectionHeader { align-items: start; }
   .textLink { margin-top: 22px; }

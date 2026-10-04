@@ -22,7 +22,9 @@ TypeScript validation is enabled in production builds. Do not add `ignoreBuildEr
 | File | Responsibility |
 | --- | --- |
 | `app/Constants.ts` | Main category/tool catalog; imported by home, menus, category pages, and sitemap |
-| `app/(site)/Home.tsx`, `app/(site)/Home.module.css` | Compact hero, featured tools, search, category filtering, tool directory |
+| `app/(site)/Home.tsx`, `app/(site)/Home.module.css` | Featured tools, category filtering, tool directory, More toolkits (no hero) |
+| `app/components/SiteSearch.tsx` | Header search dialog (icon, Cmd/Ctrl+K) over every tool, Share and HLS included |
+| `app/lib/tool-index.ts` | The combined tool list (main catalog + Share + HLS) for the home page and header search |
 | `app/layout.tsx` | Base metadata and analytics wrappers |
 | `app/(site)/layout.tsx` | Main site header, main area, and footer for every page except `/share` and `/hls` |
 | `app/globals.css` | Existing light-theme colors, base type size, common tool controls and content width |
@@ -45,7 +47,7 @@ The category layouts use `ToolLayout`. Their category indexes use `CategoryDirec
 
 ## Search and adding tools
 
-Home search uses Fuse over tool names, category names, and optional `keywords`. Share and HLS appear on the home page as the "File Sharing" and "Video & HLS" categories and in the "More toolkits" cards; `app/(site)/page.tsx` builds them from `app/share/catalog.ts` and `app/hls/catalog.ts` (links go to each section's canonical URL), so new Share or HLS tools show up there automatically. It supports Cmd/Ctrl+K, Escape, suggested queries, and a resettable empty state. Search ignores field length when ranking so long natural-language alias lists do not bury relevant tools. Result counts come from the actual filtered list. Search analytics are debounced by 400ms.
+Search lives in the site header (`app/components/SiteSearch.tsx`) on every main-site page: a small icon, or Cmd/Ctrl+K, opens a dialog. It uses Fuse over tool names, category names, and optional `keywords` (loaded on first open), shows popular tools before typing, and supports arrow keys, Enter, Escape, and a backdrop click. Searches are sent to analytics as `tool_search` with `source: "header"`, debounced by 400ms. The list comes from `app/lib/tool-index.ts`, which also adds Share and HLS: they appear in search, as the "File Sharing" and "Video & HLS" home page categories, and in the "More toolkits" cards, with links to each section's canonical URL. New Share or HLS tools show up in all three automatically.
 
 For a normal tool:
 
@@ -53,7 +55,7 @@ For a normal tool:
 2. Create `app/(site)/<category>/<slug>/page.tsx`. Keep metadata in the server page and browser interactions in a client component.
 3. Use the category layout; do not duplicate site navigation, footer, or related-tool blocks.
 4. Give the page a descriptive H1 and labels for inputs. Include empty, invalid, working, successful, and reset states where applicable.
-5. Verify the category card, home search, mobile menu, sitemap URL, and direct route.
+5. Verify the category card, header search, mobile menu, sitemap URL, and direct route.
 
 Avoid duplicate tools for spelling variations or search phrases. Add accurate search aliases instead. Torrent tools are added in `torrent/` (see its README), not here. Share and HLS tools are added in their own catalogs (`app/share/catalog.ts`, `app/hls/catalog.ts`).
 

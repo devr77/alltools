@@ -1,5 +1,6 @@
 import SiteHeader from "@/app/components/SiteHeader";
 import SiteFooter from "@/app/components/SiteFooter";
+import { searchTools } from "@/app/lib/tool-index";
 
 const jsonLdWebsite = {
   "@context": "https://schema.org",
@@ -14,7 +15,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }} />
-      <SiteHeader />
+      <SiteHeader tools={searchTools()} />
       <main className="site-main">{children}</main>
       <SiteFooter />
     </>
