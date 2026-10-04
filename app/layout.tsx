@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Header and footer live in section layouts: app/(site)/layout.tsx for the main site, app/share/layout.tsx for Share.
+// Header and footer live in section layouts: app/(site)/layout.tsx for the main site, app/share/layout.tsx for Share,
+// and app/hls/layout.tsx for HLS.
 export default function RootLayout({
   children,
 }: Readonly<{

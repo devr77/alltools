@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { categories } from "./Constants";
 import { CANONICAL_ON_DOMAIN } from "./share/domain";
 import { shareSitemap } from "./share/seo";
+import { CANONICAL_ON_DOMAIN as HLS_ON_DOMAIN } from "./hls/domain";
+import { hlsSitemap } from "./hls/seo";
 
 const BASE_URL = "https://toolsbase.org";
 
@@ -50,6 +52,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: url === "/" ? 1 : 0.7,
   }));
 
-  // Share pages are listed by whichever host is canonical for them (app/share/domain.ts).
-  return [...staticLinks, ...dynamicSitemap, ...(CANONICAL_ON_DOMAIN ? [] : shareSitemap())];
+  // Share and HLS pages are listed by whichever host is canonical for them (app/share/domain.ts, app/hls/domain.ts).
+  return [
+    ...staticLinks, ...dynamicSitemap,
+    ...(CANONICAL_ON_DOMAIN ? [] : shareSitemap()),
+    ...(HLS_ON_DOMAIN ? [] : hlsSitemap()),
+  ];
 }

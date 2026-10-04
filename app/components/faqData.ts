@@ -67,29 +67,6 @@ export const encodingDecodingFAQs = [
   }
 ];
 
-export const generatorFAQs = [
-  {
-    question: "Are these generator tools free?",
-    answer: "Yes, all our generators including UUID and NanoID generators are completely free to use."
-  },
-  {
-    question: "What's the difference between UUID and NanoID?",
-    answer: "UUIDs are 36-character standard identifiers, while NanoIDs are shorter, URL-friendly identifiers that use a larger character set for better efficiency."
-  },
-  {
-    question: "How many IDs can I generate?",
-    answer: "You can generate as many IDs as you need. There's no limit on the number of generations."
-  },
-  {
-    question: "Are the generated IDs truly unique?",
-    answer: "Yes, both UUID v4 and NanoID algorithms ensure extremely high uniqueness probabilities, making collisions virtually impossible."
-  },
-  {
-    question: "Can I use these IDs in production?",
-    answer: "Absolutely! These generators produce cryptographically secure random IDs suitable for production use in databases, APIs, and applications."
-  }
-];
-
 export const randomiserFAQs = [
   {
     question: "Are the randomization tools free?",

@@ -140,26 +140,6 @@ export const categories = [
       },
     ],
   },
-  {
-    name: "Generators",
-    slug: "generators",
-    icon: "⚙️",
-    description: "Various generators for IDs and  data",
-    tools: [
-      {
-        name: "UUID Generator",
-        slug: "uuid-generator",
-        icon: "🎲",
-        description: "Generate universally unique identifiers (UUIDs).",
-      },
-      {
-        name: "NanoID Generator",
-        slug: "nanoid-generator",
-        icon: "🧬",
-        description: "Generate NanoIDs for compact unique IDs.",
-      },
-    ],
-  },
   // {
   //   name: "Finance Calculators",
   //   slug: "finance-calculators",

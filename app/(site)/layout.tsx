@@ -9,7 +9,7 @@ const jsonLdWebsite = {
   url: "https://toolsbase.org/",
 };
 
-// Main ToolsBase chrome. /share sits outside this route group and uses its own layout.
+// Main ToolsBase chrome. /share and /hls sit outside this route group and use their own layouts.
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>

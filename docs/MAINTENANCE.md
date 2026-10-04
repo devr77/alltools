@@ -24,7 +24,7 @@ TypeScript validation is enabled in production builds. Do not add `ignoreBuildEr
 | `app/Constants.ts` | Main category/tool catalog; imported by home, menus, category pages, and sitemap |
 | `app/(site)/Home.tsx`, `app/(site)/Home.module.css` | Compact hero, featured tools, search, category filtering, tool directory |
 | `app/layout.tsx` | Base metadata and analytics wrappers |
-| `app/(site)/layout.tsx` | Main site header, main area, and footer for every page except `/share` |
+| `app/(site)/layout.tsx` | Main site header, main area, and footer for every page except `/share` and `/hls` |
 | `app/globals.css` | Existing light-theme colors, base type size, common tool controls and content width |
 | `app/components/SiteHeader.tsx`, `MobileSidebar.tsx` | Desktop navigation and mobile navigation dialog |
 | `app/components/SiteFooter.tsx`, `SiteFooter.module.css` | Shared responsive footer and policy/contact links |
@@ -32,6 +32,9 @@ TypeScript validation is enabled in production builds. Do not add `ignoreBuildEr
 | `app/components/ToolLayout.tsx`, `ToolLayout.module.css` | Breadcrumbs, tool panel, feedback, sharing, related tools |
 | `app/sitemap.ts` | Sitemap generated from the shared catalog |
 | `next.config.ts` | Redirects, including `/torrent` and `/torrent/:tool` to the standalone torrent site |
+| `app/share/`, `app/share-domain/` | Share section (temporary links), with its own layout; see the README |
+| `app/hls/`, `app/hls-domain/` | HLS section (stream download, playback, inspection, TS to MP4), with its own layout; see [HLS tools](#hls-tools) |
+| `middleware.ts` | Serves Share and HLS at the root of their optional own domains (`NEXT_PUBLIC_SHARE_URL`, `NEXT_PUBLIC_HLS_URL`) |
 | `torrent/` | Standalone static torrent site (not part of the Next.js build); see its README |
 
 The category layouts use `ToolLayout`. Their category indexes use `CategoryDirectory`. Existing tool implementations remain inside those shared layouts. About, contact, and privacy pages use the shared information panel style.
@@ -52,7 +55,31 @@ For a normal tool:
 4. Give the page a descriptive H1 and labels for inputs. Include empty, invalid, working, successful, and reset states where applicable.
 5. Verify the category card, home search, mobile menu, sitemap URL, and direct route.
 
-Avoid duplicate tools for spelling variations or search phrases. Add accurate search aliases instead. Torrent tools are added in `torrent/` (see its README), not here.
+Avoid duplicate tools for spelling variations or search phrases. Add accurate search aliases instead. Torrent tools are added in `torrent/` (see its README), not here. Share and HLS tools are added in their own catalogs (`app/share/catalog.ts`, `app/hls/catalog.ts`).
+
+## HLS tools
+
+`app/hls/` is a self-contained section in the same shape as Share: `HlsShell.tsx` (header, footer, acceptable-use notice), `HubPage.tsx` and `ToolPage.tsx` (shared by `app/hls` and `app/hls-domain`), `catalog.ts` (all page copy), `sections.tsx` (page sections and the tool panel), and `hls.css` (its own theme, scoped to `.hls-root`, light and dark). It imports nothing from Share or the main site.
+
+| Tool | Client component | What it does |
+| --- | --- | --- |
+| `hls-downloader` | `Downloader.tsx` | Loads a master or media playlist, lists qualities and separate audio tracks, downloads every segment, and saves one MP4 or TS file |
+| `m3u8-player` | `Player.tsx` | Plays a stream with hls.js (Safari native HLS as a fallback), with quality locking and readable errors |
+| `m3u8-checker` | `Checker.tsx` | Shows variants, renditions, segment facts, warnings, and the raw playlist; can load every variant |
+| `ts-to-mp4` | `TsConverter.tsx` | Rewraps local `.ts` files (one or many, natural name order) into one MP4 |
+
+The engine is in `app/hls/lib/`: `m3u8.ts` (parser and helpers, no browser APIs), `download.ts` (fetching with retries, byte ranges, AES-128 decryption with Web Crypto, and the downloader that fetches six segments at a time but writes them in order), `remux.ts` (container detection and output assembly), and `format.ts`. Tools hand a stream to each other with `?url=`, read once on mount by `useStreamParam` in `UrlForm.tsx`.
+
+Behavior and limits to keep in mind:
+
+- Everything runs in the visitor's browser. There is no proxy, so the stream's server must allow cross-origin reads (CORS); errors say so. Adding a proxy would make ToolsBase relay third-party video, with bandwidth and legal consequences, so don't add one casually.
+- DRM is refused, not worked around: SAMPLE-AES, Widevine, FairPlay, and PlayReady streams fail with a message. Only unencrypted streams and AES-128 with a reachable key are supported.
+- TS to MP4 uses mux.js (lazy-loaded) and supports H.264 with AAC only; other codecs fall back to TS with a message. fMP4 (`EXT-X-MAP`) streams are joined as they are. A discontinuity starts a fresh mux.js transmuxer at the end time of the previous output, because mux.js applies `baseMediaDecodeTime` only to tracks it hasn't seen yet.
+- Live playlists download only the segments listed when the download starts. Downloads are assembled as Blob parts in browser storage, so very long streams depend on the browser's limits.
+- The sample stream is Mux's public Big Buck Bunny test stream (CC BY, CORS enabled), `SAMPLE_STREAM` in `UrlForm.tsx`. Replace it if that URL stops working.
+- Analytics events (`hls_*`) never include stream URLs or file names.
+
+`tests/hls.test.mjs` covers the parser, IV derivation, container sniffing, naming, and catalog completeness. Before a release, also try the tools in a browser against a few streams: plain TS, AES-128, fMP4, byte ranges, a discontinuity, a blocked (no CORS) server, and the sample stream. Play the saved files and check their length.
 
 ## Configuration, analytics, and privacy
 
