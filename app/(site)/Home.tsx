@@ -272,51 +272,6 @@ export default function Home({ suites = [] }: { suites?: Suite[] }) {
         </section>
       )}
 
-      {!query && activeCategory === "all" && suites.length > 0 && (
-        <section className={styles.suites} aria-labelledby="suites-title">
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2 id="suites-title">More toolkits</h2>
-            </div>
-          </div>
-          <div className={styles.suiteGrid}>
-            {suites.map((suite) => (
-              <article key={suite.slug} className={styles.suiteCard}>
-                <div className={styles.suiteTop}>
-                  <span className={styles.suiteIcon} aria-hidden="true">
-                    {suite.icon}
-                  </span>
-                  <h3>{suite.name}</h3>
-                  <span className={styles.cardCategory}>
-                    {suite.tools.length} tools
-                  </span>
-                </div>
-                <p>{suite.description}</p>
-                <ul className={styles.suiteLinks} aria-label={`${suite.name} tools`}>
-                  {suite.featured
-                    .flatMap((slug) => suite.tools.filter((tool) => tool.slug === slug))
-                    .map((tool) => (
-                      <li key={tool.slug}>
-                        <a href={tool.href}>
-                          <span aria-hidden="true">{tool.icon}</span>
-                          {tool.name}
-                        </a>
-                      </li>
-                    ))}
-                </ul>
-                <a
-                  href={suite.href}
-                  className={styles.openTool}
-                  aria-label={`See all ${suite.tools.length} ${suite.name} tools`}
-                >
-                  See all {suite.tools.length} tools <Arrow />
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section
         className={styles.directory}
         id="tool-directory"
@@ -445,6 +400,51 @@ export default function Home({ suites = [] }: { suites?: Suite[] }) {
           </div>
         </div>
       </section>
+
+      {!query && activeCategory === "all" && suites.length > 0 && (
+        <section className={styles.suites} aria-labelledby="suites-title">
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 id="suites-title">More toolkits</h2>
+            </div>
+          </div>
+          <div className={styles.suiteGrid}>
+            {suites.map((suite) => (
+              <article key={suite.slug} className={styles.suiteCard}>
+                <div className={styles.suiteTop}>
+                  <span className={styles.suiteIcon} aria-hidden="true">
+                    {suite.icon}
+                  </span>
+                  <h3>{suite.name}</h3>
+                  <span className={styles.cardCategory}>
+                    {suite.tools.length} tools
+                  </span>
+                </div>
+                <p>{suite.description}</p>
+                <ul className={styles.suiteLinks} aria-label={`${suite.name} tools`}>
+                  {suite.featured
+                    .flatMap((slug) => suite.tools.filter((tool) => tool.slug === slug))
+                    .map((tool) => (
+                      <li key={tool.slug}>
+                        <a href={tool.href}>
+                          <span aria-hidden="true">{tool.icon}</span>
+                          {tool.name}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+                <a
+                  href={suite.href}
+                  className={styles.openTool}
+                  aria-label={`See all ${suite.tools.length} ${suite.name} tools`}
+                >
+                  See all {suite.tools.length} tools <Arrow />
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
