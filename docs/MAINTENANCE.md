@@ -45,7 +45,7 @@ The category layouts use `ToolLayout`. Their category indexes use `CategoryDirec
 
 ## Search and adding tools
 
-Home search uses Fuse over tool names, category names, and optional `keywords`. It supports Cmd/Ctrl+K, Escape, suggested queries, and a resettable empty state. Search ignores field length when ranking so long natural-language alias lists do not bury relevant tools. Result counts come from the actual filtered list. Search analytics are debounced by 400ms.
+Home search uses Fuse over tool names, category names, and optional `keywords`. Share and HLS appear on the home page as the "File Sharing" and "Video & HLS" categories and in the "More toolkits" cards; `app/(site)/page.tsx` builds them from `app/share/catalog.ts` and `app/hls/catalog.ts` (links go to each section's canonical URL), so new Share or HLS tools show up there automatically. It supports Cmd/Ctrl+K, Escape, suggested queries, and a resettable empty state. Search ignores field length when ranking so long natural-language alias lists do not bury relevant tools. Result counts come from the actual filtered list. Search analytics are debounced by 400ms.
 
 For a normal tool:
 

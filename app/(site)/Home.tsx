@@ -6,24 +6,64 @@ import { usePostHog } from "posthog-js/react";
 import { categories } from "@/app/Constants";
 import styles from "./Home.module.css";
 
-const tools = categories.flatMap((category) =>
-  category.tools.map((tool) => ({
+type Tool = {
+  name: string;
+  slug: string;
+  icon: string;
+  description: string;
+  keywords: string;
+  href: string;
+  category: string;
+  categorySlug: string;
+};
+type DirectoryCategory = { name: string; slug: string; icon: string; href: string; tools: Tool[] };
+
+/** A section of the site with its own layout (Share, HLS), listed on the home page next to the main categories. */
+export type Suite = {
+  name: string;
+  slug: string;
+  icon: string;
+  href: string;
+  description: string;
+  /** Extra search terms applied to every tool in the suite. */
+  keywords: string;
+  /** Slugs of the tools linked from the suite's card, in order. */
+  featured: string[];
+  tools: { name: string; slug: string; icon: string; description: string; href: string }[];
+};
+
+const mainCategories: DirectoryCategory[] = categories.map((category) => ({
+  name: category.name,
+  slug: category.slug,
+  icon: category.icon,
+  href: `/${category.slug}`,
+  tools: category.tools.map((tool) => ({
     ...tool,
+    keywords: "keywords" in tool ? String(tool.keywords) : "",
+    href: `/${category.slug}/${tool.slug}`,
     category: category.name,
     categorySlug: category.slug,
-    keywords: "keywords" in tool ? tool.keywords : "",
   })),
-);
-type Tool = (typeof tools)[number];
+}));
+
+const suiteCategory = (suite: Suite): DirectoryCategory => ({
+  name: suite.name,
+  slug: suite.slug,
+  icon: suite.icon,
+  href: suite.href,
+  tools: suite.tools.map((tool) => ({
+    ...tool,
+    keywords: suite.keywords,
+    category: suite.name,
+    categorySlug: suite.slug,
+  })),
+});
 
 const featuredSlugs = [
   "json-formatter-validator",
   "random-password-generator",
   "qr-code-generator",
 ];
-const featuredTools = featuredSlugs.flatMap((slug) =>
-  tools.filter((tool) => tool.slug === slug),
-);
 
 function Arrow({ className = "" }: { className?: string }) {
   return (
@@ -71,7 +111,7 @@ function ToolCard({
 }) {
   return (
     <a
-      href={`/${tool.categorySlug}/${tool.slug}`}
+      href={tool.href}
       className={`${styles.toolCard} ${featured ? styles.featuredCard : ""}`}
     >
       <div className={styles.cardTop}>
@@ -98,8 +138,14 @@ function ToolCard({
   );
 }
 
-export default function Home() {
+export default function Home({ suites = [] }: { suites?: Suite[] }) {
   const posthog = usePostHog();
+  const directory = useMemo(() => [...mainCategories, ...suites.map(suiteCategory)], [suites]);
+  const tools = useMemo(() => directory.flatMap((category) => category.tools), [directory]);
+  const featuredTools = useMemo(
+    () => featuredSlugs.flatMap((slug) => tools.filter((tool) => tool.slug === slug)),
+    [tools],
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const searchInput = useRef<HTMLInputElement>(null);
@@ -112,7 +158,7 @@ export default function Home() {
         ignoreFieldNorm: true,
         threshold: 0.3,
       }),
-    [],
+    [tools],
   );
 
   const matchedTools = useMemo(() => {
@@ -122,7 +168,7 @@ export default function Home() {
     return activeCategory === "all"
       ? results
       : results.filter((tool) => tool.categorySlug === activeCategory);
-  }, [query, activeCategory, fuse]);
+  }, [query, activeCategory, fuse, tools]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -226,6 +272,51 @@ export default function Home() {
         </section>
       )}
 
+      {!query && activeCategory === "all" && suites.length > 0 && (
+        <section className={styles.suites} aria-labelledby="suites-title">
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 id="suites-title">More toolkits</h2>
+            </div>
+          </div>
+          <div className={styles.suiteGrid}>
+            {suites.map((suite) => (
+              <article key={suite.slug} className={styles.suiteCard}>
+                <div className={styles.suiteTop}>
+                  <span className={styles.suiteIcon} aria-hidden="true">
+                    {suite.icon}
+                  </span>
+                  <h3>{suite.name}</h3>
+                  <span className={styles.cardCategory}>
+                    {suite.tools.length} tools
+                  </span>
+                </div>
+                <p>{suite.description}</p>
+                <ul className={styles.suiteLinks} aria-label={`${suite.name} tools`}>
+                  {suite.featured
+                    .flatMap((slug) => suite.tools.filter((tool) => tool.slug === slug))
+                    .map((tool) => (
+                      <li key={tool.slug}>
+                        <a href={tool.href}>
+                          <span aria-hidden="true">{tool.icon}</span>
+                          {tool.name}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+                <a
+                  href={suite.href}
+                  className={styles.openTool}
+                  aria-label={`See all ${suite.tools.length} ${suite.name} tools`}
+                >
+                  See all {suite.tools.length} tools <Arrow />
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section
         className={styles.directory}
         id="tool-directory"
@@ -257,7 +348,7 @@ export default function Home() {
                 <span>All tools</span>
                 <span className={styles.categoryCount}>{tools.length}</span>
               </button>
-              {categories.map((category) => (
+              {directory.map((category) => (
                 <button
                   key={category.slug}
                   aria-pressed={activeCategory === category.slug}
@@ -288,7 +379,7 @@ export default function Home() {
                       Results for <strong>“{query}”</strong>
                     </>
                   ) : (
-                    categories.find(
+                    directory.find(
                       (category) => category.slug === activeCategory,
                     )?.name
                   )}
@@ -317,7 +408,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              categories
+              directory
                 .filter(
                   (category) =>
                     activeCategory === "all" ||
@@ -335,7 +426,7 @@ export default function Home() {
                         <span>{category.tools.length}</span>
                       </h3>
                       <a
-                        href={`/${category.slug}`}
+                        href={category.href}
                         aria-label={`View all ${category.name} tools`}
                       >
                         View all <Arrow />
